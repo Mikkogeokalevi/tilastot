@@ -3,6 +3,7 @@
   Tekijä: Mikkokalevi
   Sivu luotu: 05/2025
 -->
+
 <html lang="fi">
 <head>
     <meta charset="UTF-8" />
@@ -10,27 +11,60 @@
     <title>Geokätkötilastot</title> <style>
         body {
             margin: 0;
-            /* Adjust padding-top for the fixed nav */
-            /* Increased padding-top to account for wrapping nav on mobile */
-            padding-top: 140px; /* Increased padding */
+            /* padding-top will be set by JavaScript */
             font-family: sans-serif;
             background-color: #121212;
             color: #e0e0e0;
         }
 
+        /* Style for the user input area - now fixed at the top */
+        #userControlArea {
+            position: fixed; /* Keep it fixed at the top */
+            top: 0; /* Align to the very top */
+            left: 0;
+            width: 100%;
+            box-sizing: border-box; /* Include padding in width */
+            padding: 10px; /* Padding inside the area */
+            background-color: #1f1f1f; /* Background to match nav */
+            border-bottom: 1px solid #333; /* Separator line */
+            z-index: 1000; /* Make sure it's above the nav */
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            align-items: center;
+            gap: 10px; /* Space between items */
+        }
+
+        #userControlArea div {
+             margin: 0; /* Remove default div margin */
+         }
+
+        /* Styles for the input and button */
+        #usernameInput, #updateButton {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+            font-size: 14px;
+        }
+
+         #updateButton:hover {
+            background-color: #005fa3;
+        }
+
         nav {
-            position: fixed;
-            top: 0;
+            position: fixed; /* Keep it fixed */
+            /* top will be set by JavaScript */
             left: 0;
             width: 100%;
             background-color: #1f1f1f;
             border-bottom: 1px solid #333;
             padding: 10px;
-            box-sizing: border-box;
+            box-sizing: border-box; /* Include padding in width */
             display: flex;
             flex-wrap: wrap; /* Allow items to wrap */
             align-items: center;
-            z-index: 999;
+            z-index: 999; /* Below userControlArea but above content */
         }
 
         .nav-title {
@@ -45,17 +79,15 @@
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            /* Adjust margin-top if flex-wrap causes second row */
-            margin-top: 0; /* Reset margin */
+            margin-top: 0;
         }
 
-         @media (max-width: 767px) { /* Adjust for smaller screens if nav wraps */
+         @media (max-width: 767px) {
             .nav-group {
                  margin-top: 10px; /* Add space if wrapping occurs */
                  width: 100%; /* Take full width */
             }
          }
-
 
         .nav-heading {
             font-weight: bold;
@@ -86,65 +118,17 @@
             color: white;
         }
 
-        /* Style for the new user input area */
-        #userControlArea {
-            /* margin-top should be 0 now, padding-top on body creates space */
-            margin-top: 0;
-            margin-left: 10px;
-            margin-bottom: 20px; /* Space before the first heading */
-            padding: 10px;
-            background-color: #1f1f1f; /* Background to match nav */
-            border-radius: 5px;
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-            align-items: center;
-            gap: 10px; /* Space between items */
-        }
-
-         #userControlArea div {
-             margin: 0; /* Remove default div margin */
-         }
-
-
-        /* Styles for the input and button */
-        #usernameInput, #updateButton {
-            padding: 8px;
-            border-radius: 5px; /* Corrected radius */
-            border: 1px solid #555;
-            background-color: #333;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        #updateButton:hover {
-            background-color: #005fa3;
-        }
-
-
         h2 {
-            /* Keep existing margin-top, add margin-bottom to space from link */
+            /* margin-top will be taken care of by body padding-top */
             margin: 40px 10px 5px; /* Reduced bottom margin to place link closer */
             font-size: 22px;
-             /* Adjust scroll-margin-top to account for the fixed nav height + user control area */
-            /* Increased scroll-margin-top to account for increased body padding-top and userControlArea */
-            scroll-margin-top: 220px; /* Adjusted margin (approx nav height + userControlArea height) */
+             /* scroll-margin-top will be set by JavaScript */
         }
 
         h3 {
             margin: 20px 10px 10px;
             font-size: 18px;
             color: #cccccc;
-        }
-
-        @media (min-width: 768px) {
-            /* On larger screens, nav likely doesn't wrap, padding-top can be less */
-            body {
-                padding-top: 60px; /* Revert padding-top for larger screens */
-            }
-             h2 {
-                scroll-margin-top: 80px; /* Adjust margin for larger screens */
-                 margin: 40px 10px 5px; /* Keep consistent */
-             }
         }
 
         img {
@@ -155,15 +139,13 @@
             border-radius: 5px;
         }
 
-        /* Ensure images below h3 also have proper margin */
         h3 + img {
-             margin-top: 10px; /* Add margin above image if it follows h3 */
+             margin-top: 10px;
         }
-
 
         .content-link {
             display: inline-block;
-            margin: 10px; /* Default margin for general content links */
+            margin: 10px;
             padding: 8px 14px;
             background-color: #0077cc;
             color: white;
@@ -183,7 +165,6 @@
             /* Inherits content-link styles */
             display: inline-block; /* Keep it inline-block to flow after H2 */
             margin: 0 0 20px 10px; /* Adjust margin: top right bottom left */
-                                   /* 0 top, 0 right, 20px bottom (space before content), 10px left (space from H2) */
             font-size: 12px; /* Slightly smaller font */
             vertical-align: middle; /* Align vertically with the heading */
         }
@@ -197,8 +178,13 @@
         }
     </style>
 </head>
-<body id="top"> <nav>
-        <div class="nav-title">Geokätkötilastot - Navigointi:</div> <div class="nav-group">
+<body id="top"> <div id="userControlArea">
+         <div>
+            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> </div>
+        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus"> <button id="updateButton">Päivitä</button>
+    </div>
+    <nav>
+        <div class="nav-title">Navigointi:</div> <div class="nav-group">
             <div class="nav-heading">*</div>
             <a href="#dt2025">T/D 2025</a>
             <a href="#dt">T/D full</a>
@@ -226,12 +212,8 @@
         </div>
     </nav>
 
-    <div id="userControlArea">
-         <div>
-            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> </div>
-        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus"> <button id="updateButton">Päivitä</button>
-    </div>
-    <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
+    <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=1">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=2">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=3">
@@ -239,7 +221,8 @@
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=7">
 
 
-    <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
+    <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=1">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=2">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=3">
@@ -247,7 +230,8 @@
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=7">
 
 
-    <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <h3>Tammikuu</h3>
+    <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <h3>Tammikuu</h3>
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=01">
     <h3>Helmikuu</h3>
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=02">
@@ -273,16 +257,20 @@
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=12">
 
 
-    <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <a class="content-link" href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
+    <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <a class="content-link" href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
 
 
-    <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
+    <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
 
 
-    <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
+    <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
 
 
-    <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
+    <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&year=2025">
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=1">
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=2">
@@ -294,7 +282,8 @@
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=20">
 
 
-    <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <h3>Päijät-häme</h3>
+    <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <h3>Päijät-häme</h3>
     <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=P%C3%A4ij%C3%A4t-H%C3%A4me">
     <h3>Kymenlaakso</h3>
     <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=kymenlaakso">
@@ -306,7 +295,8 @@
     <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Uusimaa">
 
 
-    <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
+    <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">Yleis kartta</a>
     <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" target="_blank">Tradi kartta</a>
@@ -320,18 +310,23 @@
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" target="_blank">Virtu kartta</a>
 
 
-    <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
+    <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" target="_blank">Tripletti kartta</a>
 
-    <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
+    <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
 
-    <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
+    <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
 
 
-    <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
+    <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
 
 
-    <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
+    <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
 
 
     <h2 id="jasmer">Jasmer</h2> <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
@@ -345,9 +340,34 @@
     <br><br><br><br><br>
 
     <script>
-        // Keep the Intersection Observer for nav link highlighting
         const sections = document.querySelectorAll("h2[id]");
         const navLinks = document.querySelectorAll("nav a");
+        const userControlArea = document.getElementById('userControlArea');
+        const navBar = document.querySelector('nav');
+        const usernameInput = document.getElementById('usernameInput');
+        const updateButton = document.getElementById('updateButton');
+        const currentUsernameSpan = document.getElementById('currentUsername');
+        const h2Elements = document.querySelectorAll('h2');
+
+
+        // Function to adjust padding and margins based on fixed header heights
+        function adjustLayout() {
+            const userAreaHeight = userControlArea.offsetHeight;
+            const navHeight = navBar.offsetHeight;
+            const totalFixedHeight = userAreaHeight + navHeight;
+
+            // Set the top position of the nav bar
+            navBar.style.top = userAreaHeight + 'px';
+
+            // Set padding-top for the body to push content below fixed headers
+            document.body.style.paddingTop = totalFixedHeight + 'px';
+
+            // Set scroll-margin-top for H2 elements to account for fixed headers when jumping
+            h2Elements.forEach(h2 => {
+                h2.style.scrollMarginTop = totalFixedHeight + 'px';
+            });
+        }
+
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -359,10 +379,10 @@
                 }
             });
         }, {
-             // Adjust rootMargin based on the fixed nav height and userControlArea height
-             // Needs to be large enough so the H2 is visible below the fixed elements
-            rootMargin: "-200px 0px -60% 0px", /* Adjusted margin */
-            threshold: 0.1
+             /* rootMargin needs to be dynamic or large enough for max fixed height */
+             /* We'll set scroll-margin-top dynamically, so this margin can be simpler */
+             rootMargin: "-50px 0px -60% 0px", /* Keep a reasonable margin */
+             threshold: 0.1
         });
 
         sections.forEach(section => {
@@ -370,12 +390,6 @@
         });
 
         // --- JavaScript for username update ---
-
-        // Get the elements from their new location
-        const usernameInput = document.getElementById('usernameInput');
-        const updateButton = document.getElementById('updateButton');
-        const currentUsernameSpan = document.getElementById('currentUsername');
-
 
         function updateStats(username) {
             // Trim whitespace from the username
@@ -395,20 +409,14 @@
                          element.removeAttribute('src'); // Remove src to hide image
                     } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                          // For links, revert the href to the base data-href value without a user or disable it.
-                         // Reverting to data-href value without user:
                          let baseHref = element.getAttribute('data-href');
-                         if(baseHref.includes('user=')) {
+                         if(baseHref && baseHref.includes('user=')) {
                              element.href = baseHref.replace(/user=([^&]+)/, 'user=');
-                         } else {
-                             // If the original data-href didn't have a user param, just keep it as is or clear?
-                             // Let's clear it if it was previously set by the script.
+                         } else if (baseHref) {
+                              // If the original data-href didn't have a user param but has href, remove it
                              element.removeAttribute('href');
                          }
-
-                         // Or disable the link instead:
-                         // element.style.pointerEvents = 'none';
-                         // element.style.opacity = '0.5'; // Optional: make it look disabled
-                    }
+                     }
                 });
                  return; // Stop the function here
             }
@@ -435,9 +443,6 @@
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
-                     // If links were disabled, re-enable them
-                     element.style.pointerEvents = '';
-                     element.style.opacity = '';
                 } else {
                     return; // Skip elements without data-src/data-href or other types
                 }
@@ -452,7 +457,6 @@
                 } else if (originalUrl) {
                     // If the data attribute exists but doesn't contain 'user=',
                     // just set the src/href from the data attribute.
-                    // This case is less likely with the provided geocache.fi URLs.
                      element[urlAttribute] = originalUrl;
                 }
             });
@@ -474,23 +478,16 @@
             }
         });
 
+        // --- Layout Adjustments ---
+        // Adjust layout on initial load and window resize
+        document.addEventListener('DOMContentLoaded', adjustLayout);
+        window.addEventListener('resize', adjustLayout);
+
+
         // Initial state on page load:
         // - The input field is empty (value="").
         // - The currentUsernameSpan shows "[Ei käyttäjää]".
-        // - No images/links with data-src/data-href are loaded automatically because
-        //   we removed the initial updateStats call on load and src/href are initially missing.
-
-         // Set the initial username text in the control area span on load
-         document.addEventListener('DOMContentLoaded', () => {
-             if (currentUsernameSpan && usernameInput) {
-                 // Initially, the input value is empty, so span shows "[Ei käyttäjää]".
-                 // If you ever set a default value="mikkokalevi" in the input,
-                 // this line would update the span to show "mikkokalevi" on load,
-                 // but images wouldn't load until the button is pressed.
-                 // currentUsernameSpan.textContent = usernameInput.value.trim() || "[Ei käyttäjää]";
-             }
-         });
-
+        // - No images/links with data-src/data-href are loaded automatically.
 
     </script>
 
