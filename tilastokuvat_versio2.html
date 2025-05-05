@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Geocache.fi - Kuvageneraattori</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: sans-serif;
+      margin: 1em;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto 2em 0;
+      padding: 1em;
+    }
+
+    label {
+      display: inline-block;
+      margin-bottom: 0.3em;
+      margin-top: 0.8em;
+    }
+
+    select, input[type="date"], input[type="text"] {
+      width: 100%;
+      padding: 0.5em;
+      margin-bottom: 0.6em;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      font-size: 1em;
+    }
+
+    .row {
+      display: flex;
+      gap: 0.5em;
+      flex-wrap: wrap;
+    }
+
+    .row > div {
+      flex: 1;
+      min-width: 100px;
+    }
+
+    button {
+      margin-top: 1em;
+      padding: 0.6em 1em;
+      background-color: #333;
+      color: #e0e0e0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+
+    a {
+      color: #80cbc4;
+      display: inline-block;
+      margin-top: 1em;
+    }
+
+    img {
+      margin-top: 1em;
+      max-width: 100%;
+      border: 1px solid #333;
+    }
+
+    @media (max-width: 600px) {
+      select, input[type="date"], input[type="text"] {
+        font-size: 1.1em;
+      }
+
+      button {
+        width: 100%;
+        font-size: 1.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Geocache.fi - Kuvageneraattori</h2>
+
+    <label for="user">Käyttäjätunnus:</label>
+    <input type="text" id="user" placeholder="esim. mikkokalevi">
+
+    <label for="kuvatyyppi">Kuvan tyyppi:</label>
+    <select id="kuvatyyppi">
+      <option value="matrix">T/D-taulukko</option>
+      <option value="kunta">Kuntakartta</option>
+      <option value="year">Vuosikalenteri</option>
+      <option value="ftfkunta">ftf kunta</option>
+      <option value="hiddenday">Jasmer</option>
+      <option value="saari">saarilöydöt</option>
+    </select>
+
+    <label for="aikavalinta">Aikarajaus:</label>
+    <select id="aikavalinta" onchange="toggleAikaKentat()">
+      <option value="ei">Ei aikarajausta</option>
+      <option value="kylla">Valitse aikaväli</option>
+    </select>
+
+    <div id="aikaKentat" style="display:none;">
+      <div class="row">
+        <div>
+          <label for="year">Vuosi:</label>
+          <select id="year">
+            <option value="current">—</option>
+          </select>
+        </div>
+        <div>
+          <label for="startdate">Alkupäivä:</label>
+          <input type="date" id="startdate">
+        </div>
+        <div>
+          <label for="enddate">Loppupäivä:</label>
+          <input type="date" id="enddate">
+        </div>
+      </div>
+    </div>
+
+    <label for="cachetype">Kätkötyyppi:</label>
+    <select id="cachetype">
+      <option value="">—</option>
+      <option value="1">Traditional Cache</option>
+      <option value="2">Multi-cache</option>
+      <option value="3">Unknown Cache</option>
+      <option value="4">Letterbox Hybrid</option>
+      <option value="5">Event Cache</option>
+      <option value="6">Earthcache</option>
+      <option value="7">Virtual Cache</option>
+      <option value="8">Webcam Cache</option>
+      <option value="9">Wherigo Cache</option>
+      <option value="10">Community Celebration Event</option>
+      <option value="11">Mega-Event Cache</option>
+      <option value="12">Cache In Trash Out Event</option>
+      <option value="13">Giga-Event Cache</option>
+      <option value="14">Groundspeak Block Party</option>
+      <option value="98">Muut paitsi tradit</option>
+      <option value="99">Kaikki event-tyypit</option>
+    </select>
+
+    <button onclick="luoLinkki()">Luo linkki ja kuva</button>
+    <a id="linkki" href="#" target="_blank"></a>
+    <img id="kuva" alt="">
+  </div>
+
+  <script>
+    function formatDate(input) {
+      const parts = input.split("-");
+      return parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : "";
+    }
+
+    function toggleAikaKentat() {
+      const valinta = document.getElementById("aikavalinta").value;
+      document.getElementById("aikaKentat").style.display = valinta === "kylla" ? "block" : "none";
+    }
+
+    function luoLinkki() {
+      const baseUrl = "https://www.geocache.fi/stat/";
+      const kuvatyyppi = document.getElementById("kuvatyyppi").value;
+      const user = document.getElementById("user").value.trim();
+      const start = document.getElementById("startdate").value;
+      const end = document.getElementById("enddate").value;
+      const cachetype = document.getElementById("cachetype").value;
+      const aikavalinta = document.getElementById("aikavalinta").value;
+      const year = document.getElementById("year").value;
+
+      if (!user) {
+        alert("Syötä käyttäjänimi.");
+        return;
+      }
+
+      let params = `?user=${encodeURIComponent(user)}`;
+
+      if (aikavalinta === "kylla") {
+        if (start && end) {
+          params += `&startdate=${formatDate(start)}&enddate=${formatDate(end)}`;
+        } else if (year && year !== "current") {
+          params += `&year=${year}`;
+        }
+      }
+
+      if (cachetype) {
+        params += `&cachetype=${cachetype}`;
+      }
+
+      const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
+      document.getElementById("linkki").href = finalUrl;
+      document.getElementById("linkki").textContent = "Avaa kuva uudessa ikkunassa";
+      document.getElementById("kuva").src = finalUrl;
+    }
+
+    window.onload = function () {
+      const yearSelect = document.getElementById("year");
+      const currentYear = new Date().getFullYear();
+      for (let y = 2000; y <= currentYear; y++) {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+      }
+    };
+  </script>
+</body>
+</html>
