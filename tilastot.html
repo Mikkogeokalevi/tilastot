@@ -23,15 +23,34 @@
             background-color: #1f1f1f; /* Background to match nav */
             border-bottom: 1px solid #333; /* Separator line */
             z-index: 1000; /* Make sure it's above the nav */
-            display: flex;
+            display: flex; /* Use flexbox for layout */
             flex-wrap: wrap; /* Allow wrapping on small screens */
-            align-items: center;
+            align-items: center; /* Vertically align items */
             gap: 10px; /* Space between items */
         }
 
-        #userControlArea div {
+         /* New style for the logo within the userControlArea */
+        #userControlArea .logo {
+            height: 40px; /* Example size - Adjust as needed for mikkokalevi.png */
+            width: 40px;  /* Example size - Adjust as needed */
+            margin-right: 10px; /* Space between logo and subsequent items */
+            flex-shrink: 0; /* Prevent shrinking */
+            object-fit: contain; /* Maintain aspect ratio without stretching */
+            vertical-align: middle; /* Align logo nicely */
+        }
+
+
+         #userControlArea div {
              margin: 0; /* Remove default div margin */
+              /* Allow this div to take space but shrink if needed */
+             flex-shrink: 1;
          }
+
+         #userControlArea input,
+         #userControlArea button {
+             flex-shrink: 0; /* Prevent input and button from shrinking too much */
+         }
+
 
         /* Styles for the input and button */
         #usernameInput, #updateButton {
@@ -174,8 +193,8 @@
     </style>
 </head>
 <body id="top"> <div id="userControlArea">
-         <div>
-           <img src="mikkokalevi.png" alt="Sivuston logo" class="logo"> Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> </div>
+        <img src="mikkokalevi.png" alt="Käyttäjän logo" class="logo"> <div>
+            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> </div>
         <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus"> <button id="updateButton">Päivitä</button>
     </div>
     <nav>
@@ -361,6 +380,12 @@
             h2Elements.forEach(h2 => {
                 h2.style.scrollMarginTop = totalFixedHeight + 'px';
             });
+
+             // Adjust the rootMargin for the Intersection Observer
+             // This makes the active link highlighting more accurate
+             // rootMargin: "top right bottom left"
+             // The top margin should be the height of the fixed headers + a small buffer
+             observer.rootMargin = `-${totalFixedHeight + 10}px 0px -60% 0px`; // Added a small buffer
         }
 
 
@@ -374,9 +399,7 @@
                 }
             });
         }, {
-             /* rootMargin needs to be dynamic or large enough for max fixed height */
-             /* We'll set scroll-margin-top dynamically, so this margin can be simpler */
-             rootMargin: "-50px 0px -60% 0px", /* Keep a reasonable margin */
+             /* rootMargin will be set dynamically by adjustLayout */
              threshold: 0.1
         });
 
@@ -479,10 +502,12 @@
         window.addEventListener('resize', adjustLayout);
 
 
-        // Initial state on page load:
-        // - The input field is empty (value="").
-        // - The currentUsernameSpan shows "[Ei käyttäjää]".
-        // - No images/links with data-src/data-href are loaded automatically.
+        // Initial state handler (shows "[Ei käyttäjää]")
+        document.addEventListener('DOMContentLoaded', () => {
+             if (currentUsernameSpan) {
+                  currentUsernameSpan.textContent = usernameInput.value.trim() || "[Ei käyttäjää]";
+             }
+         });
 
     </script>
 
