@@ -89,7 +89,14 @@
     <h2>Kätkö tilastojen - Kuvageneraattori</h2>
 
     <label for="user">Käyttäjätunnus:</label>
-    <input type="text" id="user" placeholder="esim. paavojohannes">
+    <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
+    <datalist id="userlist">
+      <option value="mikkokalevi">
+      <option value="Tiltu">
+      <option value="lahjemies">
+      <option value="eukka">
+      <option value="Milde04">
+    </datalist>
 
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
