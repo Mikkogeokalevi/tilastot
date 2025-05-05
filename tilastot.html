@@ -7,12 +7,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Geokätkötilastot</title> <!-- Title updated to be more generic -->
-    <style>
+    <title>Geokätkötilastot</title> <style>
         body {
             margin: 0;
             /* Adjust padding-top for the fixed nav */
-            padding-top: 60px; /* Original padding for fixed nav */
+            /* Increased padding-top to account for wrapping nav on mobile */
+            padding-top: 140px; /* Increased padding */
             font-family: sans-serif;
             background-color: #121212;
             color: #e0e0e0;
@@ -88,7 +88,8 @@
 
         /* Style for the new user input area */
         #userControlArea {
-            margin-top: 20px; /* Space below the fixed nav */
+            /* margin-top should be 0 now, padding-top on body creates space */
+            margin-top: 0;
             margin-left: 10px;
             margin-bottom: 20px; /* Space before the first heading */
             padding: 10px;
@@ -108,17 +109,11 @@
         /* Styles for the input and button */
         #usernameInput, #updateButton {
             padding: 8px;
-            border-radius: 5辑px; /* Corrected radius */
+            border-radius: 5px; /* Corrected radius */
             border: 1px solid #555;
             background-color: #333;
             color: #fff;
             font-size: 14px;
-        }
-
-        #updateButton {
-            background-color: #0077cc;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
 
         #updateButton:hover {
@@ -131,7 +126,8 @@
             margin: 40px 10px 5px; /* Reduced bottom margin to place link closer */
             font-size: 22px;
              /* Adjust scroll-margin-top to account for the fixed nav height + user control area */
-            scroll-margin-top: 120px; /* Adjusted margin */
+            /* Increased scroll-margin-top to account for increased body padding-top and userControlArea */
+            scroll-margin-top: 220px; /* Adjusted margin (approx nav height + userControlArea height) */
         }
 
         h3 {
@@ -143,7 +139,7 @@
         @media (min-width: 768px) {
             /* On larger screens, nav likely doesn't wrap, padding-top can be less */
             body {
-                padding-top: 60px;
+                padding-top: 60px; /* Revert padding-top for larger screens */
             }
              h2 {
                 scroll-margin-top: 80px; /* Adjust margin for larger screens */
@@ -201,11 +197,8 @@
         }
     </style>
 </head>
-<body id="top"> <!-- Added id="top" as the target for back-to-top links -->
-
-    <nav>
-        <div class="nav-title">Geokätkötilastot - Navigointi:</div> <!-- Simplified title -->
-        <div class="nav-group">
+<body id="top"> <nav>
+        <div class="nav-title">Geokätkötilastot - Navigointi:</div> <div class="nav-group">
             <div class="nav-heading">*</div>
             <a href="#dt2025">T/D 2025</a>
             <a href="#dt">T/D full</a>
@@ -233,20 +226,12 @@
         </div>
     </nav>
 
-    <!-- User Input Area moved outside of nav -->
     <div id="userControlArea">
          <div>
-            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> <!-- Initial text -->
-         </div>
-        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus"> <!-- Removed default value -->
-        <button id="updateButton">Päivitä</button>
+            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> </div>
+        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus"> <button id="updateButton">Päivitä</button>
     </div>
-    <!-- End User Input Area -->
-
-
-    <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Images now use data-src -->
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
+    <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=1">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=2">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=3">
@@ -254,9 +239,7 @@
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=7">
 
 
-    <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Images now use data-src -->
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
+    <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=1">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=2">
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=3">
@@ -264,9 +247,7 @@
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=7">
 
 
-    <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Images now use data-src -->
-    <h3>Tammikuu</h3>
+    <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <h3>Tammikuu</h3>
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=01">
     <h3>Helmikuu</h3>
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=02">
@@ -292,24 +273,16 @@
     <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=12">
 
 
-    <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- This link does not use the geocache.fi user parameter, so it's left as is -->
-    <a class="content-link" href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
+    <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <a class="content-link" href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
 
 
-    <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Image now uses data-src -->
-    <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
+    <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
 
 
-    <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Image now uses data-src -->
-    <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
+    <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
 
 
-    <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Images now use data-src -->
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
+    <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&year=2025">
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=1">
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=2">
@@ -321,9 +294,7 @@
     <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=20">
 
 
-    <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Images now use data-src -->
-    <h3>Päijät-häme</h3>
+    <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <h3>Päijät-häme</h3>
     <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=P%C3%A4ij%C3%A4t-H%C3%A4me">
     <h3>Kymenlaakso</h3>
     <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=kymenlaakso">
@@ -335,9 +306,7 @@
     <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Uusimaa">
 
 
-    <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Images and relevant links now use data-src/data-href -->
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
+    <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">Yleis kartta</a>
     <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" target="_blank">Tradi kartta</a>
@@ -351,33 +320,21 @@
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" target="_blank">Virtu kartta</a>
 
 
-    <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Image and link now use data-src/data-href -->
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
+    <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
     <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" target="_blank">Tripletti kartta</a>
 
-    <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Image now uses data-src -->
-    <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
+    <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
 
-    <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Image now uses data-src -->
-    <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
+    <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
 
 
-    <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Image now uses data-src -->
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
+    <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
 
 
-    <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <!-- Back to top link after H2 -->
-    <!-- Link now uses data-href -->
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
+    <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a> <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
 
 
-    <h2 id="jasmer">Jasmer</h2> <!-- No back-to-top after the last section -->
-    <!-- Images and relevant links now use data-src/data-href -->
-    <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
+    <h2 id="jasmer">Jasmer</h2> <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
     <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
     <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=2" target="_blank">Jasmer multi</a>
     <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=3" target="_blank">Jasmer mysse</a>
@@ -402,8 +359,9 @@
                 }
             });
         }, {
-             // Adjust rootMargin as needed based on the nav height + user control area height
-            rootMargin: "-120px 0px -60% 0px", /* Adjusted margin based on nav (60px) + userControlArea (approx 60px) */
+             // Adjust rootMargin based on the fixed nav height and userControlArea height
+             // Needs to be large enough so the H2 is visible below the fixed elements
+            rootMargin: "-200px 0px -60% 0px", /* Adjusted margin */
             threshold: 0.1
         });
 
@@ -436,10 +394,18 @@
                     if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                          element.removeAttribute('src'); // Remove src to hide image
                     } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
-                         // You might want to revert href or disable the link
-                         // Reverting to data-href value:
-                         element.href = element.getAttribute('data-href').replace(/user=([^&]+)/, 'user='); // Revert user part to empty
-                         // Or disable the link:
+                         // For links, revert the href to the base data-href value without a user or disable it.
+                         // Reverting to data-href value without user:
+                         let baseHref = element.getAttribute('data-href');
+                         if(baseHref.includes('user=')) {
+                             element.href = baseHref.replace(/user=([^&]+)/, 'user=');
+                         } else {
+                             // If the original data-href didn't have a user param, just keep it as is or clear?
+                             // Let's clear it if it was previously set by the script.
+                             element.removeAttribute('href');
+                         }
+
+                         // Or disable the link instead:
                          // element.style.pointerEvents = 'none';
                          // element.style.opacity = '0.5'; // Optional: make it look disabled
                     }
@@ -469,9 +435,9 @@
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
-                    // If links were disabled, re-enable them
-                    element.style.pointerEvents = '';
-                    element.style.opacity = '';
+                     // If links were disabled, re-enable them
+                     element.style.pointerEvents = '';
+                     element.style.opacity = '';
                 } else {
                     return; // Skip elements without data-src/data-href or other types
                 }
@@ -486,11 +452,9 @@
                 } else if (originalUrl) {
                     // If the data attribute exists but doesn't contain 'user=',
                     // just set the src/href from the data attribute.
+                    // This case is less likely with the provided geocache.fi URLs.
                      element[urlAttribute] = originalUrl;
                 }
-                 // Note: If an element has data-src/data-href but the URL is empty or doesn't contain 'user=',
-                 // the src/href will not be set by this logic unless you add an explicit else case here.
-                 // Based on the provided URLs, they all seem to have 'user='.
             });
         }
 
@@ -518,10 +482,12 @@
 
          // Set the initial username text in the control area span on load
          document.addEventListener('DOMContentLoaded', () => {
-             if (currentUsernameSpan) {
-                 // Since the input is initially empty, the span shows "[Ei käyttäjää]" by default.
-                 // If you wanted a default username loaded on page load, you would set value="mikkokalevi"
-                 // in the input field and uncomment the initial updateStats call.
+             if (currentUsernameSpan && usernameInput) {
+                 // Initially, the input value is empty, so span shows "[Ei käyttäjää]".
+                 // If you ever set a default value="mikkokalevi" in the input,
+                 // this line would update the span to show "mikkokalevi" on load,
+                 // but images wouldn't load until the button is pressed.
+                 // currentUsernameSpan.textContent = usernameInput.value.trim() || "[Ei käyttäjää]";
              }
          });
 
