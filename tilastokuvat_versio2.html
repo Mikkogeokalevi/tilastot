@@ -22,6 +22,28 @@
       padding: 1em;
     }
 
+    /* Uusi tyyli otsikkoalueelle, jossa logo ja teksti ovat rinnakkain */
+    .header-area {
+        display: flex; /* Käytetään flexboxia */
+        align-items: center; /* Keskitetään elementit pystysuunnassa */
+        margin-bottom: 1em; /* Lisätään tilaa otsikkoalueen alle */
+    }
+
+    /* Tyyli logokuvalle otsikkoalueella */
+    .header-area .logo {
+        width: 60px; /* Esimerkkikoko logolle, voit säätää */
+        height: 60px; /* Esimerkkikoko logolle (neliö) */
+        margin-right: 15px; /* Lisää tilaa logon ja tekstin väliin */
+        border: none; /* Poista mahdollinen kuvan reunus */
+        flex-shrink: 0; /* Estää logoa kutistumasta liikaa pienellä näytöllä */
+    }
+
+    /* Tyyli otsikkotekstille otsikkoalueella */
+    .header-area h2 {
+        margin: 0; /* Poistaa h2:n oletusmarginaalit */
+        font-size: 1.5em; /* Säilyttää tai säätää otsikon kokoa tarvittaessa */
+    }
+
     label {
       display: inline-block;
       margin-bottom: 0.3em;
@@ -43,6 +65,7 @@
       display: flex;
       gap: 0.5em;
       flex-wrap: wrap;
+      width: 100%;
     }
 
     .row > div {
@@ -70,6 +93,7 @@
       margin-top: 1em;
     }
 
+    /* Tätä yleistä img-sääntöä ei enää käytetä logon osalta */
     img {
       margin-top: 1em;
       max-width: 100%;
@@ -77,6 +101,18 @@
     }
 
     @media (max-width: 600px) {
+        /* Säätöjä pienemmille näytöille, jos tarpeen */
+        .header-area {
+            flex-direction: column; /* Pino elementit pystysuuntaan */
+            align-items: flex-start; /* Kohdista vasemmalle */
+        }
+        .header-area .logo {
+            margin-right: 0; /* Poista oikea marginaali */
+            margin-bottom: 10px; /* Lisää tilaa logon alle */
+            width: 50px; /* Voit säätää kokoa pienemmäksi */
+            height: 50px; /* Voit säätää kokoa pienemmäksi */
+        }
+
       select, input[type="date"], input[type="text"] {
         font-size: 1.1em;
       }
@@ -90,7 +126,10 @@
 </head>
 <body>
   <div class="container">
-    <h2>Kätkö tilastojen - Kuvageneraattori</h2>
+    <div class="header-area">
+        <img src="logo.jpg" alt="Sivuston logo" class="logo">
+        <h2>Kätkö tilastojen - Kuvageneraattori</h2>
+    </div>
 
     <label for="user">Käyttäjätunnus:</label>
     <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
@@ -99,7 +138,7 @@
       <option value="Tiltu">
       <option value="lahjemies">
       <option value="eukka">
-      <option value="milde04">
+      <option value="Milde04">
     </datalist>
 
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
