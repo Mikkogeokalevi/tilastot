@@ -3,6 +3,7 @@
   Tekijä: Mikkokalevi
   Sivu luotu: 05/2025
 -->
+<!DOCTYPE html>
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
@@ -312,7 +313,7 @@
       const user = document.getElementById("user").value.trim();
       const start = document.getElementById("startdate").value;
       const end = document.getElementById("enddate").value;
-      const cachetype = document.getElementById("cachetype").value;
+      const cachetype = document.getElementById("cachetype").value; // Hae kätkötyyppi
       const aikavalinta = document.getElementById("aikavalinta").value;
       const year = document.getElementById("year").value;
 
@@ -343,6 +344,7 @@
         }
       }
 
+      // Lisää kätkötyyppi oletus-URLiin (tämä on jo aiemmin tehty, varmistetaan vain)
       if (cachetype) {
         params += `&cachetype=${cachetype}`;
       }
@@ -354,7 +356,13 @@
 
       if (kuvatyyppi === "kunta" && selectedUserId) {
           // Jos kuvatyyppi on kuntakartta JA käyttäjällä on tunnettu userid
-          const largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
+          let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
+
+          // *** UUSI LISÄYS: Lisää kätkötyyppi, jos valittu ***
+          if (cachetype) {
+              largeMapUrl += `&cachetype=${cachetype}`;
+          }
+          // *** LISÄYS PÄÄTTYY ***
 
           // Aseta kuvan lähde (pieni kartta)
           imageElement.src = finalUrl;
