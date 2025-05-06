@@ -3,7 +3,6 @@
   Tekijä: Mikkokalevi
   Sivu luotu: 05/2025
 -->
-<!DOCTYPE html>
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
@@ -142,17 +141,51 @@
         text-decoration: underline; /* Lisää alleviivaus hoverissa */
     }
 
-    /* Tyyli ladatulle kuvalle */
-    img#kuva { /* Kohdennetaan tarkemmin kuvageneraattorin kuvaan */
-      margin-top: var(--spacing-medium);
-      max-width: 100%;
-      border: 1px solid var(--border-color);
-      border-radius: var(--border-radius);
-      height: auto; /* Varmistaa kuvasuhteen */
-      display: block; /* Varmistaa, että kuva on omalla rivillään */
-      /* Alla olevat säännöt hallitaan JS:llä, mutta pidetään tässä varmuuden vuoksi */
-      cursor: default; /* Oletus kursori */
+    /* --- Uudet säännöt kuvan ja overlayn wrapperille sekä overlaylle --- */
+    .image-wrapper {
+        position: relative; /* Mahdollistaa absoluuttisen sijoittelun sisällä */
+        display: block; /* Varmistaa, että vie tilaa */
+        margin-top: var(--spacing-medium); /* Tilaa wrapperin yläpuolelle */
+        max-width: 100%; /* Varmistaa, ettei wrapper mene yli containerin leveyden */
+        /* Piilotetaan oletuksena tai jos kuvaa ei ole */
+        display: none;
     }
+
+    .image-wrapper #kuva { /* Tyyli kuvalle wrapperin sisällä */
+        display: block; /* Kuva omalle rivilleen */
+        max-width: 100%; /* Kuva täyttää wrapperin leveyden */
+        height: auto; /* Säilyttää kuvasuhteen */
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        cursor: default; /* Oletuskursori, JS muuttaa tarvittaessa */
+    }
+
+    #map-overlay { /* Tyyli tekstille kuvan päällä */
+        position: absolute; /* Sijoitellaan absoluuttisesti wrapperiin nähden */
+        top: 50%; /* Keskitetään pystysuunnassa */
+        left: 50%; /* Keskitetään vaakasuunnassa */
+        transform: translate(-50%, -50%); /* Siirretään elementtiä itsensä koosta riippuen */
+        background-color: rgba(0, 0, 0, 0.7); /* Puoliläpinäkyvä musta tausta */
+        color: var(--text-color-light); /* Tekstin väri */
+        padding: var(--spacing-small) var(--spacing-medium);
+        border-radius: var(--border-radius); /* Pyöristetyt kulmat */
+        text-align: center;
+        pointer-events: none; /* TÄRKEÄ: antaa klikkausten mennä läpi kuvaan */
+        z-index: 10; /* Varmistaa, että teksti on kuvan päällä */
+        font-size: 1.1em;
+        white-space: nowrap; /* Estää tekstin rivittymisen, jos tilaa on */
+        display: none; /* Piilotettu oletuksena */
+    }
+    /* --- Uudet säännöt päättyvät --- */
+
+
+    /* Tyyli linkille ladatun kuvan alla */
+    a#linkki { /* Kohdennetaan tarkemmin linkkiin kuvan alla */
+        margin-top: var(--spacing-medium);
+        /* Piilotetaan oletuksena tai jos kuva itse on linkki */
+         display: none;
+    }
+
 
     /* Mobiililaitteille (< 600px) */
     @media (max-width: 600px) {
@@ -203,8 +236,9 @@
             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali linkille */
         }
 
-        img#kuva { /* Tämä koskee ladattua kuvaa */
-             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali kuvalle */
+        #map-overlay { /* Säädetään overlayta mobiilissa */
+             font-size: 1em; /* Hieman pienempi fontti mobiilissa */
+             padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); /* Pienempi padding */
         }
     }
   </style>
@@ -282,8 +316,14 @@
     </select>
 
     <button onclick="luoLinkki()">Luo linkki ja kuva</button>
+
+    <div class="image-wrapper">
+      <img id="kuva" alt="">
+      <div id="map-overlay">Klikkaa karttaa isommaksi</div>
+    </div>
+
     <a id="linkki" href="#" target="_blank"></a>
-    <img id="kuva" alt="">
+
   </div>
 
   <script>
@@ -319,16 +359,20 @@
 
       const imageElement = document.getElementById("kuva");
       const linkElementBelow = document.getElementById("linkki");
+      const overlayElement = document.getElementById("map-overlay"); // Hae overlay-elementti
+      const imageWrapper = document.querySelector('.image-wrapper'); // Hae kuvan wrapper-elementti
+
 
       if (!user) {
         alert("Syötä käyttäjänimi.");
-        // Piilota kuva ja linkki virhetilanteessa
-        imageElement.style.display = 'none';
+        // Piilota kaikki kuvaukseen liittyvät elementit virhetilanteessa
+        if (imageWrapper) imageWrapper.style.display = 'none';
+        overlayElement.style.display = 'none';
         linkElementBelow.style.display = 'none';
         return;
       }
 
-      // Oletuksena muodostettava URL kuvalle ja linkille (linkille alla)
+      // Oletuksena muodostettava URL kuvalle
       let params = `?user=${encodeURIComponent(user)}`;
 
       // Add type=2 parameter specifically for hiddenday
@@ -344,12 +388,16 @@
         }
       }
 
-      // Lisää kätkötyyppi oletus-URLiin (tämä on jo aiemmin tehty, varmistetaan vain)
+      // Lisää kätkötyyppi oletus-URLiin (tämä on jo aiemmin tehty)
       if (cachetype) {
         params += `&cachetype=${cachetype}`;
       }
 
       const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
+
+       // Varmista, että kuvakehykset ovat näkyvissä, jos URL on olemassa. Piilotetaan lopussa, jos ei.
+       if (imageWrapper) imageWrapper.style.display = 'block';
+       imageElement.style.display = 'block'; // Kuva näkyviin wrapperin sisällä
 
       // --- Kuntakartta-spesifi logiikka ---
       const selectedUserId = userIds[user]; // Hakee userid:n, jos käyttäjä on mappauksessa
@@ -358,17 +406,16 @@
           // Jos kuvatyyppi on kuntakartta JA käyttäjällä on tunnettu userid
           let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
 
-          // *** UUSI LISÄYS: Lisää kätkötyyppi, jos valittu ***
+          // Lisää kätkötyyppi, jos valittu
           if (cachetype) {
               largeMapUrl += `&cachetype=${cachetype}`;
           }
-          // *** LISÄYS PÄÄTTYY ***
 
           // Aseta kuvan lähde (pieni kartta)
           imageElement.src = finalUrl;
           imageElement.alt = "Kuntakartta (klikkaa isompaan kuvaan)";
 
-          // Tallenna ison kartan linkki data-attribuuttiin, jotta klikkikuuntelija löytää sen
+          // Tallenna ison kartan linkki data-attribuuttiin
           imageElement.dataset.largeMapUrl = largeMapUrl;
 
           // Muuta kursori osoittamaan, että kuva on klikattava
@@ -376,6 +423,10 @@
 
           // Piilota linkki kuvan alla
           linkElementBelow.style.display = 'none';
+
+          // Näytä overlay-teksti kartan päällä
+          overlayElement.style.display = 'block';
+
 
       } else {
           // --- Muut kuvatyypit TAI kuntakartta tuntemattomalle käyttäjälle ---
@@ -391,16 +442,19 @@
           linkElementBelow.href = finalUrl;
           linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
           linkElementBelow.style.display = 'inline-block'; // Tai muu sopiva display-arvo
+
+          // Piilota overlay-teksti
+          overlayElement.style.display = 'none';
       }
 
-      // Varmista, että kuva näkyy (jos URL on olemassa)
-       if (finalUrl) {
-            imageElement.style.display = 'block';
-        } else {
-            // Tähän voisi lisätä paremman virheilmoituksen
-            imageElement.style.display = 'none';
-            linkElementBelow.style.display = 'none'; // Piilota linkkikin
-        }
+      // Lopuksi, jos finalUrl on jostain syystä tyhjä tai virheellinen, piilota elementit
+      // Tämä on varotoimi, jos URLin luonnissa tapahtuu jotain odottamatonta
+       if (!finalUrl || imageElement.src.includes('undefined') || imageElement.src.includes('null')) {
+            if (imageWrapper) imageWrapper.style.display = 'none';
+            overlayElement.style.display = 'none';
+            linkElementBelow.style.display = 'none';
+            // alert("Kuvaa ei voitu luoda valituilla asetuksilla."); // Voit näyttää virheen täälläkin
+       }
     }
 
     // --- Lisää klikkikuuntelija kuva-elementille ---
