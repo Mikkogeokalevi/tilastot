@@ -28,7 +28,7 @@
             flex-wrap: wrap; /* Allow wrapping on small screens */
             align-items: center; /* Vertically align items */
             gap: 10px; /* Space between items */
-            /* KORJAUS: POISTETTU position: relative; - Tämä aiheutti ristiriidan fixed-positionin kanssa */
+            /* POISTETTU: position: relative; - Tämä aiheutti ristiriidan fixed-positionin kanssa */
         }
 
         /* New style for the logo within the userControlArea */
@@ -216,6 +216,13 @@
             font-size: 12px; /* Slightly smaller font */
             vertical-align: middle; /* Align vertically with the heading */
         }
+
+         /* UUSI CSS (VALINNAINEN): Tyyli toimimattomille userid-linkeille */
+         .content-link[data-param-type="userid"]:not([href]) {
+            opacity: 0.5; /* Himmennä linkki */
+            cursor: not-allowed; /* Muuta kursori */
+            /* text-decoration: line-through; */ /* Yliviivaus, jos halutaan */
+         }
 
 
         .version {
@@ -411,15 +418,22 @@
 
         <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" data-param-type="userid" target="_blank">Yleis kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" data-param-type="userid" target="_blank">Tradi kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=2">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=2" data-param-type="userid" target="_blank">Multi kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=3" data-param-type="userid" target="_blank">Mysse kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=6" data-param-type="userid" target="_blank">Öörtti kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" data-param-type="userid" target="_blank">Virtu kartta</a>
 
 
         <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" data-param-type="userid" target="_blank">Tripletti kartta</a>
 
         <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
@@ -433,6 +447,7 @@
 
 
         <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" data-param-type="userid" target="_blank">ISO kuntakartta linkeillä</a>
 
 
         <h2 id="jasmer">Jasmer</h2>
@@ -458,35 +473,34 @@
         const loadingSpinner = document.getElementById('loadingSpinner');
         const usernameSuggestionsDiv = document.getElementById('usernameSuggestions');
 
+        // UUSI JS: Mappaus nimimerkkiin ja ID:hen - TÄYDENNÄ MUIDEN ID:T TÄHÄN
+        const userIdMapping = {
+            'mikkokalevi': 306478,
+            'eukka': 36206,
+            'Tiltu': 309395,
+            'lahjemies': 308779,
+            'milde04': null // <-- Lisää Milde04:n ID tähän, kun saat sen (esim. 12345), esim. 'milde04': 12345,
+        };
+
         const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
         let currentImagesLoading = 0;
-        // UUSI JS: Flag klikkaus-tapahtuman tunnistamiseen ehdotuslistalla
         let isSuggestionClick = false;
 
 
         // Function to adjust padding and margins based on fixed header heights
-        // This is crucial for keeping userControlArea and nav fixed and content below them
         function adjustLayout() {
             const userAreaHeight = userControlArea.offsetHeight;
             const navHeight = navBar.offsetHeight;
             const totalFixedHeight = userAreaHeight + navHeight;
 
-            // Set the top position of the nav bar right below the user control area
             navBar.style.top = userAreaHeight + 'px';
-
-            // Set padding-top for the body to push content below both fixed headers
             document.body.style.paddingTop = totalFixedHeight + 'px';
-            // console.log('Adjusted layout. Total Padding:', totalFixedHeight);
 
-
-            // Set scroll-margin-top for H2 elements so anchor links scroll correctly below headers
             h2Elements.forEach(h2 => {
                 h2.style.scrollMarginTop = totalFixedHeight + 'px';
             });
 
-             // Adjust the rootMargin for the Intersection Observer
-             // This makes the active link highlighting more accurate below fixed headers
-             observer.rootMargin = `-${totalFixedHeight + 10}px 0px -60% 0px`; // Added a small buffer
+            observer.rootMargin = `-${totalFixedHeight + 10}px 0px -60% 0px`;
         }
 
 
@@ -494,7 +508,6 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute("id");
-                    // Only update active nav links if statsContent is currently visible
                     if (statsContent.style.display !== 'none') {
                         navLinks.forEach(link => {
                             link.classList.toggle("active", link.getAttribute("href") === "#" + id);
@@ -503,10 +516,9 @@
                 }
             });
         }, {
-             threshold: 0.1 // Trigger when 10% of the section is visible
+             threshold: 0.1
         });
 
-        // Observe H2 elements for scroll spy, even if content is initially hidden
         sections.forEach(section => {
             observer.observe(section);
         });
@@ -515,67 +527,54 @@
 
         function updateStats(username) {
             const cleanUsername = username.trim();
-             console.log('updateStats called with:', username, '(trimmed:', cleanUsername + ')');
+            console.log('updateStats called with:', username, '(trimmed:', cleanUsername + ')');
 
-
-            // Hide content area and spinner immediately when triggered
-            if (statsContent) {
-                statsContent.style.display = 'none';
-            }
-             if (loadingSpinner) {
-                 loadingSpinner.style.display = 'none';
-             }
+            if (statsContent) { statsContent.style.display = 'none'; }
+            if (loadingSpinner) { loadingSpinner.style.display = 'none'; }
 
 
             if (!cleanUsername) {
                 console.warn("Username is empty after trimming, skipping update.");
-                if (currentUsernameSpan) {
-                   currentUsernameSpan.textContent = "[Tyhjä]";
-                }
-                 // Clear loaded images/links within statsContent when username is cleared
-                 document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
-                      if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
-                          element.removeAttribute('src'); // Remove src to hide image
-                      } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
-                          element.removeAttribute('href'); // Remove href for links
+                if (currentUsernameSpan) { currentUsernameSpan.textContent = "[Tyhjä]"; }
+
+                 // Tyhjennä ja poista userid-linkkien toiminnallisuus, jos käyttäjänimi tyhjä
+                 document.querySelectorAll('#statsContent img[src], #statsContent a[href]').forEach(element => {
+                      // Poista src/href vain niistä, jotka on asetettu data-attribuuteista (ei back-to-top tms.)
+                      if (element.hasAttribute('data-src') || element.hasAttribute('data-href')) {
+                          if (element.tagName === 'IMG') {
+                              element.removeAttribute('src');
+                               element.style.visibility = 'hidden'; // Piilota kuva
+                          } else if (element.tagName === 'A') {
+                              element.removeAttribute('href');
+                              // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää tyyli
+                          }
                       }
                   });
-                 // Remove last stored username if input is cleared
+
                  localStorage.removeItem('lastGeocacheUsername');
-                 return; // Stop the function here
+                 return;
             }
 
-            // Store successfully entered username
             localStorage.setItem('lastGeocacheUsername', cleanUsername);
+            console.log('Stored username in localStorage:', cleanUsername);
 
+            if (statsContent) { statsContent.style.display = 'block'; }
+            if (loadingSpinner) { loadingSpinner.style.display = 'block'; }
 
-            // Show content area and spinner when a valid username is entered
-             if (statsContent) {
-                 statsContent.style.display = 'block';
-             }
-            if (loadingSpinner) {
-                loadingSpinner.style.display = 'block'; // Show spinner
-            }
+            if (currentUsernameSpan) { currentUsernameSpan.textContent = cleanUsername; }
 
-
-            if (currentUsernameSpan) {
-                currentUsernameSpan.textContent = cleanUsername;
-            }
-
-            // Select only dynamic elements within statsContent
             const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
+            // UUSI JS: Hae käyttäjän ID-numero, jos käyttäjä löytyy esiasetetuista
+            const userId = userIdMapping[cleanUsername]; // Palauttaa ID:n, nullin tai undefined
 
-            const userParamRegex = /user=([^&]+)/;
+            const userParamRegex = /user=([^&]+)/; // Regex user= parametrin löytämiseen
 
-            // Reset loading counter and ensure images are initially hidden before loading
             currentImagesLoading = 0;
             const imagesToLoad = statsContent.querySelectorAll('img[data-src]');
 
-
-             imagesToLoad.forEach(img => {
+            imagesToLoad.forEach(img => {
                  img.style.visibility = 'hidden';
                  img.style.opacity = '0';
-                 // Remove old listeners to avoid double counting
                  img.removeEventListener('load', handleImageLoadError);
                  img.removeEventListener('error', handleImageLoadError);
              });
@@ -584,41 +583,70 @@
             elementsToUpdate.forEach(element => {
                 let originalUrl;
                 let urlAttribute;
+                // UUSI JS: Tarkista, tarvitseeko tämä elementti userid-parametrin
+                const needsUserId = element.hasAttribute('data-param-type') && element.getAttribute('data-param-type') === 'userid';
 
                 if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                     originalUrl = element.getAttribute('data-src');
                     urlAttribute = 'src';
-
-                    // Add to loading counter only for images
-                    currentImagesLoading++;
-
-
-                    // Set listeners for loading and error
-                     element.addEventListener('load', handleImageLoadError);
-                     element.addEventListener('error', handleImageLoadError);
-
-
+                    // Kuvat käyttävät aina user=
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
+                     // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Poista "disabled" tyyli linkistä ennen kuin yritetään asettaa href
                 } else {
-                    return; // Skip elements without data-src/data-href or other types
+                    return;
                 }
 
-                // Construct the new URL with the updated username
+                let newUrl = originalUrl; // Aloita alkuperäisellä URLilla data-attribuutista
+
                 if (originalUrl && originalUrl.includes('user=')) {
-                    const newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
-                     // Set the src/href attribute to trigger loading/update
-                    element[urlAttribute] = newUrl;
+                     // UUSI LOGIIKKA: Päivitä URL käyttäjän tai userid:n mukaan
+                    if (needsUserId) {
+                         // Tämä linkki tarvitsee userid:n
+                         if (userId !== undefined && userId !== null) {
+                             // Käyttäjä löytyi esiasetetuista ja ID on tiedossa -> käytä userid:tä
+                             newUrl = originalUrl.replace(userParamRegex, 'userid=' + encodeURIComponent(userId));
+                             element[urlAttribute] = newUrl;
+                             // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Varmista, että tyyli poistetaan
+                         } else {
+                             // Käyttäjä EI ole esiasetettu TAI ID puuttuu (userId on undefined tai null) -> tämä userid-linkki ei toimi tällä käyttäjällä
+                             element.removeAttribute(urlAttribute); // Poista href/src jotta linkki ei toimi
+                             // VAPAAYHTEINEN: element.href = '#'; // Tai aseta href #
+                             // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää "disabled" tyyli, jos haluat himmentää tms.
+                             console.warn(`User ID not found for ${cleanUsername}. Disabled userid link: ${originalUrl}`);
+                         }
+                    } else {
+                         // Tämä linkki/kuva käyttää user= (ei tarvitse userid:tä) -> käytä nimimerkkiä
+                         newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
+                         element[urlAttribute] = newUrl;
+                    }
                 } else if (originalUrl && !element[urlAttribute]) {
-                     // If the data attribute exists but doesn't contain 'user=' (like the PGC link),
-                     // or if it's a link without 'user=' (like PGC checker), just set the attribute once if it's not already set.
-                     element[urlAttribute] = originalUrl;
-                 }
+                    // Staattinen linkki/kuva ilman user= parametria (kuten PGC checker) - aseta src/href kerran, jos ei asetettu.
+                    element[urlAttribute] = originalUrl;
+                }
+
+                // Kuormituslaskurin ja spinnerin logiikka vain kuvien lataukseen
+                if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
+                     // Lisää laskuriin vain jos kuva tarvitsi päivityksen ja sillä on nyt src
+                     if (element.hasAttribute('src')) {
+                         currentImagesLoading++;
+                          // Aseta kuuntelijat vasta kun src on asetettu
+                         element.addEventListener('load', handleImageLoadError);
+                         element.addEventListener('error', handleImageLoadError);
+                     } else {
+                         // Jos kuva (joka oli tarkoitettu ladattavaksi, eli data-src oli) ei saanut src:tä
+                         // (esim. userid-kuva jolla ei ollut ID:tä), vähennä laskuria heti.
+                         // Tämänhetkisessä koodissa kaikki kuvat saavat user=, joten tätä ei pitäisi tapahtua kuvilla.
+                         // Mutta jos tulevaisuudessa olisi userid-kuvia, tämä olisi tarpeen.
+                         // currentImagesLoading--; // Ei tarpeen nykyisillä kuvilla
+                     }
+                }
+
             });
 
-            // Check immediately if there were no images to load
-             if (imagesToLoad.length === 0) {
+            // Check immediately if there were no images to load initially
+             if (imagesToLoad.length === 0 || currentImagesLoading === 0) { // Tarkista molemmat ehdot
                  checkLoadingComplete();
              }
 
@@ -627,10 +655,7 @@
 
          // Single handler for image load or error
         function handleImageLoadError() {
-            // console.log('Image load/error event:', this.getAttribute('data-src')); // Too chatty
             currentImagesLoading--;
-            // console.log('Images loading remaining:', currentImagesLoading); // Too chatty
-            // Show the image regardless of success/failure
             this.style.visibility = 'visible';
             this.style.opacity = '1';
              // Clean up listeners
@@ -642,23 +667,22 @@
 
         // Function to check if all images have loaded and hide spinner
         function checkLoadingComplete() {
-             // Use a small delay to ensure DOM updates and potential subsequent loads register
              setTimeout(() => {
                  if (currentImagesLoading <= 0) {
                      if (loadingSpinner) {
-                         loadingSpinner.style.display = 'none'; // Hide spinner
+                         loadingSpinner.style.display = 'none';
                           console.log('All images processed, hiding spinner.');
                      }
                  } else {
-                      // Keep spinner visible if loading is ongoing
+                     // Keep spinner visible if loading is ongoing (should not happen if logic is perfect)
                      if (loadingSpinner && loadingSpinner.style.display === 'none') {
                          loadingSpinner.style.display = 'block';
-                         console.log('Images still loading, showing spinner. Remaining:', currentImagesLoading);
+                         console.log('Images still loading, showing spinner (safeguard). Remaining:', currentImagesLoading);
                      } else if (!loadingSpinner) {
                          console.warn('loadingSpinner element not found.');
                      }
                  }
-             }, 50); // Short delay
+             }, 50);
         }
 
 
@@ -667,29 +691,26 @@
         // Populate the suggestions dropdown
         function populateSuggestions() {
             if (suggestedUsernames.length === 0) {
-                usernameSuggestionsDiv.style.display = 'none'; // Ensure hidden if no suggestions
-                return; // Do nothing if no suggestions
+                usernameSuggestionsDiv.style.display = 'none';
+                return;
             }
-            usernameSuggestionsDiv.innerHTML = ''; // Clear current suggestions
+            usernameSuggestionsDiv.innerHTML = '';
 
             suggestedUsernames.forEach(name => {
                 const suggestionSpan = document.createElement('span');
                 suggestionSpan.textContent = name;
 
-                // UUSI JS: Aseta flag mousedown-tapahtumassa ENNEN bluria
+                // Aseta flag mousedown-tapahtumassa ENNEN bluria
                 suggestionSpan.addEventListener('mousedown', (event) => {
                      isSuggestionClick = true;
-                     // estä oletustoiminto, jos tarpeen (voi auttaa joissain selaimissa)
-                     // event.preventDefault();
+                     // event.preventDefault(); // Vapaaehtoinen
                 });
 
                 suggestionSpan.addEventListener('click', () => {
-                    console.log('Suggestion clicked:', name); // Jätetään tämä loki
+                    console.log('Suggestion clicked:', name);
                     usernameInput.value = name;
-                    usernameSuggestionsDiv.style.display = 'none'; // Piilota ehdotukset
-                    // KORJAUS: Kutsu updateStats heti kun nimi valitaan alasvetovalikosta
+                    usernameSuggestionsDiv.style.display = 'none';
                     updateStats(name);
-                    // Poistettu usernameInput.focus() kutsu
                 });
                 usernameSuggestionsDiv.appendChild(suggestionSpan);
             });
@@ -697,91 +718,71 @@
 
         // Event listeners for suggestions
         usernameInput.addEventListener('focus', () => {
-             if (suggestedUsernames.length > 0 && usernameSuggestionsDiv.children.length > 0) { // Tarkista, onko ehdotuksia näytettäväksi
-                 usernameSuggestionsDiv.style.display = 'block'; // Näytä ehdotukset fokusoidessa
+             if (suggestedUsernames.length > 0 && usernameSuggestionsDiv.children.length > 0) {
+                 usernameSuggestionsDiv.style.display = 'block';
              }
-              isSuggestionClick = false; // Nollaa flag, jos käyttäjä fokusoi kentän
+              isSuggestionClick = false;
         });
 
          // Piilota ehdotukset, kun kenttä menettää fokuksen
         usernameInput.addEventListener('blur', () => {
-             console.log('Input blurred. isSuggestionClick:', isSuggestionClick); // Jätetään tämä loki
+             console.log('Input blurred. isSuggestionClick:', isSuggestionClick);
             if (isSuggestionClick) {
-                // Jos ehdotusta ollaan klikkaamassa, nollaa flag pienen viiveen päästä
-                // ja ÄLÄ piilota listaa tässä. Klikkaus-käsittelijä piilottaa sen.
                 setTimeout(() => {
-                     isSuggestionClick = false; // Nollaa flag, kun klikkaus on todennäköisesti käsitelty
-                     console.log('isSuggestionClick reset to false after blur timeout.'); // Jätetään tämä loki
-                }, 50); // Lyhyt viive
+                     isSuggestionClick = false;
+                     console.log('isSuggestionClick reset to false after blur timeout.');
+                }, 50);
 
             } else {
-                // Jos normaali blur (fokus siirtyi muualle kuin ehdotukseen), piilota lista viiveen päästä.
                  setTimeout(() => {
-                     // Tarkista vielä, onko fokus palannut kenttään timeoutin aikana
                      if (document.activeElement !== usernameInput) {
                         usernameSuggestionsDiv.style.display = 'none';
-                        console.log('Normal blur: Hiding suggestions after timeout.'); // Jätetään tämä loki
+                        console.log('Normal blur: Hiding suggestions after timeout.');
                      } else {
                          console.log('Normal blur: Focus returned to input, not hiding.');
                      }
-                }, 200); // Vakioviive blur-piilotukselle
+                }, 200);
             }
         });
 
 
         // --- Event Listeners ---
 
-        // Event listener for the button click
         updateButton.addEventListener('click', () => {
-            console.log('Update button clicked.'); // Jätetään tämä loki
-            const username = usernameInput.value; // Get value from input field
-            updateStats(username); // Call the update function
+            console.log('Update button clicked.');
+            const username = usernameInput.value;
+            updateStats(username);
         });
 
-        // Event listener for the input field (Enter key)
         usernameInput.addEventListener('keypress', (event) => {
-            // Check if the pressed key is Enter
             if (event.key === 'Enter') {
-                console.log('Enter key pressed in input.'); // Jätetään tämä loki
-                event.preventDefault(); // Prevent default form submission if any
-                const username = usernameInput.value; // Get value from input field
-                updateStats(username); // Call the update function
+                console.log('Enter key pressed in input.');
+                event.preventDefault();
+                const username = usernameInput.value;
+                updateStats(username);
             }
         });
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded event fired.'); // Jätetään tämä loki
-            // Adjust layout initially. This sets fixed positions and padding.
+            console.log('DOMContentLoaded event fired.');
             adjustLayout();
-
-            // Populate suggestions on load
             populateSuggestions();
 
-            // Check for last username in localStorage on load
             const lastUsername = localStorage.getItem('lastGeocacheUsername');
             if (lastUsername) {
-                console.log('Found last username in localStorage:', lastUsername); // Jätetään tämä loki
+                console.log('Found last username in localStorage:', lastUsername);
                 usernameInput.value = lastUsername;
-                // Trigger updateStats if a last username was found to load stats immediately
                 updateStats(lastUsername);
             } else {
-                console.log('No last username found in localStorage. Hiding stats content.'); // Jätetään tämä loki
-                // Ensure statsContent is hidden if no last username was loaded
-                 if (statsContent) {
-                     statsContent.style.display = 'none';
-                 }
-                if (currentUsernameSpan) {
-                   currentUsernameSpan.textContent = "[Ei käyttäjää]";
-                }
+                console.log('No last username found in localStorage. Hiding stats content.');
+                 if (statsContent) { statsContent.style.display = 'none'; }
+                 if (currentUsernameSpan) { currentUsernameSpan.textContent = "[Ei käyttäjää]"; }
             }
 
         });
 
-        // Adjust layout on window resize
         window.addEventListener('resize', adjustLayout);
-        // console.log('Resize listener added.'); // Too chatty
-
 
     </script>
 
