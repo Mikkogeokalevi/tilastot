@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Geokätkötilastot</title> <style>
+    <title>Geokätkötilastot</title>
+    <style>
         body {
             margin: 0;
             /* padding-top will be set by JavaScript */
@@ -29,7 +30,7 @@
             gap: 10px; /* Space between items */
         }
 
-         /* New style for the logo within the userControlArea */
+        /* New style for the logo within the userControlArea */
         #userControlArea .logo {
             height: 40px; /* Example size - Adjust as needed for mikkokalevi.png */
             width: 40px;  /* Example size - Adjust as needed */
@@ -42,7 +43,7 @@
 
          #userControlArea div {
              margin: 0; /* Remove default div margin */
-              /* Allow this div to take space but shrink if needed */
+             /* Allow this div to take space but shrink if needed */
              flex-shrink: 1;
          }
 
@@ -63,8 +64,8 @@
         }
 
          #updateButton:hover {
-            background-color: #005fa3;
-        }
+             background-color: #005fa3;
+         }
 
         nav {
             position: fixed; /* Keep it fixed */
@@ -97,10 +98,10 @@
         }
 
          @media (max-width: 767px) {
-            .nav-group {
+             .nav-group {
                  margin-top: 10px; /* Add space if wrapping occurs */
                  width: 100%; /* Take full width */
-            }
+             }
          }
 
         .nav-heading {
@@ -130,6 +131,11 @@
         nav a.active {
             background-color: #0077cc;
             color: white;
+        }
+
+        /* UUSI CSS: Piilota sisältöalue oletuksena */
+        #statsContent {
+            display: none;
         }
 
         h2 {
@@ -192,13 +198,18 @@
         }
     </style>
 </head>
-<body id="top"> <div id="userControlArea">
-        <img src="mikkokalevi.png" alt="Käyttäjän logo" class="logo"> <div>
-            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span> </div>
-        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus"> <button id="updateButton">Päivitä</button>
+<body id="top">
+    <div id="userControlArea">
+        <img src="mikkokalevi.png" alt="Käyttäjän logo" class="logo">
+        <div>
+            Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span>
+        </div>
+        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus">
+        <button id="updateButton">Päivitä</button>
     </div>
     <nav>
-        <div class="nav-title">Navigointi:</div> <div class="nav-group">
+        <div class="nav-title">Navigointi:</div>
+        <div class="nav-group">
             <div class="nav-heading">*</div>
             <a href="#dt2025">T/D 2025</a>
             <a href="#dt">T/D full</a>
@@ -226,130 +237,132 @@
         </div>
     </nav>
 
-    <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=1">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=2">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=3">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=6">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=7">
+    <div id="statsContent">
+
+        <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=1">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=2">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=3">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=6">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=7">
 
 
-    <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=1">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=2">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=3">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=6">
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=7">
+        <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=1">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=2">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=3">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=6">
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=7">
 
 
-    <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <h3>Tammikuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=01">
-    <h3>Helmikuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=02">
-    <h3>Maaliskuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=03">
-    <h3>Huhtikuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=04">
-    <h3>Toukokuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=05">
-    <h3>Kesäkuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=06">
-    <h3>Heinäkuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=07">
-    <h3>Elokuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=08">
-    <h3>Syyskuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=09">
-    <h3>Lokakuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=10">
-    <h3>Marraskuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=11">
-    <h3>Joulukuu</h3>
-    <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=12">
+        <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <h3>Tammikuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=01">
+        <h3>Helmikuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=02">
+        <h3>Maaliskuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=03">
+        <h3>Huhtikuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=04">
+        <h3>Toukokuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=05">
+        <h3>Kesäkuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=06">
+        <h3>Heinäkuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=07">
+        <h3>Elokuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=08">
+        <h3>Syyskuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=09">
+        <h3>Lokakuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=10">
+        <h3>Marraskuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=11">
+        <h3>Joulukuu</h3>
+        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=12">
 
 
-    <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <a class="content-link" href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
+        <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <a class="content-link" data-href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
 
 
-    <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
+        <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
 
 
-    <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
+        <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
 
 
-    <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&year=2025">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=1">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=2">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=3">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=4">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=99">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=7">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=9">
-    <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=20">
+        <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&year=2025">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=1">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=2">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=3">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=4">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=99">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=7">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=9">
+        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=20">
 
 
-    <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <h3>Päijät-häme</h3>
-    <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=P%C3%A4ij%C3%A4t-H%C3%A4me">
-    <h3>Kymenlaakso</h3>
-    <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=kymenlaakso">
-    <h3>Kanta-häme</h3>
-    <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Kanta-H%C3%A4me">
-    <h3>Varsinais-Suomi</h3>
-    <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Varsinais-Suomi">
-    <h3>Uusimaa</h3>
-    <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Uusimaa">
+        <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <h3>Päijät-häme</h3>
+        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=P%C3%A4ij%C3%A4t-H%C3%A4me">
+        <h3>Kymenlaakso</h3>
+        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=kymenlaakso">
+        <h3>Kanta-häme</h3>
+        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Kanta-H%C3%A4me">
+        <h3>Varsinais-Suomi</h3>
+        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Varsinais-Suomi">
+        <h3>Uusimaa</h3>
+        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Uusimaa">
 
 
-    <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">Yleis kartta</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" target="_blank">Tradi kartta</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=2">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=2" target="_blank">Multi kartta</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=3" target="_blank">Mysse kartta</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=6" target="_blank">Öörtti kartta</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" target="_blank">Virtu kartta</a>
+        <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">Yleis kartta</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" target="_blank">Tradi kartta</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=2">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=2" target="_blank">Multi kartta</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=3" target="_blank">Mysse kartta</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=6" target="_blank">Öörtti kartta</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" target="_blank">Virtu kartta</a>
 
 
-    <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" target="_blank">Tripletti kartta</a>
+        <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" target="_blank">Tripletti kartta</a>
 
-    <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
+        <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
 
-    <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
-
-
-    <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
+        <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
 
 
-    <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-    <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
+        <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
 
 
-    <h2 id="jasmer">Jasmer</h2> <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
-    <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
-    <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=2" target="_blank">Jasmer multi</a>
-    <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=3" target="_blank">Jasmer mysse</a>
+        <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
 
 
-    <div class="version">Versio 30</div>
+        <h2 id="jasmer">Jasmer</h2>
+        <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
+        <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
+        <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=2" target="_blank">Jasmer multi</a>
+        <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=3" target="_blank">Jasmer mysse</a>
+
+    </div> <div class="version">Versio 30</div>
 
     <br><br><br><br><br>
 
@@ -362,6 +375,8 @@
         const updateButton = document.getElementById('updateButton');
         const currentUsernameSpan = document.getElementById('currentUsername');
         const h2Elements = document.querySelectorAll('h2');
+        // UUSI JS: Hae viittaus sisältöalueeseen
+        const statsContent = document.getElementById('statsContent');
 
 
         // Function to adjust padding and margins based on fixed header heights
@@ -403,6 +418,7 @@
              threshold: 0.1
         });
 
+        // Observer needs to observe the H2 elements even if the content is initially hidden
         sections.forEach(section => {
             observer.observe(section);
         });
@@ -420,24 +436,28 @@
                 if (currentUsernameSpan) {
                    currentUsernameSpan.textContent = "[Tyhjä]";
                 }
+                // UUSI JS: Piilota sisältöalue, jos käyttäjänimi on tyhjä
+                if (statsContent) {
+                    statsContent.style.display = 'none';
+                }
                 // Clear loaded images/links when username becomes empty
-                document.querySelectorAll('img[src], a[href]').forEach(element => {
+                document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
                     // Only clear elements that were loaded by the script (i.e., have data attributes)
                     if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                          element.removeAttribute('src'); // Remove src to hide image
                     } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                          // For links, revert the href to the base data-href value without a user or disable it.
-                         let baseHref = element.getAttribute('data-href');
-                         if(baseHref && baseHref.includes('user=')) {
-                             element.href = baseHref.replace(/user=([^&]+)/, 'user=');
-                         } else if (baseHref) {
-                              // If the original data-href didn't have a user param but has href, remove it
-                             element.removeAttribute('href');
-                         }
-                     }
+                         // Let's just remove the href for simplicity when empty
+                         element.removeAttribute('href');
+                    }
                 });
-                 return; // Stop the function here
+                return; // Stop the function here
             }
+
+            // UUSI JS: Näytä sisältöalue, jos käyttäjänimi on syötetty
+            if (statsContent) {
+                 statsContent.style.display = 'block';
+             }
 
             // Update the visible username in the user control area
             if (currentUsernameSpan) {
@@ -445,8 +465,8 @@
             }
 
 
-            // Select all elements that have data-src or data-href attributes
-            const elementsToUpdate = document.querySelectorAll('img[data-src], a[data-href]');
+            // Select all elements within statsContent that have data-src or data-href attributes
+            const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
 
             // Regex to find 'user=' followed by characters until '&' or end of string
             const userParamRegex = /user=([^&]+)/;
@@ -472,11 +492,13 @@
 
                     // Update the attribute. This triggers the browser to load the resource.
                     element[urlAttribute] = newUrl;
-                } else if (originalUrl) {
-                    // If the data attribute exists but doesn't contain 'user=',
-                    // just set the src/href from the data attribute.
-                     element[urlAttribute] = originalUrl;
                 }
+                 // Note: Elements with data-href/data-src but no 'user=' will use the data-href/data-src value as is.
+                 // This seems correct for the structure (e.g., the PGC checker link)
+                 else if (originalUrl && !element[urlAttribute]) {
+                     // If element didn't have src/href yet, set it from data attribute
+                      element[urlAttribute] = originalUrl;
+                 }
             });
         }
 
@@ -504,8 +526,15 @@
 
         // Initial state handler (shows "[Ei käyttäjää]")
         document.addEventListener('DOMContentLoaded', () => {
+             // Set initial text for username span
              if (currentUsernameSpan) {
-                  currentUsernameSpan.textContent = usernameInput.value.trim() || "[Ei käyttäjää]";
+                 currentUsernameSpan.textContent = usernameInput.value.trim() || "[Ei käyttäjää]";
+             }
+            // The CSS display: none; handles initial hiding, no need to hide here.
+            // If there is a default value in usernameInput and it's not empty,
+            // call updateStats on load to show content and load stats.
+             if (usernameInput.value.trim()) {
+                 updateStats(usernameInput.value);
              }
          });
 
