@@ -141,13 +141,16 @@
         text-decoration: underline; /* Lisää alleviivaus hoverissa */
     }
 
-    /* Tätä yleistä img-sääntöä ei enää käytetä logon osalta */
-    img {
-      margin-top: var(--spacing-medium); /* Saa saman ylämarginaalin kuin muut elementit */
+    /* Tyyli ladatulle kuvalle */
+    img#kuva { /* Kohdennetaan tarkemmin kuvageneraattorin kuvaan */
+      margin-top: var(--spacing-medium);
       max-width: 100%;
       border: 1px solid var(--border-color);
-      border-radius: var(--border-radius); /* Pyöristä kuvankin kulmia */
+      border-radius: var(--border-radius);
       height: auto; /* Varmistaa kuvasuhteen */
+      display: block; /* Varmistaa, että kuva on omalla rivillään */
+      /* Alla olevat säännöt hallitaan JS:llä, mutta pidetään tässä varmuuden vuoksi */
+      cursor: default; /* Oletus kursori */
     }
 
     /* Mobiililaitteille (< 600px) */
@@ -163,8 +166,7 @@
         .header-area {
             flex-direction: column; /* Pino elementit pystysuuntaan */
             align-items: flex-start; /* Kohdista vasemmalle */
-            margin-bottom: var(--spacing-mobile-large); /* Pienempi tila otsikkoalueen alle */
-            padding-bottom: var(--spacing-mobile-medium); /* Pienempi sisäinen tila */
+             margin-bottom: var(--spacing-mobile-large);
         }
         .header-area .logo {
             margin-right: 0; /* Poista oikea marginaali pinottaessa */
@@ -196,11 +198,11 @@
             width: 100%; /* Nappi 100% leveäksi */
         }
 
-        a {
+        a#linkki { /* Kohdennetaan tarkemmin linkkiin kuvan alla */
             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali linkille */
         }
 
-        img { /* Tämä koskee ladattua kuvaa */
+        img#kuva { /* Tämä koskee ladattua kuvaa */
              margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali kuvalle */
         }
     }
@@ -220,8 +222,7 @@
       <option value="Tiltu">
       <option value="lahjemies">
       <option value="eukka">
-      <option value="Milde04">
-    </datalist>
+      <option value="Milde04"> </datalist>
 
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
@@ -285,6 +286,16 @@
   </div>
 
   <script>
+    // Mappaus käyttäjien nimimerkkien ja userid:den välillä
+    // Lisää "Milde04": sen ID tähän, kun saat sen
+    const userIds = {
+        "mikkokalevi": 306478,
+        "eukka": 36206,
+        "Tiltu": 309395,
+        "lahjemies": 308779,
+        // "Milde04": XXXX
+    };
+
     function formatDate(input) {
       const parts = input.split("-");
       return parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : "";
@@ -305,11 +316,18 @@
       const aikavalinta = document.getElementById("aikavalinta").value;
       const year = document.getElementById("year").value;
 
+      const imageElement = document.getElementById("kuva");
+      const linkElementBelow = document.getElementById("linkki");
+
       if (!user) {
         alert("Syötä käyttäjänimi.");
+        // Piilota kuva ja linkki virhetilanteessa
+        imageElement.style.display = 'none';
+        linkElementBelow.style.display = 'none';
         return;
       }
 
+      // Oletuksena muodostettava URL kuvalle ja linkille (linkille alla)
       let params = `?user=${encodeURIComponent(user)}`;
 
       // Add type=2 parameter specifically for hiddenday
@@ -330,29 +348,88 @@
       }
 
       const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
-      document.getElementById("linkki").href = finalUrl;
-      document.getElementById("linkki").textContent = "Avaa kuva uudessa ikkunassa";
-      document.getElementById("kuva").src = finalUrl;
+
+      // --- Kuntakartta-spesifi logiikka ---
+      const selectedUserId = userIds[user]; // Hakee userid:n, jos käyttäjä on mappauksessa
+
+      if (kuvatyyppi === "kunta" && selectedUserId) {
+          // Jos kuvatyyppi on kuntakartta JA käyttäjällä on tunnettu userid
+          const largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
+
+          // Aseta kuvan lähde (pieni kartta)
+          imageElement.src = finalUrl;
+          imageElement.alt = "Kuntakartta (klikkaa isompaan kuvaan)";
+
+          // Tallenna ison kartan linkki data-attribuuttiin, jotta klikkikuuntelija löytää sen
+          imageElement.dataset.largeMapUrl = largeMapUrl;
+
+          // Muuta kursori osoittamaan, että kuva on klikattava
+          imageElement.style.cursor = 'pointer';
+
+          // Piilota linkki kuvan alla
+          linkElementBelow.style.display = 'none';
+
+      } else {
+          // --- Muut kuvatyypit TAI kuntakartta tuntemattomalle käyttäjälle ---
+          // Aseta kuvan lähde normaalisti
+          imageElement.src = finalUrl;
+          imageElement.alt = "Tilastokuva"; // Oletus alt-teksti
+
+          // Varmista, että data-attribuutti on poistettu (jotta kuva ei ole linkki)
+          delete imageElement.dataset.largeMapUrl;
+          imageElement.style.cursor = 'default'; // Palauta kursori oletusarvoon
+
+          // Näytä linkki kuvan alla normaalisti
+          linkElementBelow.href = finalUrl;
+          linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
+          linkElementBelow.style.display = 'inline-block'; // Tai muu sopiva display-arvo
+      }
+
+      // Varmista, että kuva näkyy (jos URL on olemassa)
+       if (finalUrl) {
+            imageElement.style.display = 'block';
+        } else {
+            // Tähän voisi lisätä paremman virheilmoituksen
+            imageElement.style.display = 'none';
+            linkElementBelow.style.display = 'none'; // Piilota linkkikin
+        }
     }
 
-    window.onload = function () {
-      const yearSelect = document.getElementById("year");
-      const currentYear = new Date().getFullYear();
-      // Add "--" option first
-      const defaultOpt = document.createElement("option");
-      defaultOpt.value = "current";
-      defaultOpt.textContent = "—";
-      yearSelect.appendChild(defaultOpt);
-      // Add years from 2000 to current
-      for (let y = 2000; y <= currentYear; y++) {
-        const opt = document.createElement("option");
-        opt.value = y;
-        opt.textContent = y;
-        yearSelect.appendChild(opt);
-      }
-       // Set default value for year select
-      yearSelect.value = "current";
-    };
+    // --- Lisää klikkikuuntelija kuva-elementille ---
+    // Tämä kuuntelija tarkistaa aina, onko data-large-map-url attribuutti asetettu
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const imageElement = document.getElementById("kuva");
+        if (imageElement) {
+            imageElement.addEventListener('click', function() {
+                // Tarkista, onko data-large-map-url attribuutti olemassa
+                const largeMapUrl = this.dataset.largeMapUrl;
+                if (largeMapUrl) {
+                    // Jos attribuutti löytyy, avaa linkki uudessa välilehdessä
+                    window.open(largeMapUrl, '_blank');
+                }
+                // Jos attribuuttia ei ole, kuva ei ole klikattava linkiksi tässä tapauksessa
+            });
+        }
+
+        // Lisää vuodet dropdown-valikkoon DOMin latauduttua
+        const yearSelect = document.getElementById("year");
+        const currentYear = new Date().getFullYear();
+        // Add "--" option first
+        const defaultOpt = document.createElement("option");
+        defaultOpt.value = "current";
+        defaultOpt.textContent = "—";
+        yearSelect.appendChild(defaultOpt);
+        // Add years from 2000 to current
+        for (let y = 2000; y <= currentYear; y++) {
+            const opt = document.createElement("option");
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
+        }
+        // Set default value for year select
+        yearSelect.value = "current";
+    });
+
   </script>
 </body>
 </html>
