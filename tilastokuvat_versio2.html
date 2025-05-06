@@ -143,12 +143,13 @@
 
     /* --- Uudet säännöt kuvan ja overlayn wrapperille sekä overlaylle --- */
     .image-wrapper {
-        position: relative; /* Mahdollistaa absoluuttisen sijoittelun sisällä */
+        position: relative; /* Mahdollistaa suhteellisen sisällön */
         display: block; /* Varmistaa, että vie tilaa */
         margin-top: var(--spacing-medium); /* Tilaa wrapperin yläpuolelle */
         max-width: 100%; /* Varmistaa, ettei wrapper mene yli containerin leveyden */
         /* Piilotetaan oletuksena tai jos kuvaa ei ole */
         display: none;
+        text-align: center; /* Keskitetään sekä teksti että kuva wrapperin sisällä */
     }
 
     .image-wrapper #kuva { /* Tyyli kuvalle wrapperin sisällä */
@@ -158,23 +159,19 @@
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
         cursor: default; /* Oletuskursori, JS muuttaa tarvittaessa */
+        margin: 0 auto; /* Keskitä kuva wrapperin sisällä */
     }
 
-    #map-overlay { /* Tyyli tekstille kuvan päällä */
-        position: absolute; /* Sijoitellaan absoluuttisesti wrapperiin nähden */
-        top: 50%; /* Keskitetään pystysuunnassa */
-        left: 50%; /* Keskitetään vaakasuunnassa */
-        transform: translate(-50%, -50%); /* Siirretään elementtiä itsensä koosta riippuen */
-        background-color: rgba(0, 0, 0, 0.7); /* Puoliläpinäkyvä musta tausta */
+    #map-overlay { /* Tyyli tekstille kuvan YLÄPUOLELLA */
+        /* Poistettu absoluuttinen sijoittelu */
+        display: block; /* Varmistaa, että vie tilaa */
+        text-align: center; /* Keskitetään vaakasuunnassa */
         color: var(--text-color-light); /* Tekstin väri */
-        padding: var(--spacing-small) var(--spacing-medium);
-        border-radius: var(--border-radius); /* Pyöristetyt kulmat */
-        text-align: center;
-        pointer-events: none; /* TÄRKEÄ: antaa klikkausten mennä läpi kuvaan */
-        z-index: 10; /* Varmistaa, että teksti on kuvan päällä */
-        font-size: 1.1em;
-        white-space: nowrap; /* Estää tekstin rivittymisen, jos tilaa on */
-        display: none; /* Piilotettu oletuksena */
+        font-size: 0.9em; /* Pienempi fonttikoko */
+        margin-bottom: var(--spacing-small); /* Tilaa tekstin ja kuvan väliin */
+        /* Poistettu tausta, padding, pyöristys */
+        /* Piilotettu oletuksena, hallitaan JS:llä */
+        display: none;
     }
     /* --- Uudet säännöt päättyvät --- */
 
@@ -237,8 +234,8 @@
         }
 
         #map-overlay { /* Säädetään overlayta mobiilissa */
-             font-size: 1em; /* Hieman pienempi fontti mobiilissa */
-             padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); /* Pienempi padding */
+             font-size: 0.8em; /* Hieman pienempi fontti mobiilissa */
+             margin-bottom: var(--spacing-mobile-small); /* Pienempi marginaali */
         }
     }
   </style>
@@ -318,8 +315,8 @@
     <button onclick="luoLinkki()">Luo linkki ja kuva</button>
 
     <div class="image-wrapper">
-      <img id="kuva" alt="">
       <div id="map-overlay">Klikkaa karttaa isommaksi</div>
+      <img id="kuva" alt="">
     </div>
 
     <a id="linkki" href="#" target="_blank"></a>
@@ -334,7 +331,7 @@
         "eukka": 36206,
         "Tiltu": 309395,
         "lahjemies": 308779,
-        // "Milde04": XXXX
+        // "Milde04": XXXX // Lisää Milde04:n ID tähän
     };
 
     function formatDate(input) {
@@ -388,7 +385,7 @@
         }
       }
 
-      // Lisää kätkötyyppi oletus-URLiin (tämä on jo aiemmin tehty)
+      // Lisää kätkötyyppi oletus-URLiin
       if (cachetype) {
         params += `&cachetype=${cachetype}`;
       }
@@ -424,7 +421,7 @@
           // Piilota linkki kuvan alla
           linkElementBelow.style.display = 'none';
 
-          // Näytä overlay-teksti kartan päällä
+          // Näytä overlay-teksti kuvan yläpuolella
           overlayElement.style.display = 'block';
 
 
@@ -448,7 +445,6 @@
       }
 
       // Lopuksi, jos finalUrl on jostain syystä tyhjä tai virheellinen, piilota elementit
-      // Tämä on varotoimi, jos URLin luonnissa tapahtuu jotain odottamatonta
        if (!finalUrl || imageElement.src.includes('undefined') || imageElement.src.includes('null')) {
             if (imageWrapper) imageWrapper.style.display = 'none';
             overlayElement.style.display = 'none';
