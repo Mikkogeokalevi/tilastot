@@ -22,6 +22,11 @@
       --spacing-small: 0.5em;
       --spacing-medium: 1em;
       --spacing-large: 1.5em;
+
+      /* Uusia, pienempiä väljyyksiä mobiilille */
+      --spacing-mobile-small: 0.3em;
+      --spacing-mobile-medium: 0.8em;
+      --spacing-mobile-large: 1em;
     }
 
     body {
@@ -138,40 +143,66 @@
 
     /* Tätä yleistä img-sääntöä ei enää käytetä logon osalta */
     img {
-      margin-top: var(--spacing-medium);
+      margin-top: var(--spacing-medium); /* Saa saman ylämarginaalin kuin muut elementit */
       max-width: 100%;
       border: 1px solid var(--border-color);
       border-radius: var(--border-radius); /* Pyöristä kuvankin kulmia */
+      height: auto; /* Varmistaa kuvasuhteen */
     }
 
+    /* Mobiililaitteille (< 600px) */
     @media (max-width: 600px) {
+        body {
+            margin: var(--spacing-mobile-medium); /* Pienemmät marginaalit bodylle */
+        }
         .container {
-            padding: var(--spacing-medium); /* Pienempi padding pienellä näytöllä */
+            padding: var(--spacing-mobile-large); /* Pienempi padding containerissa */
+            margin: var(--spacing-mobile-large) auto; /* Pienemmät ylä/alamarginaalit containerissa */
         }
         /* Säätöjä pienemmille näytöille */
         .header-area {
             flex-direction: column; /* Pino elementit pystysuuntaan */
             align-items: flex-start; /* Kohdista vasemmalle */
-             margin-bottom: var(--spacing-medium);
+            margin-bottom: var(--spacing-mobile-large); /* Pienempi tila otsikkoalueen alle */
+            padding-bottom: var(--spacing-mobile-medium); /* Pienempi sisäinen tila */
         }
         .header-area .logo {
-            margin-right: 0; /* Poista oikea marginaali */
-            margin-bottom: 10px; /* Lisää tilaa logon alle */
+            margin-right: 0; /* Poista oikea marginaali pinottaessa */
+            margin-bottom: var(--spacing-mobile-medium); /* Lisää tilaa logon alle */
             width: 60px; /* Voit säätää kokoa pienemmäksi */
             height: 60px; /* Voit säätää kokoa pienemmäksi */
         }
         .header-area h2 {
-             font-size: 1.6em;
+             font-size: 1.5em; /* Hieman pienempi otsikko mobiilissa */
         }
 
-      select, input[type="date"], input[type="text"] {
-        font-size: 1em; /* Fonttikoko voi olla sama */
-      }
+        label {
+            margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali labeleille */
+            margin-bottom: var(--spacing-mobile-small); /* Pienempi alamarginaali labeleille */
+        }
 
-      button {
-        width: 100%;
-        font-size: 1.1em;
-      }
+        select, input[type="date"], input[type="text"] {
+            margin-bottom: var(--spacing-mobile-medium); /* Pienempi alamarginaali lomake-elementeille */
+            padding: var(--spacing-mobile-small); /* Pienempi padding lomake-elementeille */
+        }
+
+        .row {
+             margin-bottom: var(--spacing-mobile-medium); /* Pienempi tila rivin alle */
+        }
+
+        button {
+            margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali napille */
+            padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); /* Pienempi padding napille */
+            width: 100%; /* Nappi 100% leveäksi */
+        }
+
+        a {
+            margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali linkille */
+        }
+
+        img { /* Tämä koskee ladattua kuvaa */
+             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali kuvalle */
+        }
     }
   </style>
 </head>
