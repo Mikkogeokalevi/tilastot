@@ -9,112 +9,163 @@
   <title>Kätkö tilastojen - Kuvageneraattori</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      /* Määritellään värejä CSS-muuttujiin, helpottaa ylläpitoa */
+      --bg-color-dark: #1e1e2e; /* Syvempi tumma tausta */
+      --text-color-light: #cdd6f4; /* Pehmeämpi vaalea teksti */
+      --card-bg: #313244; /* Elementtien tausta */
+      --border-color: #45475a; /* Reunusten väri */
+      --accent-color: #89b4fa; /* Korostusväri linkeille/napeille (valinnainen) */
+      --button-bg: #585b70; /* Nappien tausta */
+      --button-hover-bg: #6c7086; /* Nappien hover-tausta */
+      --border-radius: 8px; /* Yleinen kulmien pyöristys */
+      --spacing-small: 0.5em;
+      --spacing-medium: 1em;
+      --spacing-large: 1.5em;
+    }
+
     body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: sans-serif;
-      margin: 1em;
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Hiukan modernimpi fontti */
+      margin: var(--spacing-medium);
+      line-height: 1.6;
     }
 
     .container {
       max-width: 600px;
-      margin: 0 auto 2em 0;
-      padding: 1em;
+      margin: var(--spacing-large) auto; /* Keskitetty ja ylä/alareunaan tilaa */
+      padding: var(--spacing-large);
+      background-color: var(--card-bg); /* Containerille oma tausta */
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Kevyt varjo */
     }
 
     /* Uusi tyyli otsikkoalueelle, jossa logo ja teksti ovat rinnakkain */
     .header-area {
         display: flex; /* Käytetään flexboxia */
         align-items: center; /* Keskitetään elementit pystysuunnassa */
-        margin-bottom: 1em; /* Lisätään tilaa otsikkoalueen alle */
+        margin-bottom: var(--spacing-large); /* Lisätään reilusti tilaa otsikkoalueen alle */
+        padding-bottom: var(--spacing-medium); /* Pieni sisäinen alareuna */
+        border-bottom: 1px solid var(--border-color); /* Kevyt erotinviiva */
     }
 
     /* Tyyli logokuvalle otsikkoalueella */
     .header-area .logo {
-        width: 60px; /* Esimerkkikoko logolle, voit säätää */
-        height: 60px; /* Esimerkkikoko logolle (neliö) */
-        margin-right: 15px; /* Lisää tilaa logon ja tekstin väliin */
+        width: 70px; /* Suurempi koko logolle */
+        height: 70px; /* Neliö */
+        margin-right: var(--spacing-medium); /* Lisää tilaa logon ja tekstin väliin */
         border: none; /* Poista mahdollinen kuvan reunus */
         flex-shrink: 0; /* Estää logoa kutistumasta liikaa pienellä näytöllä */
+        border-radius: var(--border-radius); /* Pyöristetään myös logon kulmia */
     }
 
     /* Tyyli otsikkotekstille otsikkoalueella */
     .header-area h2 {
         margin: 0; /* Poistaa h2:n oletusmarginaalit */
-        font-size: 1.5em; /* Säilyttää tai säätää otsikon kokoa tarvittaessa */
+        font-size: 1.8em; /* Hieman suurempi otsikko */
+        color: var(--text-color-light); /* Varmistetaan tekstin väri */
     }
 
     label {
       display: inline-block;
-      margin-bottom: 0.3em;
-      margin-top: 0.8em;
+      margin-bottom: var(--spacing-small);
+      margin-top: var(--spacing-medium);
+      font-weight: bold; /* Labelit lihavoituina */
     }
 
     select, input[type="date"], input[type="text"] {
-      width: 100%;
-      padding: 0.5em;
-      margin-bottom: 0.6em;
-      border: 1px solid #444;
-      border-radius: 5px;
-      background-color: #1e1e1e;
-      color: #e0e0e0;
+      width: calc(100% - 1em); /* Leveys 100% miinus padding, jotta pysyy containerissa */
+      padding: var(--spacing-small);
+      margin-bottom: var(--spacing-medium);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius); /* Pyöreämmät kulmat */
+      background-color: var(--bg-color-dark); /* Sama tausta kuin bodyllä tai hieman tummempi */
+      color: var(--text-color-light);
       font-size: 1em;
+      box-sizing: border-box; /* Sisällytä padding ja border leveyteen */
     }
+
+    /* Lomake-elementtien focus-tila */
+     select:focus, input[type="date"]:focus, input[type="text"]:focus {
+        outline: none; /* Poista oletus focus-reunus */
+        border-color: var(--accent-color); /* Korosta reunus focus-värillä */
+        box-shadow: 0 0 5px var(--accent-color); /* Lisää kevyt varjo */
+     }
+
 
     .row {
       display: flex;
-      gap: 0.5em;
+      gap: var(--spacing-small); /* Pienempi rako elementtien välissä */
       flex-wrap: wrap;
       width: 100%;
+      margin-bottom: var(--spacing-medium); /* Lisää tilaa rivin alle */
     }
 
     .row > div {
       flex: 1;
-      min-width: 100px;
+      min-width: 120px; /* Hieman suurempi minimileveys riveillä */
     }
 
     button {
-      margin-top: 1em;
-      padding: 0.6em 1em;
-      background-color: #333;
-      color: #e0e0e0;
+      margin-top: var(--spacing-medium);
+      padding: var(--spacing-small) var(--spacing-medium);
+      background-color: var(--button-bg);
+      color: var(--text-color-light);
       border: none;
-      border-radius: 5px;
+      border-radius: var(--border-radius); /* Pyöreämmät kulmat */
       cursor: pointer;
+      font-size: 1.1em; /* Hieman suurempi teksti napissa */
+      transition: background-color 0.3s ease; /* Animaatio hoveriin */
     }
 
     button:hover {
-      background-color: #444;
+      background-color: var(--button-hover-bg);
     }
 
     a {
-      color: #80cbc4;
+      color: var(--accent-color); /* Linkkien väri */
       display: inline-block;
-      margin-top: 1em;
+      margin-top: var(--spacing-medium);
+      text-decoration: none; /* Poista alleviivaus */
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: #a6e3a1; /* Hieman eri sävy hoverissa */
+        text-decoration: underline; /* Lisää alleviivaus hoverissa */
     }
 
     /* Tätä yleistä img-sääntöä ei enää käytetä logon osalta */
     img {
-      margin-top: 1em;
+      margin-top: var(--spacing-medium);
       max-width: 100%;
-      border: 1px solid #333;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius); /* Pyöristä kuvankin kulmia */
     }
 
     @media (max-width: 600px) {
-        /* Säätöjä pienemmille näytöille, jos tarpeen */
+        .container {
+            padding: var(--spacing-medium); /* Pienempi padding pienellä näytöllä */
+        }
+        /* Säätöjä pienemmille näytöille */
         .header-area {
             flex-direction: column; /* Pino elementit pystysuuntaan */
             align-items: flex-start; /* Kohdista vasemmalle */
+             margin-bottom: var(--spacing-medium);
         }
         .header-area .logo {
             margin-right: 0; /* Poista oikea marginaali */
             margin-bottom: 10px; /* Lisää tilaa logon alle */
-            width: 50px; /* Voit säätää kokoa pienemmäksi */
-            height: 50px; /* Voit säätää kokoa pienemmäksi */
+            width: 60px; /* Voit säätää kokoa pienemmäksi */
+            height: 60px; /* Voit säätää kokoa pienemmäksi */
+        }
+        .header-area h2 {
+             font-size: 1.6em;
         }
 
       select, input[type="date"], input[type="text"] {
-        font-size: 1.1em;
+        font-size: 1em; /* Fonttikoko voi olla sama */
       }
 
       button {
@@ -256,12 +307,20 @@
     window.onload = function () {
       const yearSelect = document.getElementById("year");
       const currentYear = new Date().getFullYear();
+      // Add "--" option first
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "current";
+      defaultOpt.textContent = "—";
+      yearSelect.appendChild(defaultOpt);
+      // Add years from 2000 to current
       for (let y = 2000; y <= currentYear; y++) {
         const opt = document.createElement("option");
         opt.value = y;
         opt.textContent = y;
         yearSelect.appendChild(opt);
       }
+       // Set default value for year select
+      yearSelect.value = "current";
     };
   </script>
 </body>
