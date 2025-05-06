@@ -48,7 +48,7 @@
              min-width: 150px; /* Ensure it takes some space */
          }
 
-        /* UUSI CSS: Container for input, button, and suggestions */
+        /* Container for input, button, and suggestions */
         #inputContainer {
             display: flex;
             gap: 10px;
@@ -182,7 +182,7 @@
             max-width: 100%;
             height: auto;
             display: block;
-            margin: 0 0 20px 0; /* Remove left margin, will use padding on container */
+            margin: 0 auto 20px 0; /* Center images? Or keep left? Kept left alignment from original. Removed left margin, added padding to container */
             border-radius: 5px;
              box-sizing: border-box; /* Include border in width */
         }
@@ -225,7 +225,7 @@
             text-align: right;
         }
 
-        /* UUSI CSS: Spinner styles */
+        /* Spinner styles */
         #loadingSpinner {
             display: none; /* Initially hidden by JS */
             position: absolute;
@@ -246,7 +246,7 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* UUSI CSS: Styles for the suggestions dropdown */
+        /* Styles for the suggestions dropdown */
         .suggestions-dropdown {
             position: absolute; /* Position relative to the containing block (#inputContainer) */
             top: 100%; /* Position below the inputContainer */
@@ -411,23 +411,13 @@
 
         <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">Yleis kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" target="_blank">Tradi kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=2">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=2" target="_blank">Multi kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=3" target="_blank">Mysse kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=6" target="_blank">Öörtti kartta</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" target="_blank">Virtu kartta</a>
-
-
         <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" target="_blank">Tripletti kartta</a>
-
         <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
 
@@ -440,9 +430,6 @@
 
 
         <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" target="_blank">ISO kuntakartta linkeillä</a>
-
-
         <h2 id="jasmer">Jasmer</h2>
         <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
         <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
@@ -463,36 +450,33 @@
         const currentUsernameSpan = document.getElementById('currentUsername');
         const h2Elements = document.querySelectorAll('h2');
         const statsContent = document.getElementById('statsContent');
-        // UUSI JS: Hae viittaus spinneriin ja ehdotus-diviin
         const loadingSpinner = document.getElementById('loadingSpinner');
         const usernameSuggestionsDiv = document.getElementById('usernameSuggestions');
 
-        // UUSI JS: Määritä ehdotetut käyttäjänimet
         const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
-        let currentImagesLoading = 0; // Count images currently loading
+        let currentImagesLoading = 0;
 
 
         // Function to adjust padding and margins based on fixed header heights
+        // This is crucial for keeping userControlArea and nav fixed and content below them
         function adjustLayout() {
             const userAreaHeight = userControlArea.offsetHeight;
             const navHeight = navBar.offsetHeight;
             const totalFixedHeight = userAreaHeight + navHeight;
 
-            // Set the top position of the nav bar
+            // Set the top position of the nav bar right below the user control area
             navBar.style.top = userAreaHeight + 'px';
 
-            // Set padding-top for the body to push content below fixed headers
+            // Set padding-top for the body to push content below both fixed headers
             document.body.style.paddingTop = totalFixedHeight + 'px';
 
-            // Set scroll-margin-top for H2 elements to account for fixed headers when jumping
+            // Set scroll-margin-top for H2 elements so anchor links scroll correctly below headers
             h2Elements.forEach(h2 => {
                 h2.style.scrollMarginTop = totalFixedHeight + 'px';
             });
 
              // Adjust the rootMargin for the Intersection Observer
-             // This makes the active link highlighting more accurate
-             // rootMargin: "top right bottom left"
-             // The top margin should be the height of the fixed headers + a small buffer
+             // This makes the active link highlighting more accurate below fixed headers
              observer.rootMargin = `-${totalFixedHeight + 10}px 0px -60% 0px`; // Added a small buffer
         }
 
@@ -501,7 +485,7 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute("id");
-                    // Ensure navLinks are processed only when statsContent is visible
+                    // Only update active nav links if statsContent is currently visible
                     if (statsContent.style.display !== 'none') {
                         navLinks.forEach(link => {
                             link.classList.toggle("active", link.getAttribute("href") === "#" + id);
@@ -510,11 +494,10 @@
                 }
             });
         }, {
-             /* rootMargin will be set dynamically by adjustLayout */
-             threshold: 0.1
+             threshold: 0.1 // Trigger when 10% of the section is visible
         });
 
-        // Observer needs to observe the H2 elements even if the content is initially hidden
+        // Observe H2 elements for scroll spy, even if content is initially hidden
         sections.forEach(section => {
             observer.observe(section);
         });
@@ -524,12 +507,12 @@
         function updateStats(username) {
             const cleanUsername = username.trim();
 
-            // Hide content and spinner immediately when updating or clearing
+            // Hide content area and spinner immediately when triggered
             if (statsContent) {
                 statsContent.style.display = 'none';
             }
              if (loadingSpinner) {
-                 loadingSpinner.style.display = 'none'; // Ensure spinner is hidden before potential show
+                 loadingSpinner.style.display = 'none';
              }
 
 
@@ -538,20 +521,20 @@
                 if (currentUsernameSpan) {
                    currentUsernameSpan.textContent = "[Tyhjä]";
                 }
-                // Clear loaded images/links within statsContent
-                document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
-                     if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
-                         element.removeAttribute('src'); // Remove src to hide image
-                     } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
-                         element.removeAttribute('href'); // Remove href for links
-                     }
-                 });
-                 // UUSI JS: Poista viimeksi tallennettu käyttäjänimi, jos kenttä tyhjennetään
+                 // Clear loaded images/links within statsContent when username is cleared
+                 document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
+                      if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
+                          element.removeAttribute('src'); // Remove src to hide image
+                      } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
+                          element.removeAttribute('href'); // Remove href for links
+                      }
+                  });
+                 // Remove last stored username if input is cleared
                  localStorage.removeItem('lastGeocacheUsername');
                  return; // Stop the function here
             }
 
-            // UUSI JS: Tallenna onnistuneesti syötetty käyttäjätunnus
+            // Store successfully entered username
             localStorage.setItem('lastGeocacheUsername', cleanUsername);
 
             // Show content area and spinner when a valid username is entered
@@ -567,11 +550,22 @@
                 currentUsernameSpan.textContent = cleanUsername;
             }
 
+            // Select only dynamic elements within statsContent
             const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
             const userParamRegex = /user=([^&]+)/;
 
-            // Reset loading counter
+            // Reset loading counter and ensure images are initially hidden before loading
             currentImagesLoading = 0;
+            const imagesToLoad = statsContent.querySelectorAll('img[data-src]');
+
+             imagesToLoad.forEach(img => {
+                 img.style.visibility = 'hidden';
+                 img.style.opacity = '0';
+                 // Remove old listeners to avoid double counting
+                 img.removeEventListener('load', handleImageLoadError);
+                 img.removeEventListener('error', handleImageLoadError);
+             });
+
 
             elementsToUpdate.forEach(element => {
                 let originalUrl;
@@ -581,88 +575,76 @@
                     originalUrl = element.getAttribute('data-src');
                     urlAttribute = 'src';
 
-                    // UUSI JS: Lisää kuormituslaskuriin
+                    // Add to loading counter only for images
                     currentImagesLoading++;
-                    // UUSI JS: Poista vanha src, jos olemassa, jotta load event varmasti laukeaa
-                    element.removeAttribute('src');
-                     // UUSI JS: Piilota kuva, kunnes se latautuu uudella src:llä
-                    element.style.visibility = 'hidden'; // Piilota kuva latauksen ajaksi
-                    element.style.opacity = '0'; // Aseta läpinäkyvyys nollaksi
 
-                    // UUSI JS: Listeners for loading and error
-                    const handleLoadError = () => {
-                         currentImagesLoading--;
-                         // UUSI JS: Näytä kuva, kun lataus valmis
-                         element.style.visibility = 'visible';
-                         element.style.opacity = '1';
-                         // Remove listeners to prevent duplicates
-                         element.removeEventListener('load', handleLoadError);
-                         element.removeEventListener('error', handleLoadError);
-                         checkLoadingComplete();
-                    };
-                    element.addEventListener('load', handleLoadError);
-                    element.addEventListener('error', handleLoadError);
+                    // Set listeners for loading and error
+                     element.addEventListener('load', handleImageLoadError);
+                     element.addEventListener('error', handleImageLoadError);
 
 
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
-                     // For links, no loading indicator needed, just update href
+                     // For links, no loading indicator logic needed here
                 } else {
                     return; // Skip elements without data-src/data-href or other types
                 }
 
-                // Ensure the url exists and contains 'user=' before replacing
+                // Construct the new URL with the updated username
                 if (originalUrl && originalUrl.includes('user=')) {
                     const newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
+                     // Set the src/href attribute to trigger loading/update
                     element[urlAttribute] = newUrl;
                 } else if (originalUrl && !element[urlAttribute]) {
-                    // If the data attribute exists but doesn't contain 'user=',
-                    // or if it's a link without 'user=' (like PGC checker), just set the attribute once.
-                    element[urlAttribute] = originalUrl;
-                }
+                     // If the data attribute exists but doesn't contain 'user=' (like the PGC link),
+                     // just set the attribute once if it's not already set.
+                     element[urlAttribute] = originalUrl;
+                 }
             });
 
-            // UUSI JS: Tarkista heti, jos ei ollut yhtään kuvaa ladattavana
-            checkLoadingComplete();
+            // Check immediately if there were no images to load
+             if (imagesToLoad.length === 0) {
+                 checkLoadingComplete();
+             }
+
 
         }
 
-        // UUSI JS: Function to check if all images have loaded
+         // UUSI JS: Single handler for image load or error
+        function handleImageLoadError() {
+            currentImagesLoading--;
+            // Show the image regardless of success/failure
+            this.style.visibility = 'visible';
+            this.style.opacity = '1';
+             // Clean up listeners
+            this.removeEventListener('load', handleImageLoadError);
+            this.removeEventListener('error', handleImageLoadError);
+            checkLoadingComplete();
+        }
+
+
+        // Function to check if all images have loaded and hide spinner
         function checkLoadingComplete() {
-             // Add a small delay to ensure all listeners are potentially added
-            setTimeout(() => {
-                // Re-count elements with src, as updateStats might have set src already for some
-                 const imagesPresent = statsContent.querySelectorAll('img[src]');
-                 const linksPresent = statsContent.querySelectorAll('a[href]:not(.back-to-top)'); // Count dynamic links too if desired, but spinner is for images
-                 // Let's stick to just images for the spinner trigger
-                 const imagesToLoad = statsContent.querySelectorAll('img[data-src]'); // Count based on original elements
-
-                 // A simpler check: Are all images that *should* load (have data-src) now visible?
-                 const loadedImages = statsContent.querySelectorAll('img[data-src][src][style*="visibility: visible"]');
-                 const erroredImages = statsContent.querySelectorAll('img[data-src][src][style*="visibility: hidden"]'); // Simplified error check
-
-
-                 if (currentImagesLoading <= 0 || (loadedImages.length + erroredImages.length) >= imagesToLoad.length) {
+             // Use a small delay to ensure DOM updates and potential subsequent loads register
+             setTimeout(() => {
+                 if (currentImagesLoading <= 0) {
                      if (loadingSpinner) {
                          loadingSpinner.style.display = 'none'; // Hide spinner
                      }
                  } else {
-                     // Keep spinner visible if loading is ongoing
+                      // Keep spinner visible if loading is ongoing
                      if (loadingSpinner) {
                          loadingSpinner.style.display = 'block';
                      }
                  }
-
-            }, 50); // Small delay
-
-
+             }, 50); // Short delay
         }
 
 
         // --- JavaScript for suggestions ---
 
-        // UUSI JS: Populate the suggestions dropdown
+        // Populate the suggestions dropdown
         function populateSuggestions() {
             usernameSuggestionsDiv.innerHTML = ''; // Clear current suggestions
             suggestedUsernames.forEach(name => {
@@ -672,21 +654,21 @@
                     usernameInput.value = name;
                     usernameSuggestionsDiv.style.display = 'none'; // Hide suggestions
                     // Optional: automatically trigger updateStats after selecting
-                    // updateStats(name);
+                    // updateStats(name); // Uncomment this if you want it to update immediately on click
                     usernameInput.focus(); // Keep focus on input after selection
                 });
                 usernameSuggestionsDiv.appendChild(suggestionSpan);
             });
         }
 
-        // UUSI JS: Event listeners for suggestions
+        // Event listeners for suggestions
         usernameInput.addEventListener('focus', () => {
              if (suggestedUsernames.length > 0) {
                  usernameSuggestionsDiv.style.display = 'block'; // Show suggestions on focus
              }
         });
 
-         // UUSI JS: Hide suggestions when input loses focus, with a small delay
+         // Hide suggestions when input loses focus, with a small delay
          // to allow clicking on a suggestion before it disappears
         usernameInput.addEventListener('blur', () => {
             setTimeout(() => {
@@ -715,20 +697,20 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Adjust layout initially
+            // Adjust layout initially. This sets fixed positions and padding.
             adjustLayout();
 
-            // UUSI JS: Populate suggestions on load
+            // Populate suggestions on load
             populateSuggestions();
 
-            // UUSI JS: Check for last username in localStorage on load
+            // Check for last username in localStorage on load
             const lastUsername = localStorage.getItem('lastGeocacheUsername');
             if (lastUsername) {
                 usernameInput.value = lastUsername;
-                // UUSI JS: Trigger updateStats if a last username was found
+                // Trigger updateStats if a last username was found to load stats immediately
                 updateStats(lastUsername);
             } else {
-                // UUSI JS: Ensure statsContent is hidden if no last username
+                // Ensure statsContent is hidden if no last username was loaded
                  if (statsContent) {
                      statsContent.style.display = 'none';
                  }
