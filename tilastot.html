@@ -28,7 +28,7 @@
             flex-wrap: wrap; /* Allow wrapping on small screens */
             align-items: center; /* Vertically align items */
             gap: 10px; /* Space between items */
-            position: relative; /* Tarvitaan ehdotusten absoluuttiseen positiointiin */
+            /* POISTETTU: position: relative; - Tämä aiheutti ristiriidan fixed-positionin kanssa */
         }
 
         /* New style for the logo within the userControlArea */
@@ -416,8 +416,11 @@
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
+
+
         <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
+
         <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
 
@@ -430,6 +433,8 @@
 
 
         <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
+
+
         <h2 id="jasmer">Jasmer</h2>
         <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
         <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
@@ -611,7 +616,7 @@
 
         }
 
-         // UUSI JS: Single handler for image load or error
+         // Single handler for image load or error
         function handleImageLoadError() {
             currentImagesLoading--;
             // Show the image regardless of success/failure
@@ -653,9 +658,9 @@
                 suggestionSpan.addEventListener('click', () => {
                     usernameInput.value = name;
                     usernameSuggestionsDiv.style.display = 'none'; // Hide suggestions
-                    // Optional: automatically trigger updateStats after selecting
-                    // updateStats(name); // Uncomment this if you want it to update immediately on click
-                    usernameInput.focus(); // Keep focus on input after selection
+                    // KORJAUS: Kutsu updateStats heti kun nimi valitaan alasvetovalikosta
+                    updateStats(name);
+                    // Poistettu usernameInput.focus() kutsu välttääksesi uudelleenfocusoinnista johtuvia ongelmia blur-timerin kanssa
                 });
                 usernameSuggestionsDiv.appendChild(suggestionSpan);
             });
