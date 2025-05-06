@@ -28,7 +28,7 @@
             flex-wrap: wrap; /* Allow wrapping on small screens */
             align-items: center; /* Vertically align items */
             gap: 10px; /* Space between items */
-            /* POISTETTU: position: relative; - Tämä aiheutti ristiriidan fixed-positionin kanssa */
+            /* KORJAUS: POISTETTU position: relative; - Tämä aiheutti ristiriidan fixed-positionin kanssa */
         }
 
         /* New style for the logo within the userControlArea */
@@ -474,6 +474,8 @@
 
             // Set padding-top for the body to push content below both fixed headers
             document.body.style.paddingTop = totalFixedHeight + 'px';
+            console.log('Adjusted layout. User Area Height:', userAreaHeight, 'Nav Height:', navHeight, 'Total Padding:', totalFixedHeight);
+
 
             // Set scroll-margin-top for H2 elements so anchor links scroll correctly below headers
             h2Elements.forEach(h2 => {
@@ -511,13 +513,17 @@
 
         function updateStats(username) {
             const cleanUsername = username.trim();
+             console.log('updateStats called with:', username, '(trimmed:', cleanUsername + ')');
+
 
             // Hide content area and spinner immediately when triggered
             if (statsContent) {
                 statsContent.style.display = 'none';
+                 console.log('Hiding statsContent.');
             }
              if (loadingSpinner) {
                  loadingSpinner.style.display = 'none';
+                  console.log('Hiding spinner.');
              }
 
 
@@ -530,8 +536,10 @@
                  document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
                       if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                           element.removeAttribute('src'); // Remove src to hide image
+                           console.log('Cleared src for image:', element.getAttribute('data-src'));
                       } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                           element.removeAttribute('href'); // Remove href for links
+                           console.log('Cleared href for link:', element.getAttribute('data-href'));
                       }
                   });
                  // Remove last stored username if input is cleared
@@ -541,27 +549,36 @@
 
             // Store successfully entered username
             localStorage.setItem('lastGeocacheUsername', cleanUsername);
+             console.log('Stored username in localStorage:', cleanUsername);
+
 
             // Show content area and spinner when a valid username is entered
              if (statsContent) {
                  statsContent.style.display = 'block';
+                  console.log('Showing statsContent.');
              }
             if (loadingSpinner) {
                 loadingSpinner.style.display = 'block'; // Show spinner
+                 console.log('Showing spinner.');
             }
 
 
             if (currentUsernameSpan) {
                 currentUsernameSpan.textContent = cleanUsername;
+                 console.log('Updated current username span:', cleanUsername);
             }
 
             // Select only dynamic elements within statsContent
             const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
+            console.log('Found elements to update:', elementsToUpdate.length);
+
             const userParamRegex = /user=([^&]+)/;
 
             // Reset loading counter and ensure images are initially hidden before loading
             currentImagesLoading = 0;
             const imagesToLoad = statsContent.querySelectorAll('img[data-src]');
+             console.log('Images potentially loading:', imagesToLoad.length);
+
 
              imagesToLoad.forEach(img => {
                  img.style.visibility = 'hidden';
@@ -569,6 +586,7 @@
                  // Remove old listeners to avoid double counting
                  img.removeEventListener('load', handleImageLoadError);
                  img.removeEventListener('error', handleImageLoadError);
+                 console.log('Prepared image for loading:', img.getAttribute('data-src'));
              });
 
 
@@ -582,6 +600,8 @@
 
                     // Add to loading counter only for images
                     currentImagesLoading++;
+                    console.log('Tracking image load:', originalUrl);
+
 
                     // Set listeners for loading and error
                      element.addEventListener('load', handleImageLoadError);
@@ -591,6 +611,7 @@
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
+                     console.log('Updating link href:', originalUrl);
                      // For links, no loading indicator logic needed here
                 } else {
                     return; // Skip elements without data-src/data-href or other types
@@ -601,15 +622,18 @@
                     const newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
                      // Set the src/href attribute to trigger loading/update
                     element[urlAttribute] = newUrl;
+                     console.log('Set element attribute:', urlAttribute, newUrl);
                 } else if (originalUrl && !element[urlAttribute]) {
                      // If the data attribute exists but doesn't contain 'user=' (like the PGC link),
-                     // just set the attribute once if it's not already set.
+                     // or if it's a link without 'user=' (like PGC checker), just set the attribute once if it's not already set.
                      element[urlAttribute] = originalUrl;
+                      console.log('Set static element attribute:', urlAttribute, originalUrl);
                  }
             });
 
             // Check immediately if there were no images to load
              if (imagesToLoad.length === 0) {
+                 console.log('No images to load, checking loading complete immediately.');
                  checkLoadingComplete();
              }
 
@@ -618,7 +642,9 @@
 
          // Single handler for image load or error
         function handleImageLoadError() {
+            console.log('Image load/error event:', this.getAttribute('data-src'));
             currentImagesLoading--;
+             console.log('Images loading remaining:', currentImagesLoading);
             // Show the image regardless of success/failure
             this.style.visibility = 'visible';
             this.style.opacity = '1';
@@ -633,14 +659,20 @@
         function checkLoadingComplete() {
              // Use a small delay to ensure DOM updates and potential subsequent loads register
              setTimeout(() => {
+                 console.log('Checking loading complete. Remaining:', currentImagesLoading);
                  if (currentImagesLoading <= 0) {
                      if (loadingSpinner) {
                          loadingSpinner.style.display = 'none'; // Hide spinner
+                         console.log('All images processed, hiding spinner.');
                      }
                  } else {
                       // Keep spinner visible if loading is ongoing
-                     if (loadingSpinner) {
+                     if (loadingSpinner && loadingSpinner.style.display === 'none') {
+                          // Should not happen if logic is correct, but as safeguard
                          loadingSpinner.style.display = 'block';
+                         console.log('Images still loading, showing spinner (safeguard). Remaining:', currentImagesLoading);
+                     } else if (!loadingSpinner) {
+                         console.warn('loadingSpinner element not found.');
                      }
                  }
              }, 50); // Short delay
@@ -651,34 +683,54 @@
 
         // Populate the suggestions dropdown
         function populateSuggestions() {
+            console.log('Populating suggestions...');
             usernameSuggestionsDiv.innerHTML = ''; // Clear current suggestions
+            if (suggestedUsernames.length === 0) {
+                console.log('No suggested usernames defined.');
+                return; // Do nothing if no suggestions
+            }
+
             suggestedUsernames.forEach(name => {
                 const suggestionSpan = document.createElement('span');
                 suggestionSpan.textContent = name;
                 suggestionSpan.addEventListener('click', () => {
+                    console.log('Suggestion clicked:', name);
                     usernameInput.value = name;
                     usernameSuggestionsDiv.style.display = 'none'; // Hide suggestions
+                    console.log('Input value set to:', name, 'Suggestions hidden.');
                     // KORJAUS: Kutsu updateStats heti kun nimi valitaan alasvetovalikosta
                     updateStats(name);
                     // Poistettu usernameInput.focus() kutsu välttääksesi uudelleenfocusoinnista johtuvia ongelmia blur-timerin kanssa
                 });
                 usernameSuggestionsDiv.appendChild(suggestionSpan);
             });
+             console.log('Suggestions populated.');
         }
 
         // Event listeners for suggestions
         usernameInput.addEventListener('focus', () => {
-             if (suggestedUsernames.length > 0) {
+            console.log('Input focused.');
+             if (suggestedUsernames.length > 0 && usernameSuggestionsDiv.children.length > 0) { // Check if there are suggestions to show
                  usernameSuggestionsDiv.style.display = 'block'; // Show suggestions on focus
+                 console.log('Showing suggestions.');
              }
         });
 
          // Hide suggestions when input loses focus, with a small delay
          // to allow clicking on a suggestion before it disappears
         usernameInput.addEventListener('blur', () => {
+            console.log('Input blurred. Setting hide timeout.');
+            // KORJAUS: Kasvatettu timeoutin viivettä
             setTimeout(() => {
-                usernameSuggestionsDiv.style.display = 'none';
-            }, 100); // Adjust delay as needed
+                 // Tarkista vielä, onko fokus palannut kenttään timeoutin aikana (ei pitäisi tapahtua, mutta varmuuden vuoksi)
+                 if (document.activeElement !== usernameInput) {
+                    usernameSuggestionsDiv.style.display = 'none';
+                    console.log('Hiding suggestions after blur timeout.');
+                 } else {
+                     console.log('Focus returned to input during blur timeout, not hiding suggestions.');
+                 }
+            // KORJAUS: Timeout 200ms -> 300ms tai enemmän tarvittaessa
+            }, 200); // Adjusted delay (was 100)
         });
 
 
@@ -686,6 +738,7 @@
 
         // Event listener for the button click
         updateButton.addEventListener('click', () => {
+            console.log('Update button clicked.');
             const username = usernameInput.value; // Get value from input field
             updateStats(username); // Call the update function
         });
@@ -694,6 +747,7 @@
         usernameInput.addEventListener('keypress', (event) => {
             // Check if the pressed key is Enter
             if (event.key === 'Enter') {
+                console.log('Enter key pressed in input.');
                 event.preventDefault(); // Prevent default form submission if any
                 const username = usernameInput.value; // Get value from input field
                 updateStats(username); // Call the update function
@@ -702,6 +756,7 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded event fired.');
             // Adjust layout initially. This sets fixed positions and padding.
             adjustLayout();
 
@@ -711,10 +766,12 @@
             // Check for last username in localStorage on load
             const lastUsername = localStorage.getItem('lastGeocacheUsername');
             if (lastUsername) {
+                console.log('Found last username in localStorage:', lastUsername);
                 usernameInput.value = lastUsername;
                 // Trigger updateStats if a last username was found to load stats immediately
                 updateStats(lastUsername);
             } else {
+                console.log('No last username found in localStorage.');
                 // Ensure statsContent is hidden if no last username was loaded
                  if (statsContent) {
                      statsContent.style.display = 'none';
@@ -728,6 +785,8 @@
 
         // Adjust layout on window resize
         window.addEventListener('resize', adjustLayout);
+        console.log('Resize listener added.');
+
 
     </script>
 
