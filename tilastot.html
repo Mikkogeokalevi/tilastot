@@ -23,11 +23,12 @@
             padding: 10px; /* Padding inside the area */
             background-color: #1f1f1f; /* Background to match nav */
             border-bottom: 1px solid #333; /* Separator line */
-            z-index: 1000; /* Make sure it's above the nav */
+            z-index: 1000; /* Make sure it's above the nav and other content */
             display: flex; /* Use flexbox for layout */
             flex-wrap: wrap; /* Allow wrapping on small screens */
             align-items: center; /* Vertically align items */
             gap: 10px; /* Space between items */
+            position: relative; /* Tarvitaan ehdotusten absoluuttiseen positiointiin */
         }
 
         /* New style for the logo within the userControlArea */
@@ -40,31 +41,52 @@
             vertical-align: middle; /* Align logo nicely */
         }
 
-
-         #userControlArea div {
+         #userControlArea > div:first-of-type { /* Geokätkötilastot käyttäjälle div */
              margin: 0; /* Remove default div margin */
-             /* Allow this div to take space but shrink if needed */
-             flex-shrink: 1;
+             flex-shrink: 1; /* Allow this div to take space but shrink if needed */
+             white-space: nowrap; /* Prevent wrapping for the text */
+             min-width: 150px; /* Ensure it takes some space */
          }
 
-         #userControlArea input,
-         #userControlArea button {
-             flex-shrink: 0; /* Prevent input and button from shrinking too much */
-         }
+        /* UUSI CSS: Container for input, button, and suggestions */
+        #inputContainer {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-grow: 1; /* Allow to take available space */
+            flex-wrap: wrap; /* Allow input and button to wrap */
+            position: relative; /* Tarvitaan ehdotusten absoluuttiseen positiointiin */
+        }
 
 
         /* Styles for the input and button */
-        #usernameInput, #updateButton {
-            padding: 8px;
+        #usernameInput {
+             padding: 8px;
+             border-radius: 5px;
+             border: 1px solid #555;
+             background-color: #333;
+             color: #fff;
+             font-size: 14px;
+             flex-grow: 1; /* Allow input to grow */
+             min-width: 120px; /* Minimum width for input */
+         }
+
+        #updateButton {
+            padding: 8px 15px; /* Add padding for button */
             border-radius: 5px;
-            border: 1px solid #555;
-            background-color: #333;
-            color: #fff;
+            border: 1px solid #0077cc; /* Blue border */
+            background-color: #0077cc; /* Blue background */
+            color: white;
             font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            flex-shrink: 0; /* Prevent button from shrinking */
         }
 
          #updateButton:hover {
              background-color: #005fa3;
+             border-color: #005fa3;
          }
 
         nav {
@@ -133,30 +155,36 @@
             color: white;
         }
 
-        /* UUSI CSS: Piilota sisältöalue oletuksena */
+        /* Piilota sisältöalue oletuksena */
         #statsContent {
-            display: none;
+            display: none; /* Initially hidden */
+            position: relative; /* Needed for positioning spinner absolutely */
+            min-height: 200px; /* Prevent content collapse when hidden/loading - Adjust as needed */
+            padding: 0 10px; /* Lisää sisäpuolista paddingia */
         }
 
         h2 {
             /* margin-top will be taken care of by body padding-top */
-            margin: 40px 10px 5px; /* Reduced bottom margin to place link closer */
+            margin: 40px 0 5px; /* Reduced bottom margin to place link closer */
             font-size: 22px;
              /* scroll-margin-top will be set by JavaScript */
+             padding-left: 10px; /* Siirrä otsikkoa hieman sisään */
         }
 
         h3 {
-            margin: 20px 10px 10px;
+            margin: 20px 0 10px; /* Adjust margin */
             font-size: 18px;
             color: #cccccc;
+             padding-left: 10px; /* Siirrä otsikkoa hieman sisään */
         }
 
         img {
             max-width: 100%;
             height: auto;
             display: block;
-            margin: 0 0 20px 10px;
+            margin: 0 0 20px 0; /* Remove left margin, will use padding on container */
             border-radius: 5px;
+             box-sizing: border-box; /* Include border in width */
         }
 
         h3 + img {
@@ -165,7 +193,7 @@
 
         .content-link {
             display: inline-block;
-            margin: 10px;
+            margin: 10px 0; /* Adjust margin */
             padding: 8px 14px;
             background-color: #0077cc;
             color: white;
@@ -184,7 +212,7 @@
         .back-to-top {
             /* Inherits content-link styles */
             display: inline-block; /* Keep it inline-block to flow after H2 */
-            margin: 0 0 20px 10px; /* Adjust margin: top right bottom left */
+            margin: 0 10px 20px 10px; /* Adjust margin: top right bottom left */
             font-size: 12px; /* Slightly smaller font */
             vertical-align: middle; /* Align vertically with the heading */
         }
@@ -196,6 +224,60 @@
             color: #888;
             text-align: right;
         }
+
+        /* UUSI CSS: Spinner styles */
+        #loadingSpinner {
+            display: none; /* Initially hidden by JS */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #0077cc; /* Spinner color */
+            border-radius: 50%;
+            animation: spin 1s linear infinite; /* Animation */
+            z-index: 10; /* Above potential content */
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* UUSI CSS: Styles for the suggestions dropdown */
+        .suggestions-dropdown {
+            position: absolute; /* Position relative to the containing block (#inputContainer) */
+            top: 100%; /* Position below the inputContainer */
+            left: 0;
+            right: 0; /* Extend to the right edge of inputContainer */
+            z-index: 1002; /* Above userControlArea */
+            background-color: #2b2b2b; /* Dark background */
+            border: 1px solid #555;
+            border-top: none; /* No top border as it connects to input */
+            border-radius: 0 0 5px 5px; /* Rounded bottom corners */
+            max-height: 150px; /* Limit height and enable scrolling */
+            overflow-y: auto;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: none; /* Hidden by default */
+            padding: 0; /* No internal padding */
+            margin-top: 0; /* No margin top */
+        }
+
+        .suggestions-dropdown span {
+            display: block; /* Each suggestion on a new line */
+            padding: 8px 15px; /* Padding inside suggestion item */
+            cursor: pointer;
+            color: #e0e0e0;
+        }
+
+        .suggestions-dropdown span:hover {
+            background-color: #3c3c3c; /* Hover effect */
+            color: #ffffff;
+        }
+
+
     </style>
 </head>
 <body id="top">
@@ -204,8 +286,12 @@
         <div>
             Geokätkötilastot käyttäjälle: <span id="currentUsername">[Ei käyttäjää]</span>
         </div>
-        <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus">
-        <button id="updateButton">Päivitä</button>
+        <div id="inputContainer">
+            <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus">
+            <button id="updateButton">Päivitä</button>
+            <div id="usernameSuggestions" class="suggestions-dropdown">
+                </div>
+        </div>
     </div>
     <nav>
         <div class="nav-title">Navigointi:</div>
@@ -238,6 +324,7 @@
     </nav>
 
     <div id="statsContent">
+        <div id="loadingSpinner" class="spinner"></div>
 
         <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
         <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
@@ -362,7 +449,7 @@
         <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=2" target="_blank">Jasmer multi</a>
         <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=3" target="_blank">Jasmer mysse</a>
 
-    </div> <div class="version">Versio 30</div>
+    </div> <div class="version">Versio 30 (muokattu)</div>
 
     <br><br><br><br><br>
 
@@ -375,8 +462,14 @@
         const updateButton = document.getElementById('updateButton');
         const currentUsernameSpan = document.getElementById('currentUsername');
         const h2Elements = document.querySelectorAll('h2');
-        // UUSI JS: Hae viittaus sisältöalueeseen
         const statsContent = document.getElementById('statsContent');
+        // UUSI JS: Hae viittaus spinneriin ja ehdotus-diviin
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const usernameSuggestionsDiv = document.getElementById('usernameSuggestions');
+
+        // UUSI JS: Määritä ehdotetut käyttäjänimet
+        const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
+        let currentImagesLoading = 0; // Count images currently loading
 
 
         // Function to adjust padding and margins based on fixed header heights
@@ -408,9 +501,12 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute("id");
-                    navLinks.forEach(link => {
-                        link.classList.toggle("active", link.getAttribute("href") === "#" + id);
-                    });
+                    // Ensure navLinks are processed only when statsContent is visible
+                    if (statsContent.style.display !== 'none') {
+                        navLinks.forEach(link => {
+                            link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+                        });
+                    }
                 }
             });
         }, {
@@ -423,53 +519,59 @@
             observer.observe(section);
         });
 
-        // --- JavaScript for username update ---
+        // --- JavaScript for username update and loading ---
 
         function updateStats(username) {
-            // Trim whitespace from the username
             const cleanUsername = username.trim();
 
-            // Handle empty username case
+            // Hide content and spinner immediately when updating or clearing
+            if (statsContent) {
+                statsContent.style.display = 'none';
+            }
+             if (loadingSpinner) {
+                 loadingSpinner.style.display = 'none'; // Ensure spinner is hidden before potential show
+             }
+
+
             if (!cleanUsername) {
                 console.warn("Username is empty after trimming, skipping update.");
-                // Update the span to indicate empty username
                 if (currentUsernameSpan) {
                    currentUsernameSpan.textContent = "[Tyhjä]";
                 }
-                // UUSI JS: Piilota sisältöalue, jos käyttäjänimi on tyhjä
-                if (statsContent) {
-                    statsContent.style.display = 'none';
-                }
-                // Clear loaded images/links when username becomes empty
+                // Clear loaded images/links within statsContent
                 document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
-                    // Only clear elements that were loaded by the script (i.e., have data attributes)
-                    if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
+                     if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                          element.removeAttribute('src'); // Remove src to hide image
-                    } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
-                         // For links, revert the href to the base data-href value without a user or disable it.
-                         // Let's just remove the href for simplicity when empty
-                         element.removeAttribute('href');
-                    }
-                });
-                return; // Stop the function here
+                     } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
+                         element.removeAttribute('href'); // Remove href for links
+                     }
+                 });
+                 // UUSI JS: Poista viimeksi tallennettu käyttäjänimi, jos kenttä tyhjennetään
+                 localStorage.removeItem('lastGeocacheUsername');
+                 return; // Stop the function here
             }
 
-            // UUSI JS: Näytä sisältöalue, jos käyttäjänimi on syötetty
-            if (statsContent) {
+            // UUSI JS: Tallenna onnistuneesti syötetty käyttäjätunnus
+            localStorage.setItem('lastGeocacheUsername', cleanUsername);
+
+            // Show content area and spinner when a valid username is entered
+             if (statsContent) {
                  statsContent.style.display = 'block';
              }
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block'; // Show spinner
+            }
 
-            // Update the visible username in the user control area
+
             if (currentUsernameSpan) {
                 currentUsernameSpan.textContent = cleanUsername;
             }
 
-
-            // Select all elements within statsContent that have data-src or data-href attributes
             const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
-
-            // Regex to find 'user=' followed by characters until '&' or end of string
             const userParamRegex = /user=([^&]+)/;
+
+            // Reset loading counter
+            currentImagesLoading = 0;
 
             elementsToUpdate.forEach(element => {
                 let originalUrl;
@@ -478,29 +580,122 @@
                 if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                     originalUrl = element.getAttribute('data-src');
                     urlAttribute = 'src';
+
+                    // UUSI JS: Lisää kuormituslaskuriin
+                    currentImagesLoading++;
+                    // UUSI JS: Poista vanha src, jos olemassa, jotta load event varmasti laukeaa
+                    element.removeAttribute('src');
+                     // UUSI JS: Piilota kuva, kunnes se latautuu uudella src:llä
+                    element.style.visibility = 'hidden'; // Piilota kuva latauksen ajaksi
+                    element.style.opacity = '0'; // Aseta läpinäkyvyys nollaksi
+
+                    // UUSI JS: Listeners for loading and error
+                    const handleLoadError = () => {
+                         currentImagesLoading--;
+                         // UUSI JS: Näytä kuva, kun lataus valmis
+                         element.style.visibility = 'visible';
+                         element.style.opacity = '1';
+                         // Remove listeners to prevent duplicates
+                         element.removeEventListener('load', handleLoadError);
+                         element.removeEventListener('error', handleLoadError);
+                         checkLoadingComplete();
+                    };
+                    element.addEventListener('load', handleLoadError);
+                    element.addEventListener('error', handleLoadError);
+
+
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
+                     // For links, no loading indicator needed, just update href
                 } else {
                     return; // Skip elements without data-src/data-href or other types
                 }
 
-                // Ensure the url exists and contains 'user='
+                // Ensure the url exists and contains 'user=' before replacing
                 if (originalUrl && originalUrl.includes('user=')) {
-                    // Replace the existing username with the new username using regex
                     const newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
-
-                    // Update the attribute. This triggers the browser to load the resource.
                     element[urlAttribute] = newUrl;
+                } else if (originalUrl && !element[urlAttribute]) {
+                    // If the data attribute exists but doesn't contain 'user=',
+                    // or if it's a link without 'user=' (like PGC checker), just set the attribute once.
+                    element[urlAttribute] = originalUrl;
                 }
-                 // Note: Elements with data-href/data-src but no 'user=' will use the data-href/data-src value as is.
-                 // This seems correct for the structure (e.g., the PGC checker link)
-                 else if (originalUrl && !element[urlAttribute]) {
-                     // If element didn't have src/href yet, set it from data attribute
-                      element[urlAttribute] = originalUrl;
+            });
+
+            // UUSI JS: Tarkista heti, jos ei ollut yhtään kuvaa ladattavana
+            checkLoadingComplete();
+
+        }
+
+        // UUSI JS: Function to check if all images have loaded
+        function checkLoadingComplete() {
+             // Add a small delay to ensure all listeners are potentially added
+            setTimeout(() => {
+                // Re-count elements with src, as updateStats might have set src already for some
+                 const imagesPresent = statsContent.querySelectorAll('img[src]');
+                 const linksPresent = statsContent.querySelectorAll('a[href]:not(.back-to-top)'); // Count dynamic links too if desired, but spinner is for images
+                 // Let's stick to just images for the spinner trigger
+                 const imagesToLoad = statsContent.querySelectorAll('img[data-src]'); // Count based on original elements
+
+                 // A simpler check: Are all images that *should* load (have data-src) now visible?
+                 const loadedImages = statsContent.querySelectorAll('img[data-src][src][style*="visibility: visible"]');
+                 const erroredImages = statsContent.querySelectorAll('img[data-src][src][style*="visibility: hidden"]'); // Simplified error check
+
+
+                 if (currentImagesLoading <= 0 || (loadedImages.length + erroredImages.length) >= imagesToLoad.length) {
+                     if (loadingSpinner) {
+                         loadingSpinner.style.display = 'none'; // Hide spinner
+                     }
+                 } else {
+                     // Keep spinner visible if loading is ongoing
+                     if (loadingSpinner) {
+                         loadingSpinner.style.display = 'block';
+                     }
                  }
+
+            }, 50); // Small delay
+
+
+        }
+
+
+        // --- JavaScript for suggestions ---
+
+        // UUSI JS: Populate the suggestions dropdown
+        function populateSuggestions() {
+            usernameSuggestionsDiv.innerHTML = ''; // Clear current suggestions
+            suggestedUsernames.forEach(name => {
+                const suggestionSpan = document.createElement('span');
+                suggestionSpan.textContent = name;
+                suggestionSpan.addEventListener('click', () => {
+                    usernameInput.value = name;
+                    usernameSuggestionsDiv.style.display = 'none'; // Hide suggestions
+                    // Optional: automatically trigger updateStats after selecting
+                    // updateStats(name);
+                    usernameInput.focus(); // Keep focus on input after selection
+                });
+                usernameSuggestionsDiv.appendChild(suggestionSpan);
             });
         }
+
+        // UUSI JS: Event listeners for suggestions
+        usernameInput.addEventListener('focus', () => {
+             if (suggestedUsernames.length > 0) {
+                 usernameSuggestionsDiv.style.display = 'block'; // Show suggestions on focus
+             }
+        });
+
+         // UUSI JS: Hide suggestions when input loses focus, with a small delay
+         // to allow clicking on a suggestion before it disappears
+        usernameInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                usernameSuggestionsDiv.style.display = 'none';
+            }, 100); // Adjust delay as needed
+        });
+
+
+        // --- Event Listeners ---
 
         // Event listener for the button click
         updateButton.addEventListener('click', () => {
@@ -518,25 +713,34 @@
             }
         });
 
-        // --- Layout Adjustments ---
-        // Adjust layout on initial load and window resize
-        document.addEventListener('DOMContentLoaded', adjustLayout);
-        window.addEventListener('resize', adjustLayout);
-
-
-        // Initial state handler (shows "[Ei käyttäjää]")
+        // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-             // Set initial text for username span
-             if (currentUsernameSpan) {
-                 currentUsernameSpan.textContent = usernameInput.value.trim() || "[Ei käyttäjää]";
-             }
-            // The CSS display: none; handles initial hiding, no need to hide here.
-            // If there is a default value in usernameInput and it's not empty,
-            // call updateStats on load to show content and load stats.
-             if (usernameInput.value.trim()) {
-                 updateStats(usernameInput.value);
-             }
-         });
+            // Adjust layout initially
+            adjustLayout();
+
+            // UUSI JS: Populate suggestions on load
+            populateSuggestions();
+
+            // UUSI JS: Check for last username in localStorage on load
+            const lastUsername = localStorage.getItem('lastGeocacheUsername');
+            if (lastUsername) {
+                usernameInput.value = lastUsername;
+                // UUSI JS: Trigger updateStats if a last username was found
+                updateStats(lastUsername);
+            } else {
+                // UUSI JS: Ensure statsContent is hidden if no last username
+                 if (statsContent) {
+                     statsContent.style.display = 'none';
+                 }
+                if (currentUsernameSpan) {
+                   currentUsernameSpan.textContent = "[Ei käyttäjää]";
+                }
+            }
+
+        });
+
+        // Adjust layout on window resize
+        window.addEventListener('resize', adjustLayout);
 
     </script>
 
