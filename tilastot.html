@@ -460,6 +460,8 @@
 
         const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
         let currentImagesLoading = 0;
+        // UUSI JS: Flag klikkaus-tapahtuman tunnistamiseen ehdotuslistalla
+        let isSuggestionClick = false;
 
 
         // Function to adjust padding and margins based on fixed header heights
@@ -474,7 +476,7 @@
 
             // Set padding-top for the body to push content below both fixed headers
             document.body.style.paddingTop = totalFixedHeight + 'px';
-            console.log('Adjusted layout. User Area Height:', userAreaHeight, 'Nav Height:', navHeight, 'Total Padding:', totalFixedHeight);
+            // console.log('Adjusted layout. Total Padding:', totalFixedHeight);
 
 
             // Set scroll-margin-top for H2 elements so anchor links scroll correctly below headers
@@ -519,11 +521,9 @@
             // Hide content area and spinner immediately when triggered
             if (statsContent) {
                 statsContent.style.display = 'none';
-                 console.log('Hiding statsContent.');
             }
              if (loadingSpinner) {
                  loadingSpinner.style.display = 'none';
-                  console.log('Hiding spinner.');
              }
 
 
@@ -536,10 +536,8 @@
                  document.querySelectorAll('#statsContent img[src], #statsContent a[href]:not(.back-to-top)').forEach(element => {
                       if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                           element.removeAttribute('src'); // Remove src to hide image
-                           console.log('Cleared src for image:', element.getAttribute('data-src'));
                       } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                           element.removeAttribute('href'); // Remove href for links
-                           console.log('Cleared href for link:', element.getAttribute('data-href'));
                       }
                   });
                  // Remove last stored username if input is cleared
@@ -549,35 +547,29 @@
 
             // Store successfully entered username
             localStorage.setItem('lastGeocacheUsername', cleanUsername);
-             console.log('Stored username in localStorage:', cleanUsername);
 
 
             // Show content area and spinner when a valid username is entered
              if (statsContent) {
                  statsContent.style.display = 'block';
-                  console.log('Showing statsContent.');
              }
             if (loadingSpinner) {
                 loadingSpinner.style.display = 'block'; // Show spinner
-                 console.log('Showing spinner.');
             }
 
 
             if (currentUsernameSpan) {
                 currentUsernameSpan.textContent = cleanUsername;
-                 console.log('Updated current username span:', cleanUsername);
             }
 
             // Select only dynamic elements within statsContent
             const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
-            console.log('Found elements to update:', elementsToUpdate.length);
 
             const userParamRegex = /user=([^&]+)/;
 
             // Reset loading counter and ensure images are initially hidden before loading
             currentImagesLoading = 0;
             const imagesToLoad = statsContent.querySelectorAll('img[data-src]');
-             console.log('Images potentially loading:', imagesToLoad.length);
 
 
              imagesToLoad.forEach(img => {
@@ -586,7 +578,6 @@
                  // Remove old listeners to avoid double counting
                  img.removeEventListener('load', handleImageLoadError);
                  img.removeEventListener('error', handleImageLoadError);
-                 console.log('Prepared image for loading:', img.getAttribute('data-src'));
              });
 
 
@@ -600,7 +591,6 @@
 
                     // Add to loading counter only for images
                     currentImagesLoading++;
-                    console.log('Tracking image load:', originalUrl);
 
 
                     // Set listeners for loading and error
@@ -611,8 +601,6 @@
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
-                     console.log('Updating link href:', originalUrl);
-                     // For links, no loading indicator logic needed here
                 } else {
                     return; // Skip elements without data-src/data-href or other types
                 }
@@ -622,18 +610,15 @@
                     const newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
                      // Set the src/href attribute to trigger loading/update
                     element[urlAttribute] = newUrl;
-                     console.log('Set element attribute:', urlAttribute, newUrl);
                 } else if (originalUrl && !element[urlAttribute]) {
                      // If the data attribute exists but doesn't contain 'user=' (like the PGC link),
                      // or if it's a link without 'user=' (like PGC checker), just set the attribute once if it's not already set.
                      element[urlAttribute] = originalUrl;
-                      console.log('Set static element attribute:', urlAttribute, originalUrl);
                  }
             });
 
             // Check immediately if there were no images to load
              if (imagesToLoad.length === 0) {
-                 console.log('No images to load, checking loading complete immediately.');
                  checkLoadingComplete();
              }
 
@@ -642,9 +627,9 @@
 
          // Single handler for image load or error
         function handleImageLoadError() {
-            console.log('Image load/error event:', this.getAttribute('data-src'));
+            // console.log('Image load/error event:', this.getAttribute('data-src')); // Too chatty
             currentImagesLoading--;
-             console.log('Images loading remaining:', currentImagesLoading);
+            // console.log('Images loading remaining:', currentImagesLoading); // Too chatty
             // Show the image regardless of success/failure
             this.style.visibility = 'visible';
             this.style.opacity = '1';
@@ -659,18 +644,16 @@
         function checkLoadingComplete() {
              // Use a small delay to ensure DOM updates and potential subsequent loads register
              setTimeout(() => {
-                 console.log('Checking loading complete. Remaining:', currentImagesLoading);
                  if (currentImagesLoading <= 0) {
                      if (loadingSpinner) {
                          loadingSpinner.style.display = 'none'; // Hide spinner
-                         console.log('All images processed, hiding spinner.');
+                          console.log('All images processed, hiding spinner.');
                      }
                  } else {
                       // Keep spinner visible if loading is ongoing
                      if (loadingSpinner && loadingSpinner.style.display === 'none') {
-                          // Should not happen if logic is correct, but as safeguard
                          loadingSpinner.style.display = 'block';
-                         console.log('Images still loading, showing spinner (safeguard). Remaining:', currentImagesLoading);
+                         console.log('Images still loading, showing spinner. Remaining:', currentImagesLoading);
                      } else if (!loadingSpinner) {
                          console.warn('loadingSpinner element not found.');
                      }
@@ -683,54 +666,66 @@
 
         // Populate the suggestions dropdown
         function populateSuggestions() {
-            console.log('Populating suggestions...');
-            usernameSuggestionsDiv.innerHTML = ''; // Clear current suggestions
             if (suggestedUsernames.length === 0) {
-                console.log('No suggested usernames defined.');
+                usernameSuggestionsDiv.style.display = 'none'; // Ensure hidden if no suggestions
                 return; // Do nothing if no suggestions
             }
+            usernameSuggestionsDiv.innerHTML = ''; // Clear current suggestions
 
             suggestedUsernames.forEach(name => {
                 const suggestionSpan = document.createElement('span');
                 suggestionSpan.textContent = name;
+
+                // UUSI JS: Aseta flag mousedown-tapahtumassa ENNEN bluria
+                suggestionSpan.addEventListener('mousedown', (event) => {
+                     isSuggestionClick = true;
+                     // estä oletustoiminto, jos tarpeen (voi auttaa joissain selaimissa)
+                     // event.preventDefault();
+                });
+
                 suggestionSpan.addEventListener('click', () => {
-                    console.log('Suggestion clicked:', name);
+                    console.log('Suggestion clicked:', name); // Jätetään tämä loki
                     usernameInput.value = name;
-                    usernameSuggestionsDiv.style.display = 'none'; // Hide suggestions
-                    console.log('Input value set to:', name, 'Suggestions hidden.');
+                    usernameSuggestionsDiv.style.display = 'none'; // Piilota ehdotukset
                     // KORJAUS: Kutsu updateStats heti kun nimi valitaan alasvetovalikosta
                     updateStats(name);
-                    // Poistettu usernameInput.focus() kutsu välttääksesi uudelleenfocusoinnista johtuvia ongelmia blur-timerin kanssa
+                    // Poistettu usernameInput.focus() kutsu
                 });
                 usernameSuggestionsDiv.appendChild(suggestionSpan);
             });
-             console.log('Suggestions populated.');
         }
 
         // Event listeners for suggestions
         usernameInput.addEventListener('focus', () => {
-            console.log('Input focused.');
-             if (suggestedUsernames.length > 0 && usernameSuggestionsDiv.children.length > 0) { // Check if there are suggestions to show
-                 usernameSuggestionsDiv.style.display = 'block'; // Show suggestions on focus
-                 console.log('Showing suggestions.');
+             if (suggestedUsernames.length > 0 && usernameSuggestionsDiv.children.length > 0) { // Tarkista, onko ehdotuksia näytettäväksi
+                 usernameSuggestionsDiv.style.display = 'block'; // Näytä ehdotukset fokusoidessa
              }
+              isSuggestionClick = false; // Nollaa flag, jos käyttäjä fokusoi kentän
         });
 
-         // Hide suggestions when input loses focus, with a small delay
-         // to allow clicking on a suggestion before it disappears
+         // Piilota ehdotukset, kun kenttä menettää fokuksen
         usernameInput.addEventListener('blur', () => {
-            console.log('Input blurred. Setting hide timeout.');
-            // KORJAUS: Kasvatettu timeoutin viivettä
-            setTimeout(() => {
-                 // Tarkista vielä, onko fokus palannut kenttään timeoutin aikana (ei pitäisi tapahtua, mutta varmuuden vuoksi)
-                 if (document.activeElement !== usernameInput) {
-                    usernameSuggestionsDiv.style.display = 'none';
-                    console.log('Hiding suggestions after blur timeout.');
-                 } else {
-                     console.log('Focus returned to input during blur timeout, not hiding suggestions.');
-                 }
-            // KORJAUS: Timeout 200ms -> 300ms tai enemmän tarvittaessa
-            }, 200); // Adjusted delay (was 100)
+             console.log('Input blurred. isSuggestionClick:', isSuggestionClick); // Jätetään tämä loki
+            if (isSuggestionClick) {
+                // Jos ehdotusta ollaan klikkaamassa, nollaa flag pienen viiveen päästä
+                // ja ÄLÄ piilota listaa tässä. Klikkaus-käsittelijä piilottaa sen.
+                setTimeout(() => {
+                     isSuggestionClick = false; // Nollaa flag, kun klikkaus on todennäköisesti käsitelty
+                     console.log('isSuggestionClick reset to false after blur timeout.'); // Jätetään tämä loki
+                }, 50); // Lyhyt viive
+
+            } else {
+                // Jos normaali blur (fokus siirtyi muualle kuin ehdotukseen), piilota lista viiveen päästä.
+                 setTimeout(() => {
+                     // Tarkista vielä, onko fokus palannut kenttään timeoutin aikana
+                     if (document.activeElement !== usernameInput) {
+                        usernameSuggestionsDiv.style.display = 'none';
+                        console.log('Normal blur: Hiding suggestions after timeout.'); // Jätetään tämä loki
+                     } else {
+                         console.log('Normal blur: Focus returned to input, not hiding.');
+                     }
+                }, 200); // Vakioviive blur-piilotukselle
+            }
         });
 
 
@@ -738,7 +733,7 @@
 
         // Event listener for the button click
         updateButton.addEventListener('click', () => {
-            console.log('Update button clicked.');
+            console.log('Update button clicked.'); // Jätetään tämä loki
             const username = usernameInput.value; // Get value from input field
             updateStats(username); // Call the update function
         });
@@ -747,7 +742,7 @@
         usernameInput.addEventListener('keypress', (event) => {
             // Check if the pressed key is Enter
             if (event.key === 'Enter') {
-                console.log('Enter key pressed in input.');
+                console.log('Enter key pressed in input.'); // Jätetään tämä loki
                 event.preventDefault(); // Prevent default form submission if any
                 const username = usernameInput.value; // Get value from input field
                 updateStats(username); // Call the update function
@@ -756,7 +751,7 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded event fired.');
+            console.log('DOMContentLoaded event fired.'); // Jätetään tämä loki
             // Adjust layout initially. This sets fixed positions and padding.
             adjustLayout();
 
@@ -766,12 +761,12 @@
             // Check for last username in localStorage on load
             const lastUsername = localStorage.getItem('lastGeocacheUsername');
             if (lastUsername) {
-                console.log('Found last username in localStorage:', lastUsername);
+                console.log('Found last username in localStorage:', lastUsername); // Jätetään tämä loki
                 usernameInput.value = lastUsername;
                 // Trigger updateStats if a last username was found to load stats immediately
                 updateStats(lastUsername);
             } else {
-                console.log('No last username found in localStorage.');
+                console.log('No last username found in localStorage. Hiding stats content.'); // Jätetään tämä loki
                 // Ensure statsContent is hidden if no last username was loaded
                  if (statsContent) {
                      statsContent.style.display = 'none';
@@ -785,7 +780,7 @@
 
         // Adjust layout on window resize
         window.addEventListener('resize', adjustLayout);
-        console.log('Resize listener added.');
+        // console.log('Resize listener added.'); // Too chatty
 
 
     </script>
