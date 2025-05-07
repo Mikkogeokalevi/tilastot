@@ -186,7 +186,7 @@
         /* Perii muita nappityylejä (tausta, väri, reunat, kursori jne.) */
     }
 
-    /* --- Uudet säännöt vuosikalenterin lisäsuodattimille --- */
+    /* --- Vuosikalenterin lisäsuodattimille --- */
     #yearSpecificFilters {
         display: none; /* Piilotettu oletuksena, JS näyttää kun valitaan vuosikalenteri */
         margin-top: var(--spacing-medium);
@@ -304,7 +304,8 @@
       <option value="Tiltu">
       <option value="lahjemies">
       <option value="eukka">
-      <option value="Milde04"> </datalist>
+      <option value="milde04">
+    </datalist>
 
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
@@ -414,17 +415,19 @@
   </div>
 
   <script>
+    // Copyright (c) 2025 mikkokalevi
+
     // Mappaus käyttäjien nimimerkkien ja userid:den välillä
-    // Lisää "Milde04": sen ID tähän, kun saat sen
+    // Korjattu "Milde04" pienelle
     const userIds = {
         "mikkokalevi": 306478,
         "eukka": 36206,
         "Tiltu": 309395,
         "lahjemies": 308779,
-        // "Milde04": XXXX // Lisää Milde04:n ID tähän
+        "milde04": null // Korjattu nimi. ID puuttuu edelleen.
     };
 
-    // UUSI: Triplet-option tiedot
+    // Triplet-option tiedot
     const tripletOptionData = { value: '90', text: 'Triplet-extra: tradi, multi, mysse löydöt' };
 
 
@@ -502,7 +505,7 @@
         }
     }
 
-    // --- UUSI: Funktio käsittelemään kuvatyypin muutoksia ja Triplet-option näyttämistä ---
+    // Funktio käsittelemään kuvatyypin muutoksia ja Triplet-option näyttämistä
     function handleKuvatyyppiChange() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const cachetypeSelect = document.getElementById("cachetype");
@@ -516,7 +519,8 @@
 
         // Kutsu muut toggle-funktiot
         toggleAikaKentat();
-        toggleYearSpecificFilters();
+        toggleYearSpecificFilters(); // Tässä kutsutaan toggleYearSpecificFilters
+
 
         // --- Käsittele Triplet-option näyttäminen/piilottaminen ---
         const existingTripletOption = cachetypeSelect.querySelector(`option[value="${tripletOptionData.value}"]`);
@@ -802,7 +806,7 @@
             const monthNames = ["Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"];
             for (let m = 0; m < 12; m++) {
                 const opt = document.createElement("option");
-                opt.value = (m + 1).toString().padStart(2, '0');
+                opt.value = (m + 1).toString().padStart(2, '0'); // Kuukauden arvo 01-12
                 opt.textContent = monthNames[m];
                 monthSelect.appendChild(opt);
             }
@@ -870,55 +874,53 @@
                 if (startdateElement && settings.startdate !== undefined) startdateElement.value = settings.startdate;
                 if (enddateElement && settings.enddate !== undefined) enddateElement.value = settings.enddate;
 
-                // Triplet-option saattaa puuttua Cache Type -valikosta latausvaiheessa,
-                // jos kuvatyyppi ei ollut kuntakartta tallennushetkellä.
-                // Asetetaan cachetype vasta sen jälkeen, kun handleKuvatyyppiChange on kutsuttu
-                // ja option mahdollisesti lisätty.
+                // Triplet-option saattaa puuttua Cache Type -valikosta latausvaiheessa.
+                // handleKuvatyyppiChange lisätään alla ja se kutsuu toggle-funktiot.
+                // Asetetaan cachetype vasta tämän jälkeen.
 
                 if (pkuntaMkuntaChoiceElement && settings.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaChoiceElement.value = settings.pkuntaMkuntaChoice;
                 if (locationFilterValueElement && settings.locationFilterValue !== undefined) locationFilterValueElement.value = settings.locationFilterValue;
                 if (extraFilterElement && settings.extraFilter !== undefined) extraFilterElement.value = settings.extraFilter;
 
-                 // Kutsu toggle-funktioita asetusten latauksen jälkeen
-                 // handleKuvatyyppiChange hoitaa nyt sekä aikakentät että vuosikalenterin lisäkentät
+                 // Kutsu handleKuvatyyppiChange asetusten latauksen jälkeen.
+                 // Tämä funktio kutsuu myös toggleAikaKentat ja toggleYearSpecificFilters.
+                 // TÄMÄ ON KRIITTINEN VAIHE, KOSKA SE VOI LISÄTÄ Triplet-OPTION cachetype-valikkoon.
                  if (typeof handleKuvatyyppiChange === 'function') {
-                     // Kutsu tämä ENNEN cachetypen asettamista, koska tämä voi lisätä option 90
                      handleKuvatyyppiChange();
                      // Aseta cachetype-arvo vasta kun handleKuvatyyppiChange on suoritettu
+                     // (eli Triplet-option on mahdollisesti lisätty valikkoon)
                      if (cachetypeElement && settings.cachetype !== undefined) {
-                          // Tarkista, että ladattu arvo (esim. 90) on nyt validi valikossa
                           let loadedCachetype = settings.cachetype;
-                           // Jos Cache Type -valikossa ei ole ladattua arvoa, aseta se tyhjäksi
+                           // Varmista, että ladattu arvo (esim. 90) on nyt validi valikossa
                           if (loadedCachetype !== '' && !cachetypeElement.querySelector(`option[value="${loadedCachetype}"]`)) {
-                               loadedCachetype = ''; // Palauta tyhjäksi jos option puuttuu (esim. 90 ladattu mutta kuvatyyppi ei ole kunta)
+                               console.warn(`Loaded cachetype value "${loadedCachetype}" not found in select options. Resetting.`);
+                               loadedCachetype = ''; // Palauta tyhjäksi jos option puuttuu
                            }
                           cachetypeElement.value = loadedCachetype;
                      }
-
                  } else {
                       console.error("handleKuvatyyppiChange function not found during load.");
-                      // Jos handleKuvatyyppiChange puuttuu, kutsu vanhat toggle-funktiot ja aseta cachetype suoraan
+                       // Fallback: Kutsu vanhat toggle-funktiot ja aseta cachetype suoraan
                       if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                       if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
-                      if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
-
+                       if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
                  }
 
             } else {
-                 // Jos asetuksia ei löytynyt Local Storagesta, varmista oikea tila alussa
+                 // Jos asetuksia ei löytynyt Local Storagesta, varmista oikea tila alussa kutsumalla handleria
                  if (typeof handleKuvatyyppiChange === 'function') {
-                      handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan
+                      handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan (kuvatyyppi=matrix oletuksena)
                   } else {
-                     // Jos handleKuvatyyppiChange puuttuu, kutsu vanhat toggle-funktiot
+                     // Fallback
                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
                  }
             }
         } catch (e) {
             console.error("Could not load settings from Local Storage", e);
-            // Varmista oikea tila virheen sattuessa
+             // Varmista oikea tila virheen sattuessa
              if (typeof handleKuvatyyppiChange === 'function') {
-                  handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan
+                  handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan (kuvatyyppi=matrix oletuksena)
               } else {
                  if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                  if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
@@ -926,7 +928,7 @@
             // localStorage.removeItem('statGeneratorSettings');
         }
 
-        // Initial calls to toggle functions (moved inside load logic or handled by handleKuvatyyppiChange)
+        // Initial calls to toggle functions (handled by handleKuvatyyppiChange load or fallback)
 
 
     }); // DOMContentLoaded päättyy
