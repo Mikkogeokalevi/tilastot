@@ -253,12 +253,6 @@
         font-weight: bold;
         flex-shrink: 0; /* Estä kuvaketta kutistumasta */
         display: none; /* Piilotettu oletuksena, JS näyttää kun tarpeen */
-         /* Optional: hover effect */
-        /*
-        &:hover {
-            opacity: 0.8;
-        }
-        */
     }
 
     /* Tyyli maakuntalistan containerille */
@@ -581,14 +575,12 @@
     function toggleYearSpecificFilters() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const yearSpecificFiltersDiv = document.getElementById("yearSpecificFilters");
-        const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
-        const locationFilterValueInput = document.getElementById("locationFilterValue");
-        const extraFilterSelect = document.getElementById("extraFilter");
-        const regionInfoIcon = document.getElementById("regionInfoIcon"); // Hae icon
-        const regionListContainer = document.getElementById("regionListContainer"); // Hae lista container
+        // Haetaan myös maakunta-icon ja lista container tässä, vaikka niiden näkyvyyttä ohjaa myös handlePkuntaMkuntaChoice
+        const regionInfoIcon = document.getElementById("regionInfoIcon");
+        const regionListContainer = document.getElementById("regionListContainer");
 
 
-        if (!kuvatyyppiSelect || !yearSpecificFiltersDiv || !pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !extraFilterSelect || !regionInfoIcon || !regionListContainer) {
+        if (!kuvatyyppiSelect || !yearSpecificFiltersDiv || !regionInfoIcon || !regionListContainer) { // Poistettu muut, nämä riittää pääosion ohjaukseen
              console.error("Required year specific filter elements not found.");
              return;
         }
@@ -599,15 +591,21 @@
              handlePkuntaMkuntaChoice(); // Päivitä inputin tila valinnan perusteella (ja iconin näyttö)
         } else {
             yearSpecificFiltersDiv.style.display = 'none';
-            // Nollaa arvot, kun osio piilotetaan
-            pkuntaMkuntaChoiceSelect.value = 'none';
-            locationFilterValueInput.value = '';
-            locationFilterValueInput.disabled = true;
-            locationFilterValueInput.placeholder = "";
-            extraFilterSelect.value = '';
+            // Nollaa arvot, kun osio piilotetaan (kentät haetaan handlePkuntaMkuntaChoice:ssa)
+            const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
+             if(pkuntaMkuntaChoiceSelect) pkuntaMkuntaChoiceSelect.value = 'none';
+            const locationFilterValueInput = document.getElementById("locationFilterValue");
+             if(locationFilterValueInput) {
+                 locationFilterValueInput.value = '';
+                 locationFilterValueInput.disabled = true;
+                 locationFilterValueInput.placeholder = "";
+             }
+            const extraFilterSelect = document.getElementById("extraFilter");
+             if(extraFilterSelect) extraFilterSelect.value = '';
+
             // Piilota icon ja maakuntalista, kun osio piilotetaan
             regionInfoIcon.style.display = 'none';
-            regionListContainer.style.display = 'none'; // Piilota myös lista varmuuden vuoksi
+            regionListContainer.style.display = 'none';
         }
     }
 
@@ -620,7 +618,7 @@
 
 
          if (!pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !regionInfoIcon || !regionListContainer) {
-             console.error("Required pkunta/mkunta elements or region elements not found.");
+             console.error("Required pkunta/mkunta elements or region elements not found in handler.");
              return;
          }
 
@@ -630,16 +628,19 @@
         regionListContainer.style.display = 'none';
         regionInfoIcon.style.display = 'none';
 
+        // Tyhjennä vanha listan sisältö (maakunta-listaa varten) aina kun tyyppi vaihtuu
+        regionListContainer.innerHTML = ''; // Varmista, että lista tyhjenee
+
 
         if (choice === 'pkunta') {
             locationFilterValueInput.disabled = false;
             // Päivitetty ehdotus/placeholder
-            locationFilterValueInput.placeholder = "esim. Lahti, Heinola";
+            locationFilterValueInput.placeholder = "esim. Lahti, Heinola"; // Korjattu: Nastola -> Heinola
         } else if (choice === 'mkunta') {
              locationFilterValueInput.disabled = false;
              // Placeholder maakunnalle
              locationFilterValueInput.placeholder = "esim. Päijät-Häme, Pirkanmaa";
-             // Näytä maakunnan infokuvake
+             // Näytä maakunnan infokuvake (vain maakunnalle)
              regionInfoIcon.style.display = 'inline-block';
         }
          else { // choice === 'none'
@@ -650,7 +651,7 @@
     }
 
      // Funktio populoi ja näyttää/piilottaa maakuntalistan
-    function toggleRegionList() {
+    function toggleRegionList() { // Nimeä säilytetty selkeyden vuoksi, vaikka lista on vain maakunnille
          const regionListContainer = document.getElementById("regionListContainer");
          if (!regionListContainer) {
              console.error("Region list container not found for toggle.");
@@ -679,7 +680,7 @@
                                const currentValue = locationInput.value.trim();
                                // Lisää pilkku ja välilyönti, jos inputissa on jo tekstiä
                                if (currentValue) {
-                                   // Jos ei pääty pilkkuun ja/tai välilyöntiin, lisää ne ennen uutta maakuntaa
+                                   // Lisää pilkku ja välilyönti vain jos tarpeen
                                    if (!currentValue.endsWith(', ') && !currentValue.endsWith(',')) {
                                        locationInput.value += ', ';
                                    } else if (currentValue.endsWith(',')) {
@@ -755,7 +756,6 @@
       const imageWrapper = document.querySelector('.image-wrapper');
       const copyLinkButton = document.getElementById("copyLinkButton");
 
-      // TÄRKEÄ TARKISTUS: Varmista, että kaikki tarvittavat elementit löytyivät DOMista
       if (!imageElement || !linkElementBelow || !overlayElement || !imageWrapper || !copyLinkButton) {
           console.error("Error: Required output elements not found in the DOM.");
           alert("Työkalussa tapahtui virhe (elementtejä puuttuu).");
@@ -846,11 +846,11 @@
       const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
 
 
-      // URL, joka kopioidaan leikepöydälle (oletuksena finalUrl)
+      // URL, joka kopioidaan leikepöydälle
       let urlToCopy = finalUrl;
 
 
-      // --- Kuntakartta-spesifi logiikka (vain userid, tietyt params) ---
+      // --- Kuntakartta-spesifi logiikka ---
       const selectedUserId = userIds[user];
 
       if (kuvatyyppi === "kunta" && selectedUserId) {
@@ -1055,7 +1055,8 @@
 
                 if (pkuntaMkuntaChoiceElement) pkuntaMkuntaChoiceElement.value = 'none';
                  if (locationFilterValueElement) locationFilterValueElement.value = '';
-                if (extraFilterElement) extraFilterElement.value = 'none'; // Ekstra nollataan myös
+                if (extraFilterElement) extraFilterElement.value = ''; // Ekstra nollataan myös
+
 
                 // Tyhjennä tallennetut asetukset
                 try {
@@ -1068,13 +1069,14 @@
                 // Päivitä käyttöliittymän tila vastaamaan nollattuja arvoja
                 // handleKuvatyyppiChange kutsuu toggleAikaKentat ja toggleYearSpecificFilters
                 if (typeof handleKuvatyyppiChange === 'function') {
-                     handleKuvatyyppiChange(); // Tämä piilottaa/näyttää osiot ja käsittelee Triplet-option
+                     handleKuvatyyppiChange();
                 } else {
                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
                  }
                 // handlePkuntaMkuntaChoice päivitetään handleKuvatyyppiChange:sta, mutta kutsutaan vielä varmuuden vuoksi
                 if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+
 
                 // Piilota kuvan tulostusalue
                  if (imageWrapper) imageWrapper.style.display = 'none';
