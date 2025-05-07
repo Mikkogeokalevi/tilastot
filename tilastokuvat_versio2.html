@@ -3,6 +3,7 @@
   Tekijä: Mikkokalevi
   Sivu luotu: 05/2025
 -->
+<!DOCTYPE html>
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
@@ -163,15 +164,12 @@
     }
 
     #map-overlay { /* Tyyli tekstille kuvan YLÄPUOLELLA */
-        /* Poistettu absoluuttinen sijoittelu */
         display: block; /* Varmistaa, että vie tilaa */
         text-align: center; /* Keskitetään vaakasuunnassa */
         color: var(--text-color-light); /* Tekstin väri */
         font-size: 0.9em; /* Pienempi fonttikoko */
         margin-bottom: var(--spacing-small); /* Tilaa tekstin ja kuvan väliin */
-        /* Poistettu tausta, padding, pyöristys */
-        /* Piilotettu oletuksena, hallitaan JS:llä */
-        display: none;
+        display: none; /* Piilotettu oletuksena */
     }
     /* --- Uudet säännöt päättyvät --- */
 
@@ -181,6 +179,16 @@
         margin-top: var(--spacing-medium);
         /* Piilotetaan oletuksena tai jos kuva itse on linkki */
          display: none;
+         /* Muita linkkityylejä */
+    }
+
+    /* Tyyli kopiointinapille */
+    #copyLinkButton {
+        margin-top: var(--spacing-small); /* Ylämarginaali erottamaan linkistä/kuvasta */
+        padding: 0.4em 0.8em; /* Pienempi padding kuin päänapissa */
+        font-size: 0.9em; /* Pienempi fonttikoko */
+        display: none; /* Piilotettu oletuksena */
+        /* Perii muita nappityylejä (tausta, väri, reunat, kursori jne.) */
     }
 
 
@@ -236,6 +244,10 @@
         #map-overlay { /* Säädetään overlayta mobiilissa */
              font-size: 0.8em; /* Hieman pienempi fontti mobiilissa */
              margin-bottom: var(--spacing-mobile-small); /* Pienempi marginaali */
+        }
+        #copyLinkButton { /* Säädetään kopiointinappia mobiilissa */
+            margin-top: var(--spacing-mobile-small); /* Pienempi ylämarginaali */
+             width: auto; /* Ei välttämättä 100% leveä */
         }
     }
   </style>
@@ -321,6 +333,9 @@
 
     <a id="linkki" href="#" target="_blank"></a>
 
+    <button id="copyLinkButton">Kopioi linkki</button>
+
+
   </div>
 
   <script>
@@ -358,14 +373,19 @@
       const linkElementBelow = document.getElementById("linkki");
       const overlayElement = document.getElementById("map-overlay"); // Hae overlay-elementti
       const imageWrapper = document.querySelector('.image-wrapper'); // Hae kuvan wrapper-elementti
+      const copyLinkButton = document.getElementById("copyLinkButton"); // Hae kopiointinappi
+
+
+      // --- Reset output elements visibility ---
+      if (imageWrapper) imageWrapper.style.display = 'none';
+      overlayElement.style.display = 'none';
+      linkElementBelow.style.display = 'none';
+      copyLinkButton.style.display = 'none';
+      imageElement.src = ''; // Clear previous image source
 
 
       if (!user) {
         alert("Syötä käyttäjänimi.");
-        // Piilota kaikki kuvaukseen liittyvät elementit virhetilanteessa
-        if (imageWrapper) imageWrapper.style.display = 'none';
-        overlayElement.style.display = 'none';
-        linkElementBelow.style.display = 'none';
         return;
       }
 
@@ -392,9 +412,8 @@
 
       const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
 
-       // Varmista, että kuvakehykset ovat näkyvissä, jos URL on olemassa. Piilotetaan lopussa, jos ei.
-       if (imageWrapper) imageWrapper.style.display = 'block';
-       imageElement.style.display = 'block'; // Kuva näkyviin wrapperin sisällä
+      // URL, joka kopioidaan leikepöydälle (oletuksena finalUrl)
+      let urlToCopy = finalUrl;
 
       // --- Kuntakartta-spesifi logiikka ---
       const selectedUserId = userIds[user]; // Hakee userid:n, jos käyttäjä on mappauksessa
@@ -407,6 +426,9 @@
           if (cachetype) {
               largeMapUrl += `&cachetype=${cachetype}`;
           }
+
+          // URL to copy is the large map URL in this case
+          urlToCopy = largeMapUrl;
 
           // Aseta kuvan lähde (pieni kartta)
           imageElement.src = finalUrl;
@@ -444,18 +466,102 @@
           overlayElement.style.display = 'none';
       }
 
-      // Lopuksi, jos finalUrl on jostain syystä tyhjä tai virheellinen, piilota elementit
-       if (!finalUrl || imageElement.src.includes('undefined') || imageElement.src.includes('null')) {
+      // --- Handle image/output area visibility ---
+       if (finalUrl && imageElement.src && !imageElement.src.includes('undefined') && !imageElement.src.includes('null')) {
+            // Kaikki ok, näytä wrapper, kuva, ja joko overlay tai linkki alla (ne on jo asetettu oikein yllä)
+            if (imageWrapper) imageWrapper.style.display = 'block';
+
+            // --- Näytä Kopioi linkki -nappi ja aseta sen data-url ---
+            copyLinkButton.style.display = 'inline-block'; // Näytä nappi
+            copyLinkButton.dataset.urlToCopy = urlToCopy; // Tallenna kopioitava URL data-attribuuttiin
+
+            // --- Tallenna valinnat Local Storageen onnistumisen jälkeen ---
+            const settingsToSave = {
+                user: user,
+                kuvatyyppi: kuvatyyppi,
+                aikavalinta: aikavalinta,
+                year: year,
+                startdate: start,
+                enddate: end,
+                cachetype: cachetype
+            };
+            try {
+                localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave));
+            } catch (e) {
+                console.error("Could not save settings to Local Storage", e);
+                // Voit näyttää tässä käyttäjälle jonkin ei-häiritsevän ilmoituksen
+            }
+
+        } else {
+            // Jos finalUrl on tyhjä tai virheellinen, piilota kaikki
             if (imageWrapper) imageWrapper.style.display = 'none';
             overlayElement.style.display = 'none';
             linkElementBelow.style.display = 'none';
+            copyLinkButton.style.display = 'none';
             // alert("Kuvaa ei voitu luoda valituilla asetuksilla."); // Voit näyttää virheen täälläkin
-       }
+        }
     }
 
-    // --- Lisää klikkikuuntelija kuva-elementille ---
-    // Tämä kuuntelija tarkistaa aina, onko data-large-map-url attribuutti asetettu
+    // --- DOMContentLoaded -tapahtumankäsittelijä ---
+    // Suoritetaan, kun koko HTML-dokumentti on latautunut ja jäsennetty
     document.addEventListener('DOMContentLoaded', (event) => {
+
+        // --- Lisää vuodet dropdown-valikkoon ---
+        const yearSelect = document.getElementById("year");
+        const currentYear = new Date().getFullYear();
+        // Tyhjennä olemassa olevat optiot varmuuden vuoksi
+        yearSelect.innerHTML = '';
+        // Lisää "--" optioksi ensimmäiseksi
+        const defaultOpt = document.createElement("option");
+        defaultOpt.value = "current";
+        defaultOpt.textContent = "—";
+        yearSelect.appendChild(defaultOpt);
+        // Lisää vuodet 2000 -> nykyinen vuosi
+        for (let y = 2000; y <= currentYear; y++) {
+            const opt = document.createElement("option");
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
+        }
+        // Aseta oletusarvo, jos sitä ei ladata tallennuksesta
+         if (yearSelect.value === "") {
+            yearSelect.value = "current";
+        }
+
+
+        // --- Lataa asetukset Local Storagesta ---
+        try {
+            const savedSettings = localStorage.getItem('statGeneratorSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                // Täytä kentät, jos asetuksia löytyi
+                if (settings.user !== undefined) document.getElementById("user").value = settings.user;
+                if (settings.kuvatyyppi !== undefined) document.getElementById("kuvatyyppi").value = settings.kuvatyyppi;
+                if (settings.aikavalinta !== undefined) {
+                     document.getElementById("aikavalinta").value = settings.aikavalinta;
+                     // Kutsu toimintoa näyttämään/piilottamaan aikakentät ladatun valinnan perusteella
+                     toggleAikaKentat();
+                }
+                // Täytä päivämäärä/vuosikentät vain, jos aikarajaus oli "kylla"
+                if (settings.aikavalinta === 'kylla') {
+                     if (settings.year !== undefined) document.getElementById("year").value = settings.year;
+                     if (settings.startdate !== undefined) document.getElementById("startdate").value = settings.startdate;
+                     if (settings.enddate !== undefined) document.getElementById("enddate").value = settings.enddate;
+                }
+                if (settings.cachetype !== undefined) document.getElementById("cachetype").value = settings.cachetype;
+
+                 // Huom: Tämä lataa vain kentät. Kuva ja linkki muodostetaan vasta, kun käyttäjä klikkaa "Luo linkki ja kuva".
+
+            }
+        } catch (e) {
+            console.error("Could not load settings from Local Storage", e);
+            // Valinnaisesti tyhjennä mahdollisesti vioittunut data:
+            // localStorage.removeItem('statGeneratorSettings');
+        }
+
+
+        // --- Lisää klikkikuuntelija kuva-elementille ---
+        // Tämä kuuntelija tarkistaa aina, onko data-large-map-url attribuutti asetettu
         const imageElement = document.getElementById("kuva");
         if (imageElement) {
             imageElement.addEventListener('click', function() {
@@ -469,24 +575,40 @@
             });
         }
 
-        // Lisää vuodet dropdown-valikkoon DOMin latauduttua
-        const yearSelect = document.getElementById("year");
-        const currentYear = new Date().getFullYear();
-        // Add "--" option first
-        const defaultOpt = document.createElement("option");
-        defaultOpt.value = "current";
-        defaultOpt.textContent = "—";
-        yearSelect.appendChild(defaultOpt);
-        // Add years from 2000 to current
-        for (let y = 2000; y <= currentYear; y++) {
-            const opt = document.createElement("option");
-            opt.value = y;
-            opt.textContent = y;
-            yearSelect.appendChild(opt);
+        // --- Lisää klikkikuuntelija Kopioi linkki -napille ---
+        const copyLinkButton = document.getElementById("copyLinkButton");
+         if (copyLinkButton) {
+            copyLinkButton.addEventListener('click', function() {
+                const urlToCopy = this.dataset.urlToCopy; // Hae URL data-attribuutista
+                if (urlToCopy) {
+                    // Käytä Clipboard APIa linkin kopioimiseen
+                    navigator.clipboard.writeText(urlToCopy)
+                        .then(() => {
+                            // Onnistui - anna käyttäjälle palautetta
+                            const originalText = this.textContent;
+                            this.textContent = "Kopioitu!";
+                            // Palauta napin teksti hetken kuluttua
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                            }, 2000); // Näytä "Kopioitu!" 2 sekunnin ajan
+                        })
+                        .catch(err => {
+                            // Epäonnistui - anna käyttäjälle palautetta ja logita virhe
+                            console.error('Linkin kopiointi epäonnistui:', err);
+                             const originalText = this.textContent;
+                             this.textContent = "Kopiointi epäonnistui!";
+                             setTimeout(() => {
+                                this.textContent = originalText;
+                            }, 3000); // Näytä virhe 3 sekunnin ajan
+                            // Valinnaisesti, jos Clipboard API ei toimi (esim. http-yhteys),
+                            // voit tarjota manuaalista kopiointia:
+                            // prompt("Kopioi linkki manuaalisesti (Ctrl+C tai Cmd+C):", urlToCopy);
+                        });
+                }
+            });
         }
-        // Set default value for year select
-        yearSelect.value = "current";
-    });
+
+    }); // DOMContentLoaded päättyy
 
   </script>
 </body>
