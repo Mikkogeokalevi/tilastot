@@ -223,8 +223,7 @@
         }
 
         /* --- Mobiili säännöt Aikarajauksen riveille --- */
-        /* Yleinen .row on oletuksena flex-direction: column mobiilissa */
-        /* Mutta Aikarajauksen rivien sisällä halutaan flex-direction: row */
+        /* Kohdenna #aikaKentat sisällä oleviin .row-elementteihin */
         #aikaKentat > .row {
              flex-direction: row; /* Pidä Vuosi/Kk ja Alku/Loppu vierekkäin omilla riveillään */
              flex-wrap: wrap; /* Salli rivin sisällä olevien elementtien rivittyä jos tila loppuu */
@@ -236,6 +235,7 @@
         #aikaKentat > .row > div {
             min-width: 0; /* Ohita yleinen 100% min-width */
             /* Jaa tila tasan kahden elementin kesken rivillä, huomioi rako */
+            /* flex-grow, flex-shrink, flex-basis */
             flex: 1 1 calc(50% - var(--spacing-mobile-small) / 2);
         }
 
@@ -313,7 +313,7 @@
             <option value="current">—</option>
           </select>
         </div>
-        <div>
+         <div>
           <label for="month">Kuukausi:</label>
           <select id="month">
             <option value="current">—</option>
@@ -380,43 +380,65 @@
 
     function formatDate(input) {
       const parts = input.split("-");
-      return parts.length === 3 ? `${parts[2}.${parts[1]}.${parts[0]}` : "";
+      // Tarkista, että parts on olemassa ja sisältää odotetun määrän osia
+      if (!parts || parts.length !== 3) {
+          console.error("Invalid date format for formatDate:", input);
+          return ""; // Palauta tyhjä merkkijono tai jokin virheilmoitus
+      }
+      return `${parts[2]}.${parts[1]}.${parts[0]}`;
     }
 
+
     function toggleAikaKentat() {
-      const valinta = document.getElementById("aikavalinta").value;
-      document.getElementById("aikaKentat").style.display = valinta === "kylla" ? "block" : "none";
+      const valinta = document.getElementById("aikavalinta")?.value; // Käytä optional chaining ?
+      const aikaKentatDiv = document.getElementById("aikaKentat"); // Hae div
+       if (aikaKentatDiv) { // Tarkista, että div löytyy
+         aikaKentatDiv.style.display = valinta === "kylla" ? "block" : "none";
+       } else {
+         console.error("Element #aikaKentat not found."); // Logita virhe, jos ei löydy
+       }
     }
 
     function luoLinkki() {
-      const baseUrl = "https://www.geocache.fi/stat/";
-      const kuvatyyppi = document.getElementById("kuvatyyppi").value;
-      const user = document.getElementById("user").value.trim();
-      const start = document.getElementById("startdate").value;
-      const end = document.getElementById("enddate").value;
-      const cachetype = document.getElementById("cachetype").value; // Hae kätkötyyppi
-      const aikavalinta = document.getElementById("aikavalinta").value;
-      const year = document.getElementById("year").value;
-      const month = document.getElementById("month").value; // Hae kuukausivalinta
-
+      // --- Hae kaikki tarvittavat elementit heti alussa ---
       const imageElement = document.getElementById("kuva");
       const linkElementBelow = document.getElementById("linkki");
-      const overlayElement = document.getElementById("map-overlay"); // Hae overlay-elementti
-      const imageWrapper = document.querySelector('.image-wrapper'); // Hae kuvan wrapper-elementti
-      const copyLinkButton = document.getElementById("copyLinkButton"); // Hae kopiointinappi
+      const overlayElement = document.getElementById("map-overlay");
+      const imageWrapper = document.querySelector('.image-wrapper');
+      const copyLinkButton = document.getElementById("copyLinkButton");
+
+      // TÄRKEÄ TARKISTUS: Varmista, että kaikki tarvittavat elementit löytyivät DOMista
+      if (!imageElement || !linkElementBelow || !overlayElement || !imageWrapper || !copyLinkButton) {
+          console.error("Error: Required output elements not found in the DOM.");
+          alert("Työkalussa tapahtui virhe (elementtejä puuttuu)."); // Ystävällisempi virhe käyttäjälle
+          // Älä jatka suoritusta, jos elementit puuttuvat
+          return;
+      }
 
 
       // --- Reset output elements visibility ---
-      if (imageWrapper) imageWrapper.style.display = 'none';
+      imageWrapper.style.display = 'none';
       overlayElement.style.display = 'none';
       linkElementBelow.style.display = 'none';
       copyLinkButton.style.display = 'none';
-      imageElement.src = ''; // Clear previous image source
+      imageElement.src = ''; // Tyhjennä edellinen kuva
 
 
+      // --- Hae lomakekenttien arvot ---
+      const baseUrl = "https://www.geocache.fi/stat/";
+      const kuvatyyppi = document.getElementById("kuvatyyppi")?.value || ''; // Default to '' if null/undefined
+      const user = document.getElementById("user")?.value.trim() || '';
+      const start = document.getElementById("startdate")?.value || '';
+      const end = document.getElementById("enddate")?.value || '';
+      const cachetype = document.getElementById("cachetype")?.value || '';
+      const aikavalinta = document.getElementById("aikavalinta")?.value || '';
+      const year = document.getElementById("year")?.value || '';
+      const month = document.getElementById("month")?.value || ''; // Hae kuukausivalinta
+
+      // Tarkista käyttäjänimi heti
       if (!user) {
         alert("Syötä käyttäjänimi.");
-        return;
+        return; // Lopeta suoritus, jos käyttäjää ei ole
       }
 
       // Oletuksena muodostettava URL kuvalle
@@ -431,7 +453,17 @@
       if (aikavalinta === "kylla") {
         if (start && end) {
           // Jos päivämääräväli on valittu, käytä sitä (ensisijainen)
-          params += `&startdate=${formatDate(start)}&enddate=${formatDate(end)}`;
+          // Varmista, että formatDate ei kaada koodia virheellisellä syötteellä
+           const formattedStart = formatDate(start);
+           const formattedEnd = formatDate(end);
+           if (formattedStart && formattedEnd) { // Lisää tarkistus, että formatointi onnistui
+               params += `&startdate=${formattedStart}&enddate=${formattedEnd}`;
+           } else {
+               console.error("Invalid start or end date format.");
+               alert("Virheellinen päivämäärämuoto.");
+               return; // Pysäytä, jos päivämäärät ovat virheellisiä
+           }
+
         } else {
           // Jos päivämääräväliä EI ole, käytä vuotta ja/tai kuukautta
           if (year && year !== "current") {
@@ -439,13 +471,7 @@
           }
           if (month && month !== "current") {
               // Lisää kuukausi parametri (arvot ovat jo 01-12)
-              // Tarkista, onko jo parametreja, jotta lisätään &
-               if (params.includes('?')) {
-                   params += `&month=${month}`;
-               } else {
-                   // Tämä skenaario (ei user= parametriä) ei pitäisi toteutua nykyrakenteessa
-                   params += `?month=${month}`;
-               }
+               params += `&month=${month}`; // user= on aina ensimmäinen, joten & on ok
           }
         }
       }
@@ -480,7 +506,6 @@
                    largeMapUrl += `&month=${month}`;
                }
           }
-
 
           // URL to copy is the large map URL in this case
           urlToCopy = largeMapUrl;
@@ -521,15 +546,14 @@
           overlayElement.style.display = 'none';
       }
 
-      // --- Handle image/output area visibility ---
-       if (finalUrl && imageElement.src && !imageElement.src.includes('undefined') && !imageElement.src.includes('null')) {
-            // Kaikki ok, näytä wrapper, kuva, ja joko overlay tai linkki alla (ne on jo asetettu oikein yllä)
-            if (imageWrapper) imageWrapper.style.display = 'block';
+      // --- Handle image/output area visibility & Copy Button ---
+       // Näytä wrapper ja kopiointinappi, jos URL on onnistuneesti muodostettu ja käyttäjä syötetty
+       if (finalUrl) { // Yksinkertaisempi tarkistus
+            imageWrapper.style.display = 'block';
 
-            // --- Näytä Kopioi linkki -nappi ja aseta sen data-url ---
             copyLinkButton.style.display = 'inline-block'; // Näytä nappi
             copyLinkButton.dataset.urlToCopy = urlToCopy; // Tallenna kopioitava URL data-attribuuttiin
-             copyLinkButton.textContent = "Kopioi linkki"; // Varmista napin teksti
+            copyLinkButton.textContent = "Kopioi linkki"; // Varmista napin teksti
 
             // --- Tallenna valinnat Local Storageen onnistumisen jälkeen ---
             const settingsToSave = {
@@ -550,12 +574,13 @@
             }
 
         } else {
-            // Jos finalUrl on tyhjä tai virheellinen, piilota kaikki
-            if (imageWrapper) imageWrapper.style.display = 'none';
+            // Jos finalUrl on tyhjä (ei pitäisi tapahtua tässä vaiheessa, jos user on validi)
+            console.error("Final URL was not generated.");
+            imageWrapper.style.display = 'none';
             overlayElement.style.display = 'none';
             linkElementBelow.style.display = 'none';
             copyLinkButton.style.display = 'none';
-            // alert("Kuvaa ei voitu luoda valituilla asetuksilla."); // Voit näyttää virheen täälläkin
+             alert("Kuvaa ei voitu luoda valituilla asetuksilla.");
         }
     }
 
@@ -565,32 +590,29 @@
 
         // --- Lisää vuodet dropdown-valikkoon ---
         const yearSelect = document.getElementById("year");
-        const currentYear = new Date().getFullYear();
-        // Tyhjennä olemassa olevat optiot varmuuden vuoksi
-        yearSelect.innerHTML = '';
-        // Lisää "--" optioksi ensimmäiseksi
-        const defaultYearOpt = document.createElement("option");
-        defaultYearOpt.value = "current";
-        defaultYearOpt.textContent = "—";
-        yearSelect.appendChild(defaultYearOpt);
-        // Lisää vuodet 2000 -> nykyinen vuosi
-        for (let y = 2000; y <= currentYear; y++) {
-            const opt = document.createElement("option");
-            opt.value = y;
-            opt.textContent = y;
-            yearSelect.appendChild(opt);
-        }
-        // Aseta oletusarvo, jos sitä ei ladata tallennuksesta
-         if (yearSelect.value === "") {
-            yearSelect.value = "current";
-        }
+        if (yearSelect) { // Tarkista, että elementti löytyy
+            const currentYear = new Date().getFullYear();
+            yearSelect.innerHTML = ''; // Tyhjennä olemassa olevat optiot
+            const defaultYearOpt = document.createElement("option");
+            defaultYearOpt.value = "current";
+            defaultYearOpt.textContent = "—";
+            yearSelect.appendChild(defaultYearOpt);
+            for (let y = 2000; y <= currentYear; y++) {
+                const opt = document.createElement("option");
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+            if (yearSelect.value === "") {
+                yearSelect.value = "current";
+            }
+        } else { console.error("Year select element (#year) not found."); }
+
 
         // --- Lisää kuukaudet dropdown-valikkoon ---
         const monthSelect = document.getElementById("month");
-        if (monthSelect) {
-            // Tyhjennä olemassa olevat optiot varmuuden vuoksi
-            monthSelect.innerHTML = '';
-            // Lisää "--" optioksi ensimmäiseksi
+        if (monthSelect) { // Tarkista, että elementti löytyy
+            monthSelect.innerHTML = ''; // Tyhjennä olemassa olevat optiot
             const defaultMonthOpt = document.createElement("option");
             defaultMonthOpt.value = "current";
             defaultMonthOpt.textContent = "—";
@@ -599,16 +621,14 @@
             const monthNames = ["Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"];
             for (let m = 0; m < 12; m++) {
                 const opt = document.createElement("option");
-                // Kuukauden arvo 1-12, padded two digits (01-12)
-                opt.value = (m + 1).toString().padStart(2, '0');
+                opt.value = (m + 1).toString().padStart(2, '0'); // Kuukauden arvo 01-12
                 opt.textContent = monthNames[m];
                 monthSelect.appendChild(opt);
             }
-            // Aseta oletusarvo, jos sitä ei ladata tallennuksesta
              if (monthSelect.value === "") {
                 monthSelect.value = "current";
             }
-        }
+        } else { console.error("Month select element (#month) not found."); }
 
 
         // --- Lataa asetukset Local Storagesta ---
@@ -617,24 +637,40 @@
             if (savedSettings) {
                 const settings = JSON.parse(savedSettings);
                 // Täytä kentät, jos asetuksia löytyi
-                if (settings.user !== undefined) document.getElementById("user").value = settings.user;
-                if (settings.kuvatyyppi !== undefined) document.getElementById("kuvatyyppi").value = settings.kuvatyyppi;
-                if (settings.aikavalinta !== undefined) {
-                     document.getElementById("aikavalinta").value = settings.aikavalinta;
-                     // Kutsu toimintoa näyttämään/piilottamaan aikakentät ladatun valinnan perusteella
-                     toggleAikaKentat();
-                }
-                // Täytä päivämäärä/vuosi/kuukausi -kentät vain, jos aikarajaus oli "kylla"
-                if (settings.aikavalinta === 'kylla') {
-                     if (settings.year !== undefined) document.getElementById("year").value = settings.year;
-                     // Lataa kuukausi
-                     if (settings.month !== undefined) document.getElementById("month").value = settings.month;
-                     if (settings.startdate !== undefined) document.getElementById("startdate").value = settings.startdate;
-                     if (settings.enddate !== undefined) document.getElementById("enddate").value = settings.enddate;
-                }
-                if (settings.cachetype !== undefined) document.getElementById("cachetype").value = settings.cachetype;
+                const userElement = document.getElementById("user");
+                if (userElement && settings.user !== undefined) userElement.value = settings.user;
 
-                 // Huom: Tämä lataa vain kentät. Kuva ja linkki muodostetaan vasta, kun käyttäjä klikkaa "Luo linkki ja kuva".
+                const kuvatyyppiElement = document.getElementById("kuvatyyppi");
+                if (kuvatyyppiElement && settings.kuvatyyppi !== undefined) kuvatyyppiElement.value = settings.kuvatyyppi;
+
+                const aikavalintaElement = document.getElementById("aikavalinta");
+                if (aikavalintaElement && settings.aikavalinta !== undefined) {
+                     aikavalintaElement.value = settings.aikavalinta;
+                     // Kutsu toimintoa näyttämään/piilottamaan aikakentät ladatun valinnan perusteella
+                     // Varmista, että toggleAikaKentat-funktio on määritelty ennen kutsua
+                     if (typeof toggleAikaKentat === 'function') {
+                         toggleAikaKentat();
+                     } else { console.error("toggleAikaKentat function not found during load."); }
+                }
+
+                // Täytä päivämäärä/vuosi/kuukausi -kentät vain, jos aikaKentat on (tai oli) näkyvä
+                // Varmista, että elementit löytyvät ennen arvon asettamista
+                if (settings.aikavalinta === 'kylla') {
+                     const yearElement = document.getElementById("year");
+                     if (yearElement && settings.year !== undefined) yearElement.value = settings.year;
+
+                     const monthElement = document.getElementById("month");
+                     if (monthElement && settings.month !== undefined) monthElement.value = settings.month;
+
+                     const startdateElement = document.getElementById("startdate");
+                     if (startdateElement && settings.startdate !== undefined) startdateElement.value = settings.startdate;
+
+                     const enddateElement = document.getElementById("enddate");
+                     if (enddateElement && settings.enddate !== undefined) enddateElement.value = settings.enddate;
+                }
+
+                const cachetypeElement = document.getElementById("cachetype");
+                if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
 
             }
         } catch (e) {
@@ -646,51 +682,43 @@
 
         // --- Lisää klikkikuuntelija kuva-elementille ---
         // Tämä kuuntelija tarkistaa aina, onko data-large-map-url attribuutti asetettu
-        const imageElement = document.getElementById("kuva");
+        const imageElement = document.getElementById("kuva"); // Hae uudelleen DOMContentLoaded scopeen
         if (imageElement) {
             imageElement.addEventListener('click', function() {
-                // Tarkista, onko data-large-map-url attribuutti olemassa
                 const largeMapUrl = this.dataset.largeMapUrl;
                 if (largeMapUrl) {
-                    // Jos attribuutti löytyy, avaa linkki uudessa välilehdessä
                     window.open(largeMapUrl, '_blank');
                 }
-                // Jos attribuuttia ei ole, kuva ei ole klikattava linkiksi tässä tapauksessa
             });
-        }
+        } else { console.error("Image element (#kuva) not found."); }
+
 
         // --- Lisää klikkikuuntelija Kopioi linkki -napille ---
-        const copyLinkButton = document.getElementById("copyLinkButton");
+        const copyLinkButton = document.getElementById("copyLinkButton"); // Hae uudelleen DOMContentLoaded scopeen
          if (copyLinkButton) {
             copyLinkButton.addEventListener('click', function() {
                 const urlToCopy = this.dataset.urlToCopy; // Hae URL data-attribuutista
                 if (urlToCopy) {
-                    // Käytä Clipboard APIa linkin kopioimiseen
                     navigator.clipboard.writeText(urlToCopy)
                         .then(() => {
-                            // Onnistui - anna käyttäjälle palautetta
                             const originalText = this.textContent;
                             this.textContent = "Kopioitu!";
-                            // Palauta napin teksti hetken kuluttua
                             setTimeout(() => {
                                 this.textContent = originalText;
-                            }, 2000); // Näytä "Kopioitu!" 2 sekunnin ajan
+                            }, 2000);
                         })
                         .catch(err => {
-                            // Epäonnistui - anna käyttäjälle palautetta ja logita virhe
                             console.error('Linkin kopiointi epäonnistui:', err);
                              const originalText = this.textContent;
                              this.textContent = "Kopiointi epäonnistui!";
                              setTimeout(() => {
                                 this.textContent = originalText;
-                            }, 3000); // Näytä virhe 3 sekunnin ajan
-                            // Valinnaisesti, jos Clipboard API ei toimi (esim. http-yhteys),
-                            // voit tarjota manuaalista kopiointia:
-                            // prompt("Kopioi linkki manuaalisesti (Ctrl+C tai Cmd+C):", urlToCopy);
+                            }, 3000);
                         });
                 }
             });
-        }
+        } else { console.error("Copy link button (#copyLinkButton) not found."); }
+
 
     }); // DOMContentLoaded päättyy
 
