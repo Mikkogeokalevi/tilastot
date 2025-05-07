@@ -105,7 +105,7 @@
 
     .row > div {
       flex: 1;
-      min-width: 100px; /* Pienennetty minimileveys riveillä, jotta mahtuu 4 elementtiä */
+      min-width: 100px; /* Minimileveys riveillä (desktop) */
     }
 
     button {
@@ -137,7 +137,7 @@
         text-decoration: underline; /* Lisää alleviivaus hoverissa */
     }
 
-    /* --- Uudet säännöt kuvan ja overlayn wrapperille sekä overlaylle --- */
+    /* --- Säännöt kuvan ja overlayn wrapperille sekä overlaylle --- */
     .image-wrapper {
         position: relative; /* Mahdollistaa suhteellisen sisällön */
         display: block; /* Varmistaa, että vie tilaa */
@@ -166,7 +166,7 @@
         margin-bottom: var(--spacing-small); /* Tilaa tekstin ja kuvan väliin */
         display: none; /* Piilotettu oletuksena */
     }
-    /* --- Uudet säännöt päättyvät --- */
+    /* --- Säännöt päättyvät --- */
 
 
     /* Tyyli linkille ladatun kuvan alla */
@@ -222,15 +222,35 @@
             padding: var(--spacing-mobile-small); /* Pienempi padding lomake-elementeille */
         }
 
-        .row {
-             margin-bottom: var(--spacing-mobile-medium); /* Pienempi tila rivin alle */
-             /* Jos rivillä 4 elementtiä mobiilissa, ne voivat pinoutua */
+        /* --- Mobiili säännöt Aikarajauksen riveille --- */
+        /* Yleinen .row on oletuksena flex-direction: column mobiilissa */
+        /* Mutta Aikarajauksen rivien sisällä halutaan flex-direction: row */
+        #aikaKentat > .row {
+             flex-direction: row; /* Pidä Vuosi/Kk ja Alku/Loppu vierekkäin omilla riveillään */
+             flex-wrap: wrap; /* Salli rivin sisällä olevien elementtien rivittyä jos tila loppuu */
+             gap: var(--spacing-mobile-small); /* Pienempi rako rivin sisällä olevien elementtien välissä */
+             margin-bottom: var(--spacing-mobile-small); /* Pienempi tila rivien välissä */
+        }
+
+        /* Aikarajauksen rivien sisällä olevat elementtien containerit (label + input/select) */
+        #aikaKentat > .row > div {
+            min-width: 0; /* Ohita yleinen 100% min-width */
+            /* Jaa tila tasan kahden elementin kesken rivillä, huomioi rako */
+            flex: 1 1 calc(50% - var(--spacing-mobile-small) / 2);
+        }
+
+        /* --- Yleiset mobiili säännöt muille .row elementeille --- */
+        /* Nämä vaikuttavat muihin .row elementteihin (esim. jos myöhemmin lisätään) */
+        /* ja ohittavat #aikaKentat spesifit säännöt, jos niitä ei ole käytetty */
+         .row:not(#aikaKentat > .row) { /* Kohdenna kaikkiin .row paitsi #aikaKentat > .row */
              flex-direction: column;
              gap: var(--spacing-mobile-medium);
-        }
-         .row > div {
-             min-width: 100%; /* Mobiilissa div vie 100% rivin leveydestä */
+             margin-bottom: var(--spacing-mobile-medium);
          }
+         .row:not(#aikaKentat > .row) > div {
+             min-width: 100%;
+         }
+
 
         button {
             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali napille */
@@ -248,7 +268,7 @@
         }
         #copyLinkButton { /* Säädetään kopiointinappia mobiilissa */
             margin-top: var(--spacing-mobile-small); /* Pienempi ylämarginaali */
-             width: 100%; /* Tee napista 100% leveä mobiilissa */
+            width: 100%; /* Tee napista 100% leveä mobiilissa */
         }
     }
   </style>
@@ -293,13 +313,15 @@
             <option value="current">—</option>
           </select>
         </div>
-         <div>
+        <div>
           <label for="month">Kuukausi:</label>
           <select id="month">
             <option value="current">—</option>
           </select>
         </div>
-         <div>
+      </div>
+      <div class="row">
+        <div>
           <label for="startdate">Alkupäivä:</label>
           <input type="date" id="startdate">
         </div>
@@ -358,7 +380,7 @@
 
     function formatDate(input) {
       const parts = input.split("-");
-      return parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : "";
+      return parts.length === 3 ? `${parts[2}.${parts[1]}.${parts[0]}` : "";
     }
 
     function toggleAikaKentat() {
@@ -375,7 +397,7 @@
       const cachetype = document.getElementById("cachetype").value; // Hae kätkötyyppi
       const aikavalinta = document.getElementById("aikavalinta").value;
       const year = document.getElementById("year").value;
-      const month = document.getElementById("month").value; // UUSI: Hae kuukausivalinta
+      const month = document.getElementById("month").value; // Hae kuukausivalinta
 
       const imageElement = document.getElementById("kuva");
       const linkElementBelow = document.getElementById("linkki");
@@ -449,7 +471,7 @@
           if (cachetype) {
               largeMapUrl += `&cachetype=${cachetype}`;
           }
-          // UUSI: Lisää vuosi ja kuukausi, jos ne on valittu aikavalinnalle (ja päivämääräväliä ei ole)
+          // Lisää vuosi ja kuukausi, jos ne on valittu aikavalinnalle (ja päivämääräväliä ei ole)
           if (aikavalinta === "kylla" && !(start && end)) {
                if (year && year !== "current") {
                    largeMapUrl += `&year=${year}`;
@@ -507,6 +529,7 @@
             // --- Näytä Kopioi linkki -nappi ja aseta sen data-url ---
             copyLinkButton.style.display = 'inline-block'; // Näytä nappi
             copyLinkButton.dataset.urlToCopy = urlToCopy; // Tallenna kopioitava URL data-attribuuttiin
+             copyLinkButton.textContent = "Kopioi linkki"; // Varmista napin teksti
 
             // --- Tallenna valinnat Local Storageen onnistumisen jälkeen ---
             const settingsToSave = {
@@ -562,7 +585,7 @@
             yearSelect.value = "current";
         }
 
-        // --- UUSI: Lisää kuukaudet dropdown-valikkoon ---
+        // --- Lisää kuukaudet dropdown-valikkoon ---
         const monthSelect = document.getElementById("month");
         if (monthSelect) {
             // Tyhjennä olemassa olevat optiot varmuuden vuoksi
@@ -604,7 +627,7 @@
                 // Täytä päivämäärä/vuosi/kuukausi -kentät vain, jos aikarajaus oli "kylla"
                 if (settings.aikavalinta === 'kylla') {
                      if (settings.year !== undefined) document.getElementById("year").value = settings.year;
-                     // UUSI: Lataa kuukausi
+                     // Lataa kuukausi
                      if (settings.month !== undefined) document.getElementById("month").value = settings.month;
                      if (settings.startdate !== undefined) document.getElementById("startdate").value = settings.startdate;
                      if (settings.enddate !== undefined) document.getElementById("enddate").value = settings.enddate;
