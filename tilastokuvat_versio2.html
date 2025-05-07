@@ -311,7 +311,7 @@
       <option value="matrix">T/D-taulukko</option>
       <option value="kunta">Kuntakartta</option>
       <option value="year">Vuosikalenteri</option>
-      <option value="ftfkunta">ftf kunta</option>
+      <option value="ftfkunta">FTF kuntakartta</option>
       <option value="hiddenday">Jasmer</option>
       <option value="saari">saarilöydöt</option>
     </select>
@@ -368,7 +368,7 @@
       <option value="14">Groundspeak Block Party</option>
       <option value="98">Muut paitsi tradit</option>
       <option value="99">Kaikki event-tyypit</option>
-    </select>
+      </select>
 
     <div id="yearSpecificFilters">
         <label>Vuosikalenterin lisäsuodatus:</label>
@@ -424,6 +424,10 @@
         // "Milde04": XXXX // Lisää Milde04:n ID tähän
     };
 
+    // UUSI: Triplet-option tiedot
+    const tripletOptionData = { value: '90', text: 'Triplet-extra: tradi, multi, mysse löydöt' };
+
+
     function formatDate(input) {
       const parts = input.split("-");
       if (!parts || parts.length !== 3) {
@@ -443,7 +447,7 @@
        }
     }
 
-    // --- UUSI: Funktio näyttämään/piilottamaan vuosikalenterin lisäsuodattimet ---
+    // Funktio näyttämään/piilottamaan vuosikalenterin lisäsuodattimet
     function toggleYearSpecificFilters() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const yearSpecificFiltersDiv = document.getElementById("yearSpecificFilters");
@@ -472,7 +476,7 @@
         }
     }
 
-    // --- UUSI: Funktio käsittelemään paikkakunta/maakunta -valinnan yksinoikeutta ---
+    // Funktio käsittelemään paikkakunta/maakunta -valinnan yksinoikeutta
     function handlePkuntaMkuntaChoice() {
         const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
         const locationFilterValueInput = document.getElementById("locationFilterValue");
@@ -495,6 +499,45 @@
             locationFilterValueInput.value = ''; // Tyhjennä arvo, kun valitaan 'none'
             locationFilterValueInput.disabled = true;
             locationFilterValueInput.placeholder = "";
+        }
+    }
+
+    // --- UUSI: Funktio käsittelemään kuvatyypin muutoksia ja Triplet-option näyttämistä ---
+    function handleKuvatyyppiChange() {
+        const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
+        const cachetypeSelect = document.getElementById("cachetype");
+
+        if (!kuvatyyppiSelect || !cachetypeSelect) {
+             console.error("Required select elements not found for kuvatyyppi change handler.");
+             return;
+        }
+
+        const selectedType = kuvatyyppiSelect.value;
+
+        // Kutsu muut toggle-funktiot
+        toggleAikaKentat();
+        toggleYearSpecificFilters();
+
+        // --- Käsittele Triplet-option näyttäminen/piilottaminen ---
+        const existingTripletOption = cachetypeSelect.querySelector(`option[value="${tripletOptionData.value}"]`);
+
+        if (selectedType === 'kunta') {
+            // Jos Kuntakartta on valittu, lisää Triplet-option jos sitä ei ole jo
+            if (!existingTripletOption) {
+                const opt = document.createElement("option");
+                opt.value = tripletOptionData.value;
+                opt.textContent = tripletOptionData.text;
+                cachetypeSelect.appendChild(opt); // Lisää valikon loppuun
+            }
+        } else {
+            // Jos joku muu tyyppi on valittu, poista Triplet-option jos se on olemassa
+            if (existingTripletOption) {
+                // Jos poistettava option oli valittuna, nollaa kätkötyyppivalikon arvo
+                if (cachetypeSelect.value === tripletOptionData.value) {
+                    cachetypeSelect.value = ''; // Nollaa oletusarvoon "--"
+                }
+                existingTripletOption.remove(); // Poista option elementti
+            }
         }
     }
 
@@ -530,12 +573,12 @@
       const user = document.getElementById("user")?.value.trim() || '';
       const start = document.getElementById("startdate")?.value || '';
       const end = document.getElementById("enddate")?.value || '';
-      const cachetype = document.getElementById("cachetype")?.value || '';
+      const cachetype = document.getElementById("cachetype")?.value || ''; // Kätkötyyppi mukaan (voi olla myös 90)
       const aikavalinta = document.getElementById("aikavalinta")?.value || '';
       const year = document.getElementById("year")?.value || '';
       const month = document.getElementById("month")?.value || '';
 
-      // UUDET: Hae vuosikalenterin lisäsuodatinarvot
+      // Hae vuosikalenterin lisäsuodatinarvot (käytä optional chaining, koska ne eivät aina näy)
       const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice")?.value || '';
       const locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || '';
       const extraFilter = document.getElementById("extraFilter")?.value || '';
@@ -580,7 +623,7 @@
         }
       }
 
-      // --- UUSI: Vuosikalenterin lisäsuodatus ---
+      // --- Vuosikalenterin lisäsuodatus (pkunta, mkunta, extra) ---
       // Lisää nämä parametrit VAIN, jos kuvatyyppi on 'year'
       if (kuvatyyppi === "year") {
           // Tarkista ja lisää sijaintisuodatus, jos arvo on syötetty ja tyyppi valittu
@@ -600,6 +643,7 @@
 
 
       // --- Kätkötyyppi ---
+      // Lisää kätkötyyppi parametri, jos se on valittu (mukaan lukien Triplet 90)
       if (cachetype) {
         params += `&cachetype=${cachetype}`;
       }
@@ -614,13 +658,16 @@
       // --- Kuntakartta-spesifi logiikka (vain userid, ei yleisiä params:eja) ---
       const selectedUserId = userIds[user];
 
+      // Kuntakartta-logiikkaan MENNÄÄN vain, jos kuvatyyppi on 'kunta' ja käyttäjä on tunnettu
       if (kuvatyyppi === "kunta" && selectedUserId) {
           // Huom: Ison kartan URL muodostetaan tässä erikseen userid:llä,
           // eikä siihen lisätä kaikkia yleisiä params-muuttujan sisältöjä suoraan.
+          // Otetaan mukaan vain tarvittavat parametrit (cachetype, year, month)
           let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
 
           // Kuntakarttaan lisätään vain tiettyjä parametreja tarvittaessa
           // Lisää kätkötyyppi, jos valittu (toimii isossa kuntakartassa)
+          // TÄMÄ SISÄLTÄÄ NYT MYÖS TRIPLETIN (cachetype=90), JOS SE ON VALITTU
           if (cachetype) {
               largeMapUrl += `&cachetype=${cachetype}`;
           }
@@ -634,12 +681,14 @@
                    largeMapUrl += `&month=${month}`;
                }
           }
+          // Pkunta/mkunta/extra EI lisätä isoon kuntakarttaan tässä, koska ne ovat vain vuosikalenterin.
+
 
           // URL to copy is the large map URL in this case
           urlToCopy = largeMapUrl;
 
           // Aseta kuvan lähde (pieni kartta)
-          imageElement.src = finalUrl; // Kuva on edelleen pieni versio
+          imageElement.src = finalUrl; // Kuva on edelleen pieni versio (junta.php?user=...params)
           imageElement.alt = "Kuntakartta (klikkaa isompaan kuvaan)";
           imageElement.dataset.largeMapUrl = largeMapUrl; // Tallenna iso linkki data-attribuuttiin
           imageElement.style.cursor = 'pointer';
@@ -649,7 +698,7 @@
 
       } else {
           // --- Muut kuvatyypit TAI kuntakartta tuntemattomalle käyttäjälle ---
-          // Aseta kuvan lähde normaalisti
+          // Aseta kuvan lähde normaalisti (finalUrl sisältää jo kaikki valitut params:it)
           imageElement.src = finalUrl;
           imageElement.alt = "Tilastokuva"; // Oletus alt-teksti
 
@@ -682,7 +731,7 @@
                 startdate: start,
                 enddate: end,
                 cachetype: cachetype,
-                // UUDET: Tallenna vuosikalenterin lisäsuodatusvalinnat
+                // Tallenna vuosikalenterin lisäsuodatusvalinnat
                 pkuntaMkuntaChoice: pkuntaMkuntaChoice,
                 locationFilterValue: locationFilterValue,
                 extraFilter: extraFilter
@@ -694,8 +743,8 @@
             }
 
         } else {
-            // Jos finalUrl on tyhjä (ei pitäisi tapahtua, jos käyttäjänimi on syötetty)
-             console.error("Final URL was not generated.");
+            // Jos finalUrl on tyhjä (ei pitäisi tapahtua tässä vaiheessa, jos käyttäjänimi on syötetty ja formaatit ok)
+             console.error("Final URL was not generated or is invalid.");
             imageWrapper.style.display = 'none';
             overlayElement.style.display = 'none';
             linkElementBelow.style.display = 'none';
@@ -716,7 +765,7 @@
         const monthSelect = document.getElementById("month");
         const startdateElement = document.getElementById("startdate");
         const enddateElement = document.getElementById("enddate");
-        const cachetypeElement = document.getElementById("cachetype");
+        const cachetypeElement = document.getElementById("cachetype"); // Hae cachetype select myös tänne
         const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
         const locationFilterValueElement = document.getElementById("locationFilterValue");
         const extraFilterElement = document.getElementById("extraFilter");
@@ -763,7 +812,8 @@
 
         // --- Add Event Listeners (check if elements exist) ---
          if (kuvatyyppiElement) {
-            kuvatyyppiElement.addEventListener('change', toggleYearSpecificFilters);
+            // Liitä uusi yhdistetty käsittelijä kuvatyypin muutoksiin
+            kuvatyyppiElement.addEventListener('change', handleKuvatyyppiChange);
          } else { console.error("Kuvatyyppi select not found for listener."); }
 
          if (aikavalintaElement) {
@@ -797,7 +847,9 @@
                             console.error('Linkin kopiointi epäonnistui:', err);
                              const originalText = this.textContent;
                              this.textContent = "Kopiointi epäonnistui!";
-                             setTimeout(() => { this.textContent = originalText; }, 3000);
+                             setTimeout(() => {
+                                this.textContent = originalText;
+                            }, 3000);
                         });
                 }
             });
@@ -809,7 +861,7 @@
             const savedSettings = localStorage.getItem('statGeneratorSettings');
             if (savedSettings) {
                 const settings = JSON.parse(savedSettings);
-                // Täytä kentät, jos asetuksia löytyi (tarkista elementin olemassaolo ennen arvon asettamista)
+                // Täytä kentät (tarkista elementin olemassaolo ennen arvon asettamista)
                 if (userElement && settings.user !== undefined) userElement.value = settings.user;
                 if (kuvatyyppiElement && settings.kuvatyyppi !== undefined) kuvatyyppiElement.value = settings.kuvatyyppi;
                 if (aikavalintaElement && settings.aikavalinta !== undefined) aikavalintaElement.value = settings.aikavalinta;
@@ -817,28 +869,65 @@
                 if (monthSelect && settings.month !== undefined) monthSelect.value = settings.month;
                 if (startdateElement && settings.startdate !== undefined) startdateElement.value = settings.startdate;
                 if (enddateElement && settings.enddate !== undefined) enddateElement.value = settings.enddate;
-                if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
+
+                // Triplet-option saattaa puuttua Cache Type -valikosta latausvaiheessa,
+                // jos kuvatyyppi ei ollut kuntakartta tallennushetkellä.
+                // Asetetaan cachetype vasta sen jälkeen, kun handleKuvatyyppiChange on kutsuttu
+                // ja option mahdollisesti lisätty.
+
                 if (pkuntaMkuntaChoiceElement && settings.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaChoiceElement.value = settings.pkuntaMkuntaChoice;
                 if (locationFilterValueElement && settings.locationFilterValue !== undefined) locationFilterValueElement.value = settings.locationFilterValue;
                 if (extraFilterElement && settings.extraFilter !== undefined) extraFilterElement.value = settings.extraFilter;
 
-                 // Kutsu toggle-funktioita asetusten latauksen jälkeen näyttämään/piilottamaan osiot
-                 if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
-                 if (typeof toggleYearSpecificFilters === 'function') {
-                     toggleYearSpecificFilters(); // Kutsu tämä asetusten latauksen jälkeen
+                 // Kutsu toggle-funktioita asetusten latauksen jälkeen
+                 // handleKuvatyyppiChange hoitaa nyt sekä aikakentät että vuosikalenterin lisäkentät
+                 if (typeof handleKuvatyyppiChange === 'function') {
+                     // Kutsu tämä ENNEN cachetypen asettamista, koska tämä voi lisätä option 90
+                     handleKuvatyyppiChange();
+                     // Aseta cachetype-arvo vasta kun handleKuvatyyppiChange on suoritettu
+                     if (cachetypeElement && settings.cachetype !== undefined) {
+                          // Tarkista, että ladattu arvo (esim. 90) on nyt validi valikossa
+                          let loadedCachetype = settings.cachetype;
+                           // Jos Cache Type -valikossa ei ole ladattua arvoa, aseta se tyhjäksi
+                          if (loadedCachetype !== '' && !cachetypeElement.querySelector(`option[value="${loadedCachetype}"]`)) {
+                               loadedCachetype = ''; // Palauta tyhjäksi jos option puuttuu (esim. 90 ladattu mutta kuvatyyppi ei ole kunta)
+                           }
+                          cachetypeElement.value = loadedCachetype;
+                     }
+
+                 } else {
+                      console.error("handleKuvatyyppiChange function not found during load.");
+                      // Jos handleKuvatyyppiChange puuttuu, kutsu vanhat toggle-funktiot ja aseta cachetype suoraan
+                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                      if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
+
+                 }
+
+            } else {
+                 // Jos asetuksia ei löytynyt Local Storagesta, varmista oikea tila alussa
+                 if (typeof handleKuvatyyppiChange === 'function') {
+                      handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan
+                  } else {
+                     // Jos handleKuvatyyppiChange puuttuu, kutsu vanhat toggle-funktiot
+                     if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                     if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
                  }
             }
         } catch (e) {
             console.error("Could not load settings from Local Storage", e);
-            // Valinnaisesti tyhjennä mahdollisesti vioittunut data:
+            // Varmista oikea tila virheen sattuessa
+             if (typeof handleKuvatyyppiChange === 'function') {
+                  handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan
+              } else {
+                 if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                 if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+             }
             // localStorage.removeItem('statGeneratorSettings');
         }
 
-        // --- Initial calls to toggle functions on page load ---
-        // Nämä kutsut varmistavat oikean tilan, jos Local Storage ei latautunut tai oli tyhjä.
-        // Ne on kutsuttava vasta, kun kaikki elementit on haettu ja valikot populoidu.
-         toggleAikaKentat();
-         toggleYearSpecificFilters(); // Kutsu varmuuden vuoksi
+        // Initial calls to toggle functions (moved inside load logic or handled by handleKuvatyyppiChange)
+
 
     }); // DOMContentLoaded päättyy
 
