@@ -28,7 +28,6 @@
             flex-wrap: wrap; /* Allow wrapping on small screens */
             align-items: center; /* Vertically align items */
             gap: 10px; /* Space between items */
-            /* POISTETTU: position: relative; - Tämä aiheutti ristiriidan fixed-positionin kanssa */
         }
 
         /* New style for the logo within the userControlArea */
@@ -88,6 +87,26 @@
              background-color: #005fa3;
              border-color: #005fa3;
          }
+
+         /* UUSI CSS: Style for the Clear button */
+         #clearButton {
+             padding: 8px 15px;
+             border-radius: 5px;
+             border: 1px solid #555; /* Grey border */
+             background-color: #555; /* Grey background */
+             color: white;
+             font-size: 14px;
+             font-weight: bold;
+             cursor: pointer;
+             transition: background-color 0.3s, border-color 0.3s;
+             flex-shrink: 0; /* Prevent button from shrinking */
+         }
+
+         #clearButton:hover {
+             background-color: #666;
+             border-color: #666;
+         }
+
 
         nav {
             position: fixed; /* Keep it fixed */
@@ -217,7 +236,7 @@
             vertical-align: middle; /* Align vertically with the heading */
         }
 
-         /* UUSI CSS (VALINNAINEN): Tyyli toimimattomille userid-linkeille */
+         /* VALINNAINEN: Tyyli toimimattomille userid-linkeille */
          .content-link[data-param-type="userid"]:not([href]) {
             opacity: 0.5; /* Himmennä linkki */
             cursor: not-allowed; /* Muuta kursori */
@@ -296,6 +315,7 @@
         <div id="inputContainer">
             <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus">
             <button id="updateButton">Päivitä</button>
+            <button id="clearButton">Tyhjennä</button>
             <div id="usernameSuggestions" class="suggestions-dropdown">
                 </div>
         </div>
@@ -467,19 +487,21 @@
         const navBar = document.querySelector('nav');
         const usernameInput = document.getElementById('usernameInput');
         const updateButton = document.getElementById('updateButton');
+        // UUSI JS: Hae viittaus Tyhjennä-nappiin
+        const clearButton = document.getElementById('clearButton');
         const currentUsernameSpan = document.getElementById('currentUsername');
         const h2Elements = document.querySelectorAll('h2');
         const statsContent = document.getElementById('statsContent');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const usernameSuggestionsDiv = document.getElementById('usernameSuggestions');
 
-        // UUSI JS: Mappaus nimimerkkiin ja ID:hen - TÄYDENNÄ MUIDEN ID:T TÄHÄN
+        // UUSI JS: Mappaus nimimerkkiin ja ID:hen - TÄYDENNETTY Milde04:n ID
         const userIdMapping = {
             'mikkokalevi': 306478,
             'eukka': 36206,
             'Tiltu': 309395,
             'lahjemies': 308779,
-            'milde04': null // <-- Lisää Milde04:n ID tähän, kun saat sen (esim. 12345), esim. 'milde04': 12345,
+            'milde04': 29523 // <-- Milde04:n ID lisätty
         };
 
         const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
@@ -535,19 +557,19 @@
 
             if (!cleanUsername) {
                 console.warn("Username is empty after trimming, skipping update.");
-                if (currentUsernameSpan) { currentUsernameSpan.textContent = "[Tyhjä]"; }
+                if (currentUsernameSpan) {
+                   currentUsernameSpan.textContent = "[Ei käyttäjää]";
+                }
 
-                 // Tyhjennä ja poista userid-linkkien toiminnallisuus, jos käyttäjänimi tyhjä
-                 document.querySelectorAll('#statsContent img[src], #statsContent a[href]').forEach(element => {
-                      // Poista src/href vain niistä, jotka on asetettu data-attribuuteista (ei back-to-top tms.)
-                      if (element.hasAttribute('data-src') || element.hasAttribute('data-href')) {
-                          if (element.tagName === 'IMG') {
-                              element.removeAttribute('src');
-                               element.style.visibility = 'hidden'; // Piilota kuva
-                          } else if (element.tagName === 'A') {
-                              element.removeAttribute('href');
-                              // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää tyyli
-                          }
+                 // KORJAUS: Tyhjennä src/href KAIKISTA dynaamisista elementeistä statsContentissa
+                 document.querySelectorAll('#statsContent img[data-src], #statsContent a[data-href]').forEach(element => {
+                      if (element.tagName === 'IMG') {
+                          element.removeAttribute('src'); // Poista src
+                           element.style.visibility = 'hidden'; // Piilota kuva
+                           element.style.opacity = '0'; // Aseta läpinäkyvyys
+                      } else if (element.tagName === 'A') {
+                          element.removeAttribute('href'); // Poista href
+                           // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää tyyli, jos käytössä
                       }
                   });
 
@@ -565,7 +587,7 @@
 
             const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
             // UUSI JS: Hae käyttäjän ID-numero, jos käyttäjä löytyy esiasetetuista
-            const userId = userIdMapping[cleanUsername]; // Palauttaa ID:n, nullin tai undefined
+            const userId = userIdMapping[cleanUsername]; // Palauttaa ID:n (number), nullin tai undefined
 
             const userParamRegex = /user=([^&]+)/; // Regex user= parametrin löytämiseen
 
@@ -589,18 +611,18 @@
                 if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
                     originalUrl = element.getAttribute('data-src');
                     urlAttribute = 'src';
-                    // Kuvat käyttävät aina user=
+                    // Kuvat käyttävät aina user= (tämänhetkisessä rakenteessa)
                 } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     originalUrl = element.getAttribute('data-href');
                     urlAttribute = 'href';
-                     // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Poista "disabled" tyyli linkistä ennen kuin yritetään asettaa href
+                     // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Poista mahdollinen "disabled" tyyli linkistä ennen kuin yritetään asettaa href
                 } else {
                     return;
                 }
 
                 let newUrl = originalUrl; // Aloita alkuperäisellä URLilla data-attribuutista
 
-                if (originalUrl && originalUrl.includes('user=')) {
+                if (originalUrl && originalUrl.includes('user=')) { // Tarkista sisältääkö alkuperäinen template user=
                      // UUSI LOGIIKKA: Päivitä URL käyttäjän tai userid:n mukaan
                     if (needsUserId) {
                          // Tämä linkki tarvitsee userid:n
@@ -611,7 +633,7 @@
                              // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Varmista, että tyyli poistetaan
                          } else {
                              // Käyttäjä EI ole esiasetettu TAI ID puuttuu (userId on undefined tai null) -> tämä userid-linkki ei toimi tällä käyttäjällä
-                             element.removeAttribute(urlAttribute); // Poista href/src jotta linkki ei toimi
+                             element.removeAttribute(urlAttribute); // Poista href jotta linkki ei toimi
                              // VAPAAYHTEINEN: element.href = '#'; // Tai aseta href #
                              // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää "disabled" tyyli, jos haluat himmentää tms.
                              console.warn(`User ID not found for ${cleanUsername}. Disabled userid link: ${originalUrl}`);
@@ -628,25 +650,20 @@
 
                 // Kuormituslaskurin ja spinnerin logiikka vain kuvien lataukseen
                 if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
-                     // Lisää laskuriin vain jos kuva tarvitsi päivityksen ja sillä on nyt src
+                     // Lisää laskuriin ja kuuntelijat vain jos kuva sai src:n asetusvaiheessa
                      if (element.hasAttribute('src')) {
                          currentImagesLoading++;
                           // Aseta kuuntelijat vasta kun src on asetettu
                          element.addEventListener('load', handleImageLoadError);
                          element.addEventListener('error', handleImageLoadError);
-                     } else {
-                         // Jos kuva (joka oli tarkoitettu ladattavaksi, eli data-src oli) ei saanut src:tä
-                         // (esim. userid-kuva jolla ei ollut ID:tä), vähennä laskuria heti.
-                         // Tämänhetkisessä koodissa kaikki kuvat saavat user=, joten tätä ei pitäisi tapahtua kuvilla.
-                         // Mutta jos tulevaisuudessa olisi userid-kuvia, tämä olisi tarpeen.
-                         // currentImagesLoading--; // Ei tarpeen nykyisillä kuvilla
                      }
+                     // Jos kuva ei saanut src:tä (esim. userid-kuva ilman ID:tä), se jää piiloon ja ei lisätä laskuriin/kuuntelijoita.
                 }
 
             });
 
             // Check immediately if there were no images to load initially
-             if (imagesToLoad.length === 0 || currentImagesLoading === 0) { // Tarkista molemmat ehdot
+             if (imagesToLoad.length === 0 || currentImagesLoading === 0) {
                  checkLoadingComplete();
              }
 
@@ -674,7 +691,6 @@
                           console.log('All images processed, hiding spinner.');
                      }
                  } else {
-                     // Keep spinner visible if loading is ongoing (should not happen if logic is perfect)
                      if (loadingSpinner && loadingSpinner.style.display === 'none') {
                          loadingSpinner.style.display = 'block';
                          console.log('Images still loading, showing spinner (safeguard). Remaining:', currentImagesLoading);
@@ -756,12 +772,19 @@
 
         usernameInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                console.log('Enter key pressed in input.');
                 event.preventDefault();
                 const username = usernameInput.value;
                 updateStats(username);
             }
         });
+
+        // UUSI JS: Event listener for the Clear button
+        clearButton.addEventListener('click', () => {
+            console.log('Clear button clicked.');
+            usernameInput.value = ''; // Tyhjennä syöttökenttä
+            updateStats(''); // Kutsu updateStats tyhjällä merkkijonolla, mikä nollaa näkymän ja localStorage tallennuksen
+        });
+
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
