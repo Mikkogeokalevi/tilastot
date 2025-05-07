@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-<!-- 
-  Tekijä: Mikkokalevi
-  Sivu luotu: 05/2025
--->
-<!DOCTYPE html>
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
@@ -110,7 +105,7 @@
 
     .row > div {
       flex: 1;
-      min-width: 120px; /* Hieman suurempi minimileveys riveillä */
+      min-width: 100px; /* Pienennetty minimileveys riveillä, jotta mahtuu 4 elementtiä */
     }
 
     button {
@@ -229,7 +224,13 @@
 
         .row {
              margin-bottom: var(--spacing-mobile-medium); /* Pienempi tila rivin alle */
+             /* Jos rivillä 4 elementtiä mobiilissa, ne voivat pinoutua */
+             flex-direction: column;
+             gap: var(--spacing-mobile-medium);
         }
+         .row > div {
+             min-width: 100%; /* Mobiilissa div vie 100% rivin leveydestä */
+         }
 
         button {
             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali napille */
@@ -247,7 +248,7 @@
         }
         #copyLinkButton { /* Säädetään kopiointinappia mobiilissa */
             margin-top: var(--spacing-mobile-small); /* Pienempi ylämarginaali */
-             width: auto; /* Ei välttämättä 100% leveä */
+             width: 100%; /* Tee napista 100% leveä mobiilissa */
         }
     }
   </style>
@@ -292,7 +293,13 @@
             <option value="current">—</option>
           </select>
         </div>
-        <div>
+         <div>
+          <label for="month">Kuukausi:</label>
+          <select id="month">
+            <option value="current">—</option>
+          </select>
+        </div>
+         <div>
           <label for="startdate">Alkupäivä:</label>
           <input type="date" id="startdate">
         </div>
@@ -368,6 +375,7 @@
       const cachetype = document.getElementById("cachetype").value; // Hae kätkötyyppi
       const aikavalinta = document.getElementById("aikavalinta").value;
       const year = document.getElementById("year").value;
+      const month = document.getElementById("month").value; // UUSI: Hae kuukausivalinta
 
       const imageElement = document.getElementById("kuva");
       const linkElementBelow = document.getElementById("linkki");
@@ -397,11 +405,26 @@
         params += `&type=2`;
       }
 
+      // --- Aikavalinta-logiikka ---
       if (aikavalinta === "kylla") {
         if (start && end) {
+          // Jos päivämääräväli on valittu, käytä sitä (ensisijainen)
           params += `&startdate=${formatDate(start)}&enddate=${formatDate(end)}`;
-        } else if (year && year !== "current") {
-          params += `&year=${year}`;
+        } else {
+          // Jos päivämääräväliä EI ole, käytä vuotta ja/tai kuukautta
+          if (year && year !== "current") {
+               params += `&year=${year}`;
+          }
+          if (month && month !== "current") {
+              // Lisää kuukausi parametri (arvot ovat jo 01-12)
+              // Tarkista, onko jo parametreja, jotta lisätään &
+               if (params.includes('?')) {
+                   params += `&month=${month}`;
+               } else {
+                   // Tämä skenaario (ei user= parametriä) ei pitäisi toteutua nykyrakenteessa
+                   params += `?month=${month}`;
+               }
+          }
         }
       }
 
@@ -426,6 +449,16 @@
           if (cachetype) {
               largeMapUrl += `&cachetype=${cachetype}`;
           }
+          // UUSI: Lisää vuosi ja kuukausi, jos ne on valittu aikavalinnalle (ja päivämääräväliä ei ole)
+          if (aikavalinta === "kylla" && !(start && end)) {
+               if (year && year !== "current") {
+                   largeMapUrl += `&year=${year}`;
+               }
+               if (month && month !== "current") {
+                   largeMapUrl += `&month=${month}`;
+               }
+          }
+
 
           // URL to copy is the large map URL in this case
           urlToCopy = largeMapUrl;
@@ -481,6 +514,7 @@
                 kuvatyyppi: kuvatyyppi,
                 aikavalinta: aikavalinta,
                 year: year,
+                month: month, // Tallenna myös kuukausi
                 startdate: start,
                 enddate: end,
                 cachetype: cachetype
@@ -512,10 +546,10 @@
         // Tyhjennä olemassa olevat optiot varmuuden vuoksi
         yearSelect.innerHTML = '';
         // Lisää "--" optioksi ensimmäiseksi
-        const defaultOpt = document.createElement("option");
-        defaultOpt.value = "current";
-        defaultOpt.textContent = "—";
-        yearSelect.appendChild(defaultOpt);
+        const defaultYearOpt = document.createElement("option");
+        defaultYearOpt.value = "current";
+        defaultYearOpt.textContent = "—";
+        yearSelect.appendChild(defaultYearOpt);
         // Lisää vuodet 2000 -> nykyinen vuosi
         for (let y = 2000; y <= currentYear; y++) {
             const opt = document.createElement("option");
@@ -526,6 +560,31 @@
         // Aseta oletusarvo, jos sitä ei ladata tallennuksesta
          if (yearSelect.value === "") {
             yearSelect.value = "current";
+        }
+
+        // --- UUSI: Lisää kuukaudet dropdown-valikkoon ---
+        const monthSelect = document.getElementById("month");
+        if (monthSelect) {
+            // Tyhjennä olemassa olevat optiot varmuuden vuoksi
+            monthSelect.innerHTML = '';
+            // Lisää "--" optioksi ensimmäiseksi
+            const defaultMonthOpt = document.createElement("option");
+            defaultMonthOpt.value = "current";
+            defaultMonthOpt.textContent = "—";
+            monthSelect.appendChild(defaultMonthOpt);
+
+            const monthNames = ["Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"];
+            for (let m = 0; m < 12; m++) {
+                const opt = document.createElement("option");
+                // Kuukauden arvo 1-12, padded two digits (01-12)
+                opt.value = (m + 1).toString().padStart(2, '0');
+                opt.textContent = monthNames[m];
+                monthSelect.appendChild(opt);
+            }
+            // Aseta oletusarvo, jos sitä ei ladata tallennuksesta
+             if (monthSelect.value === "") {
+                monthSelect.value = "current";
+            }
         }
 
 
@@ -542,9 +601,11 @@
                      // Kutsu toimintoa näyttämään/piilottamaan aikakentät ladatun valinnan perusteella
                      toggleAikaKentat();
                 }
-                // Täytä päivämäärä/vuosikentät vain, jos aikarajaus oli "kylla"
+                // Täytä päivämäärä/vuosi/kuukausi -kentät vain, jos aikarajaus oli "kylla"
                 if (settings.aikavalinta === 'kylla') {
                      if (settings.year !== undefined) document.getElementById("year").value = settings.year;
+                     // UUSI: Lataa kuukausi
+                     if (settings.month !== undefined) document.getElementById("month").value = settings.month;
                      if (settings.startdate !== undefined) document.getElementById("startdate").value = settings.startdate;
                      if (settings.enddate !== undefined) document.getElementById("enddate").value = settings.enddate;
                 }
