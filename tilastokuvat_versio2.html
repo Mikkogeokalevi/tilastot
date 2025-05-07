@@ -206,6 +206,31 @@
       opacity: 1;
     }
 
+    /* --- UUSI: Tyyli käyttäjänimikentän ja Nollaa-napin wrapperille --- */
+    .user-input-container {
+        display: flex;
+        align-items: flex-end; /* Kohdista nappi syöttökentän alareunaan */
+        gap: var(--spacing-small); /* Rako syöttökentän ja napin väliin */
+         margin-bottom: var(--spacing-medium); /* Vastaa syöttökentän normaalia alareunamarginaalia */
+    }
+
+    /* Säädä syöttökentän leveyttä flex-containerin sisällä */
+    .user-input-container input[type="text"] {
+         flex-grow: 1; /* Anna syöttökentälle tilaa kasvaa */
+         width: auto; /* Kumoa calc(100%-1em), flex hoitaa leveyden */
+          margin-bottom: 0; /* Poista syöttökentän oma alareunamarginaali flexissä */
+    }
+
+     /* Säädä Nollaa-napin ulkoasua */
+    #resetButton {
+        /* Perii pääosan nappityyleistä */
+        padding: var(--spacing-small); /* Pienempi padding */
+         font-size: 1em; /* Sama fonttikoko kuin syöttökentässä */
+         /* Yritä sovittaa napin korkeus syöttökentän korkeuteen */
+         height: calc(1em + 2 * var(--spacing-small) + 2 * 1px); /* font-size + 2*padding-top/bottom + 2*border-width */
+         margin-top: 0; /* Poista oletus ylämarginaali */
+    }
+
 
     /* Mobiililaitteille (< 600px) */
     @media (max-width: 600px) {
@@ -268,6 +293,23 @@
              min-width: 100%;
          }
 
+        /* Mobiilisäädöt käyttäjänimikentälle ja Nollaa-napille */
+        .user-input-container {
+            flex-direction: column; /* Pino päällekkäin */
+            align-items: stretch; /* Venytä koko leveydelle */
+            gap: var(--spacing-mobile-small);
+            margin-bottom: var(--spacing-mobile-medium);
+        }
+        .user-input-container input[type="text"],
+        #resetButton {
+             width: 100%; /* Koko leveys */
+             height: auto; /* Anna napin korkeuden määräytyä sisällöstä */
+             flex-grow: 0; /* Poista kasvaminen mobiilissa, leveys 100% */
+        }
+         #resetButton {
+             padding: var(--spacing-mobile-small); /* Pienempi padding mobiilissa */
+         }
+
 
         button {
             margin-top: var(--spacing-mobile-medium); /* Pienempi ylämarginaali napille */
@@ -298,14 +340,18 @@
     </div>
 
     <label for="user">Käyttäjätunnus:</label>
-    <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
-    <datalist id="userlist">
-      <option value="mikkokalevi">
-      <option value="Tiltu">
-      <option value="lahjemies">
-      <option value="eukka">
-      <option value="milde04">
-    </datalist>
+    <div class="user-input-container">
+        <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
+        <datalist id="userlist">
+          <option value="mikkokalevi">
+          <option value="Tiltu">
+          <option value="lahjemies">
+          <option value="eukka">
+          <option value="milde04">
+        </datalist>
+         <button id="resetButton" type="button">Nollaa</button>
+    </div>
+
 
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
@@ -418,13 +464,13 @@
     // Copyright (c) 2025 mikkokalevi
 
     // Mappaus käyttäjien nimimerkkien ja userid:den välillä
-    // Korjattu "Milde04" pienelle
+    // Lisätty Milde04:n ID ja nimi korjattu pienelle
     const userIds = {
         "mikkokalevi": 306478,
         "eukka": 36206,
         "Tiltu": 309395,
         "lahjemies": 308779,
-        "milde04": null // Korjattu nimi. ID puuttuu edelleen.
+        "milde04": 29523 // Milde04:n ID lisätty
     };
 
     // Triplet-option tiedot
@@ -519,7 +565,7 @@
 
         // Kutsu muut toggle-funktiot
         toggleAikaKentat();
-        toggleYearSpecificFilters(); // Tässä kutsutaan toggleYearSpecificFilters
+        toggleYearSpecificFilters();
 
 
         // --- Käsittele Triplet-option näyttäminen/piilottaminen ---
@@ -735,7 +781,6 @@
                 startdate: start,
                 enddate: end,
                 cachetype: cachetype,
-                // Tallenna vuosikalenterin lisäsuodatusvalinnat
                 pkuntaMkuntaChoice: pkuntaMkuntaChoice,
                 locationFilterValue: locationFilterValue,
                 extraFilter: extraFilter
@@ -747,13 +792,11 @@
             }
 
         } else {
-            // Jos finalUrl on tyhjä (ei pitäisi tapahtua tässä vaiheessa, jos käyttäjänimi on syötetty ja formaatit ok)
              console.error("Final URL was not generated or is invalid.");
             imageWrapper.style.display = 'none';
             overlayElement.style.display = 'none';
             linkElementBelow.style.display = 'none';
             copyLinkButton.style.display = 'none';
-             //alert("Kuvaa ei voitu luoda valituilla asetuksilla."); // Vältetään useita alertteja
         }
     }
 
@@ -769,7 +812,7 @@
         const monthSelect = document.getElementById("month");
         const startdateElement = document.getElementById("startdate");
         const enddateElement = document.getElementById("enddate");
-        const cachetypeElement = document.getElementById("cachetype"); // Hae cachetype select myös tänne
+        const cachetypeElement = document.getElementById("cachetype");
         const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
         const locationFilterValueElement = document.getElementById("locationFilterValue");
         const extraFilterElement = document.getElementById("extraFilter");
@@ -778,6 +821,7 @@
         const imageWrapper = document.querySelector('.image-wrapper');
         const overlayElement = document.getElementById("map-overlay");
         const linkElementBelow = document.getElementById("linkki");
+        const resetButton = document.getElementById("resetButton"); // UUSI: Hae nollausnappi
 
 
         // --- Populate dropdowns ---
@@ -794,7 +838,7 @@
                 opt.textContent = y;
                 yearSelect.appendChild(opt);
             }
-             if (yearSelect.value === "") { yearSelect.value = "current"; } // Aseta oletus, jos ei ladattu
+             if (yearSelect.value === "") { yearSelect.value = "current"; }
         } else { console.error("Year select element (#year) not found."); }
 
         if (monthSelect) {
@@ -806,17 +850,16 @@
             const monthNames = ["Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"];
             for (let m = 0; m < 12; m++) {
                 const opt = document.createElement("option");
-                opt.value = (m + 1).toString().padStart(2, '0'); // Kuukauden arvo 01-12
+                opt.value = (m + 1).toString().padStart(2, '0');
                 opt.textContent = monthNames[m];
                 monthSelect.appendChild(opt);
             }
-             if (monthSelect.value === "") { monthSelect.value = "current"; } // Aseta oletus, jos ei ladattu
+             if (monthSelect.value === "") { monthSelect.value = "current"; }
         } else { console.error("Month select element (#month) not found."); }
 
 
         // --- Add Event Listeners (check if elements exist) ---
          if (kuvatyyppiElement) {
-            // Liitä uusi yhdistetty käsittelijä kuvatyypin muutoksiin
             kuvatyyppiElement.addEventListener('change', handleKuvatyyppiChange);
          } else { console.error("Kuvatyyppi select not found for listener."); }
 
@@ -859,6 +902,61 @@
             });
          } else { console.error("Copy link button (#copyLinkButton) not found for listener."); }
 
+        // --- UUSI: Lisää kuuntelija Nollaa-napille ---
+         if (resetButton) {
+            resetButton.addEventListener('click', function() {
+                // Nollaa lomakekentät alkuperäisiin oletusarvoihin
+                if (userElement) userElement.value = '';
+                if (kuvatyyppiElement) kuvatyyppiElement.value = 'matrix';
+                if (aikavalintaElement) aikavalintaElement.value = 'ei';
+
+                if (yearSelect) yearSelect.value = 'current';
+                if (monthSelect) monthSelect.value = 'current';
+                if (startdateElement) startdateElement.value = '';
+                if (enddateElement) enddateElement.value = '';
+
+                if (cachetypeElement) cachetypeElement.value = '';
+
+                if (pkuntaMkuntaChoiceElement) pkuntaMkuntaChoiceElement.value = 'none';
+                 // locationFilterValueInputin nollaus ja disablointi hoidetaan handlePkuntaMkuntaChoice:ssa
+                 if (locationFilterValueElement) locationFilterValueElement.value = ''; // Tyhjennä arvo varmuuden vuoksi
+                if (extraFilterElement) extraFilterElement.value = '';
+
+
+                // Tyhjennä tallennetut asetukset Local Storagesta
+                try {
+                    localStorage.removeItem('statGeneratorSettings');
+                     console.log("Local Storage settings cleared by Reset button.");
+                } catch (e) {
+                    console.error("Could not clear Local Storage on reset:", e);
+                }
+
+                // Päivitä käyttöliittymän tila vastaamaan nollattuja arvoja
+                // handleKuvatyyppiChange kutsuu toggleAikaKentat ja toggleYearSpecificFilters
+                if (typeof handleKuvatyyppiChange === 'function') {
+                     handleKuvatyyppiChange(); // Tämä piilottaa/näyttää osiot ja käsittelee Triplet-option
+                } else {
+                     // Fallback jos handleKuvatyyppiChange puuttuu
+                     if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                     if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                 }
+                // handlePkuntaMkuntaChoice kutsutaan handleKuvatyyppiChange:sta kun kuvatyyppi muuttuu (esim. matrix -> matrix)
+                // tai suoraan toggleYearSpecificFilters:sta jos kuvatyyppi on year.
+                // Varmistetaan, että locationFilterValue on disabloitu ja placeholder tyhjä:
+                 if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+
+
+                // Piilota kuvan tulostusalue
+                 if (imageWrapper) imageWrapper.style.display = 'none';
+                 if (overlayElement) overlayElement.style.display = 'none';
+                 if (linkElementBelow) linkElementBelow.style.display = 'none';
+                 if (copyLinkButton) copyLinkButton.style.display = 'none';
+                 if (imageElement) imageElement.src = ''; // Tyhjennä kuva
+
+                console.log("Form reset complete.");
+            });
+         } else { console.error("Reset button (#resetButton) not found for listener."); }
+
 
         // --- Load settings from Local Storage ---
         try {
@@ -873,34 +971,28 @@
                 if (monthSelect && settings.month !== undefined) monthSelect.value = settings.month;
                 if (startdateElement && settings.startdate !== undefined) startdateElement.value = settings.startdate;
                 if (enddateElement && settings.enddate !== undefined) enddateElement.value = settings.enddate;
-
-                // Triplet-option saattaa puuttua Cache Type -valikosta latausvaiheessa.
-                // handleKuvatyyppiChange lisätään alla ja se kutsuu toggle-funktiot.
-                // Asetetaan cachetype vasta tämän jälkeen.
-
                 if (pkuntaMkuntaChoiceElement && settings.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaChoiceElement.value = settings.pkuntaMkuntaChoice;
                 if (locationFilterValueElement && settings.locationFilterValue !== undefined) locationFilterValueElement.value = settings.locationFilterValue;
                 if (extraFilterElement && settings.extraFilter !== undefined) extraFilterElement.value = settings.extraFilter;
 
                  // Kutsu handleKuvatyyppiChange asetusten latauksen jälkeen.
                  // Tämä funktio kutsuu myös toggleAikaKentat ja toggleYearSpecificFilters.
-                 // TÄMÄ ON KRIITTINEN VAIHE, KOSKA SE VOI LISÄTÄ Triplet-OPTION cachetype-valikkoon.
+                 // Tämä on KRIITTINEN VAIHE, KOSKA SE VOI LISÄTÄ Triplet-OPTION cachetype-valikkoon.
                  if (typeof handleKuvatyyppiChange === 'function') {
                      handleKuvatyyppiChange();
                      // Aseta cachetype-arvo vasta kun handleKuvatyyppiChange on suoritettu
-                     // (eli Triplet-option on mahdollisesti lisätty valikkoon)
                      if (cachetypeElement && settings.cachetype !== undefined) {
                           let loadedCachetype = settings.cachetype;
                            // Varmista, että ladattu arvo (esim. 90) on nyt validi valikossa
                           if (loadedCachetype !== '' && !cachetypeElement.querySelector(`option[value="${loadedCachetype}"]`)) {
                                console.warn(`Loaded cachetype value "${loadedCachetype}" not found in select options. Resetting.`);
-                               loadedCachetype = ''; // Palauta tyhjäksi jos option puuttuu
+                               loadedCachetype = '';
                            }
                           cachetypeElement.value = loadedCachetype;
                      }
                  } else {
                       console.error("handleKuvatyyppiChange function not found during load.");
-                       // Fallback: Kutsu vanhat toggle-funktiot ja aseta cachetype suoraan
+                       // Fallback
                       if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                       if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
                        if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
@@ -909,9 +1001,8 @@
             } else {
                  // Jos asetuksia ei löytynyt Local Storagesta, varmista oikea tila alussa kutsumalla handleria
                  if (typeof handleKuvatyyppiChange === 'function') {
-                      handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan (kuvatyyppi=matrix oletuksena)
+                      handleKuvatyyppiChange();
                   } else {
-                     // Fallback
                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
                  }
@@ -920,16 +1011,13 @@
             console.error("Could not load settings from Local Storage", e);
              // Varmista oikea tila virheen sattuessa
              if (typeof handleKuvatyyppiChange === 'function') {
-                  handleKuvatyyppiChange(); // Asettaa alkuperäisen tilan (kuvatyyppi=matrix oletuksena)
+                  handleKuvatyyppiChange();
               } else {
                  if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
-                 if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                 if (typeof toggleYearSpecificFilters === 'function') toggleAikaKentat(); // Korjattu: piti olla toggleYearSpecificFilters
              }
             // localStorage.removeItem('statGeneratorSettings');
         }
-
-        // Initial calls to toggle functions (handled by handleKuvatyyppiChange load or fallback)
-
 
     }); // DOMContentLoaded päättyy
 
