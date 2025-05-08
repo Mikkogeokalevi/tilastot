@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Kätkö tilastojen - Kuvageneraattori</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-color-dark: #1e1e2e;
+      --text-color-light: #cdd6f4;
+      --card-bg: #313244;
+      --border-color: #45475a;
+      --accent-color: #89b4fa;
+      --button-bg: #585b70;
+      --button-hover-bg: #6c7086;
+      --border-radius: 8px;
+      --spacing-small: 0.5em;
+      --spacing-medium: 1em;
+      --spacing-large: 1.5em;
+      --spacing-mobile-small: 0.3em;
+      --spacing-mobile-medium: 0.8em;
+      --spacing-mobile-large: 1em;
+    }
+    body {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: var(--spacing-medium);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 600px;
+      margin: var(--spacing-large) auto;
+      padding: var(--spacing-large);
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .header-area {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--spacing-large);
+      padding-bottom: var(--spacing-medium);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .header-area .logo {
+      width: 70px;
+      height: 70px;
+      margin-right: var(--spacing-medium);
+      border: none;
+      flex-shrink: 0;
+      border-radius: var(--border-radius);
+    }
+    .header-area h2 {
+      margin: 0;
+      font-size: 1.8em;
+      color: var(--text-color-light);
+    }
+    label {
+      display: inline-block;
+      margin-bottom: var(--spacing-small);
+      margin-top: var(--spacing-medium);
+      font-weight: bold;
+    }
+    select, input[type="date"], input[type="text"] {
+      width: calc(100% - 1em);
+      padding: var(--spacing-small);
+      margin-bottom: var(--spacing-medium);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-light);
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    select:focus, input[type="date"]:focus, input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 5px var(--accent-color);
+     }
+    .row {
+      display: flex;
+      gap: var(--spacing-small);
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: var(--spacing-medium);
+    }
+    .row > div {
+      flex: 1;
+      min-width: 100px;
+    }
+    button {
+      margin-top: var(--spacing-medium);
+      padding: var(--spacing-small) var(--spacing-medium);
+      background-color: var(--button-bg);
+      color: var(--text-color-light);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: var(--button-hover-bg);
+    }
+    a {
+      color: var(--accent-color);
+      display: inline-block;
+      margin-top: var(--spacing-medium);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+        color: #a6e3a1;
+        text-decoration: underline;
+    }
+    .image-wrapper {
+        position: relative;
+        display: block;
+        margin-top: var(--spacing-medium);
+        max-width: 100%;
+        display: none;
+        text-align: center;
+    }
+    .image-wrapper #kuva {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        cursor: default;
+        margin: 0 auto;
+    }
+    #map-overlay {
+        display: block;
+        text-align: center;
+        color: var(--text-color-light);
+        font-size: 0.9em;
+        margin-bottom: var(--spacing-small);
+        display: none;
+    }
+    a#linkki {
+        margin-top: var(--spacing-medium);
+        display: none;
+    }
+    #copyLinkButton {
+        margin-top: var(--spacing-small);
+        padding: 0.4em 0.8em;
+        font-size: 0.9em;
+        display: none;
+    }
+    #yearSpecificFilters {
+        display: none;
+        margin-top: var(--spacing-medium);
+        padding-top: var(--spacing-medium);
+        border-top: 1px solid var(--border-color);
+    }
+    #locationFilterValue:disabled {
+        background-color: #2a2a3a;
+        cursor: not-allowed;
+        color: #888;
+    }
+    input::placeholder {
+      color: #a0a0a0;
+      opacity: 1;
+    }
+    .user-input-container {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--spacing-small);
+         margin-bottom: var(--spacing-medium);
+    }
+    .user-input-container input[type="text"] {
+         flex-grow: 1;
+         width: auto;
+          margin-bottom: 0;
+    }
+    #resetButton {
+        padding: var(--spacing-small);
+         font-size: 1em;
+         height: calc(1em + 2 * var(--spacing-small) + 2 * 1px);
+         margin-top: 0;
+    }
+    .location-input-icon-container {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-small);
+    }
+    .location-input-icon-container input[type="text"] {
+        flex-grow: 1;
+         width: auto;
+         margin-bottom: 0;
+    }
+    .info-icon {
+        cursor: pointer;
+        color: var(--accent-color);
+        font-weight: bold;
+        flex-shrink: 0;
+        display: none;
+    }
+    #regionListContainer {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-small);
+        margin-top: var(--spacing-small);
+        max-height: 150px;
+        overflow-y: auto;
+        background-color: var(--card-bg);
+        z-index: 1;
+        position: relative;
+        font-size: 0.9em;
+    }
+    .region-list-item {
+        padding: var(--spacing-mobile-small);
+        cursor: pointer;
+    }
+    .region-list-item:hover {
+        background-color: var(--button-hover-bg);
+    }
+    @media (max-width: 600px) {
+        body { margin: var(--spacing-mobile-medium); }
+        .container {
+            padding: var(--spacing-mobile-large);
+            margin: var(--spacing-mobile-large) auto;
+        }
+        .header-area {
+            flex-direction: column; align-items: flex-start;
+             margin-bottom: var(--spacing-mobile-large);
+        }
+        .header-area .logo {
+            margin-right: 0; margin-bottom: var(--spacing-mobile-medium);
+            width: 60px; height: 60px;
+        }
+        .header-area h2 { font-size: 1.5em; }
+        label { margin-top: var(--spacing-mobile-medium); margin-bottom: var(--spacing-mobile-small); }
+        select, input[type="date"], input[type="text"] { margin-bottom: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small); }
+        #aikaKentat > .row {
+             flex-direction: row; flex-wrap: wrap;
+             gap: var(--spacing-mobile-small);
+             margin-bottom: var(--spacing-mobile-small);
+        }
+        #aikaKentat > .row > div {
+            min-width: 0; flex: 1 1 calc(50% - var(--spacing-mobile-small) / 2);
+        }
+         .row:not(#aikaKentat > .row) {
+             flex-direction: column;
+             gap: var(--spacing-mobile-medium);
+             margin-bottom: var(--spacing-mobile-medium);
+         }
+         .row:not(#aikaKentat > .row) > div { min-width: 100%; }
+        .user-input-container {
+            flex-direction: column; align-items: stretch;
+            gap: var(--spacing-mobile-small); margin-bottom: var(--spacing-mobile-medium);
+        }
+        .user-input-container input[type="text"], #resetButton {
+             width: 100%; height: auto; flex-grow: 0;
+        }
+         #resetButton { padding: var(--spacing-mobile-small); }
+         .location-input-icon-container {
+             flex-direction: row;
+             align-items: center;
+             gap: var(--spacing-mobile-small);
+             margin-bottom: var(--spacing-mobile-medium);
+         }
+          .location-input-icon-container input[type="text"] {
+              width: auto; flex-grow: 1;
+          }
+          .info-icon {
+              align-self: center; margin-bottom: 0;
+               width: auto;
+          }
+          #regionListContainer {
+              max-height: 100px;
+              padding: var(--spacing-mobile-small);
+              margin-top: var(--spacing-mobile-small);
+         }
+        button { margin-top: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); width: 100%; }
+        a#linkki { margin-top: var(--spacing-mobile-medium); }
+        #map-overlay { font-size: 0.8em; margin-bottom: var(--spacing-mobile-small); }
+        #copyLinkButton { margin-top: var(--spacing-mobile-small); width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-area">
+        <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
+        <h2>Kätkö tilastojen - Kuvageneraattori</h2>
+    </div>
+    <label for="user">Käyttäjätunnus:</label>
+    <div class="user-input-container">
+        <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
+        <datalist id="userlist">
+          <option value="mikkokalevi">
+          <option value="Tiltu">
+          <option value="lahjemies">
+          <option value="eukka">
+          <option value="milde04">
+        </datalist>
+         <button id="resetButton" type="button">Nollaa</button>
+    </div>
+    <label for="kuvatyyppi">Kuvan tyyppi:</label>
+    <select id="kuvatyyppi">
+      <option value="matrix">T/D-taulukko</option>
+      <option value="kunta">Kuntakartta</option>
+      <option value="year">Vuosikalenteri</option>
+      <option value="ftfkunta">FTF kuntakartta</option>
+      <option value="hiddenday">Jasmer</option>
+      <option value="saari">saarilöydöt</option>
+    </select>
+    <label for="aikavalinta">Aikarajaus:</label>
+    <select id="aikavalinta" onchange="toggleAikaKentat()">
+      <option value="ei">Ei aikarajausta</option>
+      <option value="kylla">Valitse aikaväli</option>
+    </select>
+    <div id="aikaKentat" style="display:none;">
+      <div class="row">
+        <div>
+          <label for="year">Vuosi:</label>
+          <select id="year">
+            <option value="current">—</option>
+          </select>
+        </div>
+        <div>
+          <label for="month">Kuukausi:</label>
+          <select id="month">
+            <option value="current">—</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="startdate">Alkupäivä:</label>
+          <input type="date" id="startdate">
+        </div>
+        <div>
+          <label for="enddate">Loppupäivä:</label>
+          <input type="date" id="enddate">
+        </div>
+      </div>
+    </div>
+    <label for="cachetype">Kätkötyyppi:</label>
+    <select id="cachetype">
+      <option value="">—</option>
+      <option value="1">Traditional Cache</option>
+      <option value="2">Multi-cache</option>
+      <option value="3">Unknown Cache</option>
+      <option value="4">Letterbox Hybrid</option>
+      <option value="5">Event Cache</option>
+      <option value="6">Earthcache</option>
+      <option value="7">Virtual Cache</option>
+      <option value="8">Webcam Cache</option>
+      <option value="9">Wherigo Cache</option>
+      <option value="10">Community Celebration Event</option>
+      <option value="11">Mega-Event Cache</option>
+      <option value="12">Cache In Trash Out Event</option>
+      <option value="13">Giga-Event Cache</option>
+      <option value="14">Groundspeak Block Party</option>
+      <option value="98">Muut paitsi tradit</option>
+      <option value="99">Kaikki event-tyypit</option>
+      </select>
+    <div id="yearSpecificFilters">
+        <label>Vuosikalenterin lisäsuodatus:</label>
+        <div class="row">
+            <div>
+                <label for="pkuntaMkuntaChoice">Sijainnin tyyppi:</label>
+                <select id="pkuntaMkuntaChoice">
+                    <option value="none">Ei rajoitusta</option>
+                    <option value="pkunta">Paikkakunta</option>
+                    <option value="mkunta">Maakunta</option>
+                </select>
+            </div>
+            <div>
+                 <label for="locationFilterValue">Nimi (pilkulla erotettuna):</label>
+                 <div class="location-input-icon-container">
+                     <input type="text" id="locationFilterValue" disabled placeholder="">
+                     <span id="regionInfoIcon" class="info-icon" title="Näytä maakunnat">ⓘ</span>
+                      </div>
+                 <div id="regionListContainer" style="display: none;">
+                     </div>
+            </div>
+        </div>
+         <div class="row">
+             <div>
+                  <label for="extraFilter">Lisäsuodatus:</label>
+                  <select id="extraFilter">
+                      <option value="">—</option>
+                      <option value="1">Vain FTF-löydöt</option>
+                      <option value="2">Vain haastekätköt</option>
+                      <option value="3">Vain haastekätköjen FTF-löydöt</option>
+                  </select>
+             </div>
+              <div></div>
+         </div>
+    </div>
+    <button onclick="luoLinkki()">Luo linkki ja kuva</button>
+    <div class="image-wrapper">
+      <div id="map-overlay">Klikkaa karttaa isommaksi</div>
+      <img id="kuva" alt="">
+    </div>
+    <a id="linkki" href="#" target="_blank"></a>
+    <button id="copyLinkButton">Kopioi linkki</button>
+  </div>
+  <script>
+    const userIds = {
+        "mikkokalevi": 306478,
+        "eukka": 36206,
+        "Tiltu": 309395,
+        "lahjemies": 308779,
+        "milde04": 29523
+    };
+    const tripletOptionData = { value: '90', text: 'Triplet-extra: tradi, multi, mysse löydöt' };
+    const suomenMaakunnat = [
+        "Ahvenanmaa", "Etelä-Karjala", "Etelä-Pohjanmaa", "Etelä-Savo",
+        "Kainuu", "Kanta-Häme", "Keski-Pohjanmaa", "Keski-Suomi",
+        "Kymenlaakso", "Lappi", "Pirkanmaa", "Pohjanmaa",
+        "Pohjois-Karjala", "Pohjois-Pohjanmaa", "Pohjois-Savo", "Päijät-Häme",
+        "Satakunta", "Uusimaa", "Varsinais-Suomi"
+    ].sort();
+    function formatDate(input) {
+      const parts = input.split("-");
+      if (!parts || parts.length !== 3) {
+          console.error("Invalid date format for formatDate:", input);
+          return "";
+      }
+      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+    function toggleAikaKentat() {
+      const valinta = document.getElementById("aikavalinta")?.value || '';
+      const aikaKentatDiv = document.getElementById("aikaKentat");
+       if (aikaKentatDiv) {
+         aikaKentatDiv.style.display = valinta === "kylla" ? "block" : "none";
+       } else {
+         console.error("Element #aikaKentat not found.");
+       }
+    }
+    function toggleYearSpecificFilters() {
+        const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
+        const yearSpecificFiltersDiv = document.getElementById("yearSpecificFilters");
+        const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
+        const locationFilterValueInput = document.getElementById("locationFilterValue");
+        const extraFilterSelect = document.getElementById("extraFilter");
+        const regionInfoIcon = document.getElementById("regionInfoIcon");
+        const regionListContainer = document.getElementById("regionListContainer");
+        if (!kuvatyyppiSelect || !yearSpecificFiltersDiv || !pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !extraFilterSelect || !regionInfoIcon || !regionListContainer) {
+             console.error("Required year specific filter elements not found in toggleYearSpecificFilters.");
+             if (!kuvatyyppiSelect) console.error("Missing: #kuvatyyppi");
+             if (!yearSpecificFiltersDiv) console.error("Missing: #yearSpecificFilters");
+             if (!pkuntaMkuntaChoiceSelect) console.error("Missing: #pkuntaMkuntaChoice");
+             if (!locationFilterValueInput) console.error("Missing: #locationFilterValue");
+             if (!extraFilterSelect) console.error("Missing: #extraFilter");
+             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon");
+             if (!regionListContainer) console.error("Missing: #regionListContainer");
+             return;
+        }
+        if (kuvatyyppiSelect.value === 'year') {
+            yearSpecificFiltersDiv.style.display = 'block';
+             handlePkuntaMkuntaChoice();
+        } else {
+            yearSpecificFiltersDiv.style.display = 'none';
+            pkuntaMkuntaChoiceSelect.value = 'none';
+            locationFilterValueInput.value = '';
+            locationFilterValueInput.disabled = true;
+            locationFilterValueInput.placeholder = "";
+            extraFilterSelect.value = '';
+            regionInfoIcon.style.display = 'none';
+            regionListContainer.style.display = 'none';
+        }
+    }
+    function handlePkuntaMkuntaChoice() {
+        const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
+        const locationFilterValueInput = document.getElementById("locationFilterValue");
+        const regionInfoIcon = document.getElementById("regionInfoIcon");
+        const regionListContainer = document.getElementById("regionListContainer");
+         if (!pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !regionInfoIcon || !regionListContainer) {
+             console.error("Required pkunta/mkunta elements or buttons/icons not found in handler.");
+             if (!pkuntaMkuntaChoiceSelect) console.error("Missing: #pkuntaMkuntaChoice in handler");
+             if (!locationFilterValueInput) console.error("Missing: #locationFilterValue in handler");
+             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon in handler");
+             if (!regionListContainer) console.error("Missing: #regionListContainer in handler");
+             return;
+         }
+        const choice = pkuntaMkuntaChoiceSelect.value;
+        regionInfoIcon.style.display = 'none';
+        regionListContainer.style.display = 'none';
+        regionListContainer.innerHTML = '';
+        if (choice === 'pkunta') {
+            locationFilterValueInput.disabled = false;
+            locationFilterValueInput.placeholder = "esim. Lahti, Heinola";
+        } else if (choice === 'mkunta') {
+             locationFilterValueInput.disabled = false;
+             locationFilterValueInput.placeholder = "esim. Päijät-Häme, Pirkanmaa";
+             regionInfoIcon.style.display = 'inline-block';
+        }
+         else {
+            locationFilterValueInput.value = '';
+            locationFilterValueInput.disabled = true;
+            locationFilterValueInput.placeholder = "";
+        }
+    }
+    function toggleRegionList() {
+         const regionListContainer = document.getElementById("regionListContainer");
+         if (!regionListContainer) {
+             console.error("Region list container not found for toggle.");
+             return;
+         }
+         if (regionListContainer.style.display === 'block') {
+             console.log("Hiding region list.");
+             regionListContainer.style.display = 'none';
+         } else {
+             if (regionListContainer.childElementCount === 0) {
+                 console.log("Populating region list...");
+                 suomenMaakunnat.forEach(maakunta => {
+                     const regionItem = document.createElement('div');
+                     regionItem.textContent = maakunta;
+                     regionItem.classList.add('region-list-item');
+                     regionItem.addEventListener('click', function() {
+                          const locationInput = document.getElementById("locationFilterValue");
+                          if (locationInput) {
+                               const currentValue = locationInput.value.trim();
+                               if (currentValue) {
+                                   if (!currentValue.endsWith(', ') && !currentValue.endsWith(',')) {
+                                       locationInput.value += ', ';
+                                   } else if (currentValue.endsWith(',')) {
+                                        locationInput.value += ' ';
+                                   }
+                               }
+                               locationInput.value += this.textContent;
+                               locationInput.focus();
+                               toggleRegionList();
+                          }
+                     });
+                     regionListContainer.appendChild(regionItem);
+                 });
+                  console.log("Region list population complete.");
+             } else {
+                 console.log("Region list already populated.");
+             }
+             console.log("Showing region list.");
+             regionListContainer.style.display = 'block';
+         }
+    }
+    function handleKuvatyyppiChange() {
+        const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
+        const cachetypeSelect = document.getElementById("cachetype");
+        if (!kuvatyyppiSelect || !cachetypeSelect) {
+             console.error("Required select elements not found for kuvatyyppi change handler.");
+             return;
+        }
+        const selectedType = kuvatyyppiSelect.value;
+        toggleAikaKentat();
+        toggleYearSpecificFilters();
+        const existingTripletOption = cachetypeSelect.querySelector(`option[value="${tripletOptionData.value}"]`);
+        if (selectedType === 'kunta') {
+            if (!existingTripletOption) {
+                const opt = document.createElement("option");
+                opt.value = tripletOptionData.value;
+                opt.textContent = tripletOptionData.text;
+                cachetypeSelect.appendChild(opt);
+            }
+        } else {
+            if (existingTripletOption) {
+                if (cachetypeSelect.value === tripletOptionData.value) {
+                    cachetypeSelect.value = '';
+                }
+                existingTripletOption.remove();
+            }
+        }
+    }
+    function luoLinkki() {
+      const imageElement = document.getElementById("kuva");
+      const linkElementBelow = document.getElementById("linkki");
+      const overlayElement = document.getElementById("map-overlay");
+      const imageWrapper = document.querySelector('.image-wrapper');
+      const copyLinkButton = document.getElementById("copyLinkButton");
+      if (!imageElement || !linkElementBelow || !overlayElement || !imageWrapper || !copyLinkButton) {
+          console.error("Error: Required output elements not found in the DOM.");
+          alert("Työkalussa tapahtui virhe (elementtejä puuttuu).");
+          return;
+      }
+      imageWrapper.style.display = 'none';
+      overlayElement.style.display = 'none';
+      linkElementBelow.style.display = 'none';
+      copyLinkButton.style.display = 'none';
+      imageElement.src = '';
+      const baseUrl = "https://www.geocache.fi/stat/";
+      const kuvatyyppi = document.getElementById("kuvatyyppi")?.value || '';
+      const user = document.getElementById("user")?.value.trim() || '';
+      const start = document.getElementById("startdate")?.value || '';
+      const end = document.getElementById("enddate")?.value || '';
+      const cachetype = document.getElementById("cachetype")?.value || '';
+      const aikavalinta = document.getElementById("aikavalinta")?.value || '';
+      const year = document.getElementById("year")?.value || '';
+      const month = document.getElementById("month")?.value || '';
+      const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice")?.value || '';
+      const locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || '';
+      const extraFilter = document.getElementById("extraFilter")?.value || '';
+      if (!user) {
+        alert("Syötä käyttäjänimi.");
+        return;
+      }
+      let params = `?user=${encodeURIComponent(user)}`;
+      if (kuvatyyppi === "hiddenday") {
+        params += `&type=2`;
+      }
+      if (aikavalinta === "kylla") {
+        if (start && end) {
+           const formattedStart = formatDate(start);
+           const formattedEnd = formatDate(end);
+           if (formattedStart && formattedEnd) {
+               params += `&startdate=${formattedStart}&enddate=${formattedEnd}`;
+           } else {
+               console.error("Invalid start or end date format.");
+               alert("Virheellinen päivämäärämuoto.");
+               return;
+           }
+        } else {
+          if (year && year !== "current") {
+               params += `&year=${year}`;
+          }
+          if (month && month !== "current") {
+               params += `&month=${month}`;
+          }
+        }
+      }
+      if (kuvatyyppi === "year") {
+          if (locationFilterValue) {
+              if (pkuntaMkuntaChoice === 'pkunta') {
+                  params += `&pkunta=${encodeURIComponent(locationFilterValue)}`;
+              } else if (pkuntaMkuntaChoice === 'mkunta') {
+                   params += `&mkunta=${encodeURIComponent(locationFilterValue)}`;
+              }
+          }
+          if (extraFilter && extraFilter !== '') {
+              params += `&extra=${extraFilter}`;
+          }
+      }
+      if (cachetype) {
+        params += `&cachetype=${cachetype}`;
+      }
+      const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
+      let urlToCopy = finalUrl;
+      const selectedUserId = userIds[user];
+      if (kuvatyyppi === "kunta" && selectedUserId) {
+          let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
+          if (cachetype) {
+              largeMapUrl += `&cachetype=${cachetype}`;
+          }
+          if (aikavalinta === "kylla" && !(start && end)) {
+               if (year && year !== "current") {
+                   largeMapUrl += `&year=${year}`;
+               }
+               if (month && month !== "current") {
+                   largeMapUrl += `&month=${month}`;
+               }
+          }
+          urlToCopy = largeMapUrl;
+          imageElement.src = finalUrl;
+          imageElement.alt = "Kuntakartta (klikkaa isompaan kuvaan)";
+          imageElement.dataset.largeMapUrl = largeMapUrl;
+          imageElement.style.cursor = 'pointer';
+          linkElementBelow.style.display = 'none';
+          overlayElement.style.display = 'block';
+      } else {
+          imageElement.src = finalUrl;
+          imageElement.alt = "Tilastokuva";
+          delete imageElement.dataset.largeMapUrl;
+          imageElement.style.cursor = 'default';
+          linkElementBelow.href = finalUrl;
+          linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
+          linkElementBelow.style.display = 'inline-block';
+          overlayElement.style.display = 'none';
+      }
+       if (finalUrl) {
+            imageWrapper.style.display = 'block';
+            copyLinkButton.style.display = 'inline-block';
+            copyLinkButton.dataset.urlToCopy = urlToCopy;
+            copyLinkButton.textContent = "Kopioi linkki";
+            const settingsToSave = {
+                user: user,
+                kuvatyyppi: kuvatyyppi,
+                aikavalinta: aikavalinta,
+                year: year,
+                month: month,
+                startdate: start,
+                enddate: end,
+                cachetype: cachetype,
+                pkuntaMkuntaChoice: pkuntaMkuntaChoice,
+                locationFilterValue: locationFilterValue,
+                extraFilter: extraFilter
+            };
+            try {
+                localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave));
+            } catch (e) {
+                console.error("Could not save settings to Local Storage", e);
+            }
+        } else {
+             console.error("Final URL was not generated or is invalid.");
+            imageWrapper.style.display = 'none';
+            overlayElement.style.display = 'none';
+            linkElementBelow.style.display = 'none';
+            copyLinkButton.style.display = 'none';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const userElement = document.getElementById("user");
+        const kuvatyyppiElement = document.getElementById("kuvatyyppi");
+        const aikavalintaElement = document.getElementById("aikavalinta");
+        const yearSelect = document.getElementById("year");
+        const monthSelect = document.getElementById("month");
+        const startdateElement = document.getElementById("startdate");
+        const enddateElement = document.getElementById("enddate");
+        const cachetypeElement = document.getElementById("cachetype");
+        const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
+        const locationFilterValueElement = document.getElementById("locationFilterValue");
+        const extraFilterElement = document.getElementById("extraFilter");
+        const imageElement = document.getElementById("kuva");
+        const copyLinkButton = document.getElementById("copyLinkButton");
+        const imageWrapper = document.querySelector('.image-wrapper');
+        const overlayElement = document.getElementById("map-overlay");
+        const linkElementBelow = document.getElementById("linkki");
+        const resetButton = document.getElementById("resetButton");
+        const regionInfoIcon = document.getElementById("regionInfoIcon");
+        const regionListContainer = document.getElementById("regionListContainer");
+        if (yearSelect) {
+            const currentYear = new Date().getFullYear();
+            yearSelect.innerHTML = '';
+            const defaultYearOpt = document.createElement("option");
+            defaultYearOpt.value = "current";
+            defaultYearOpt.textContent = "—";
+            yearSelect.appendChild(defaultYearOpt);
+            for (let y = 2000; y <= currentYear; y++) {
+                const opt = document.createElement("option");
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+             if (yearSelect.value === "") { yearSelect.value = "current"; }
+        } else { console.error("Year select element (#year) not found."); }
+        if (monthSelect) {
+            monthSelect.innerHTML = '';
+            const defaultMonthOpt = document.createElement("option");
+            defaultMonthOpt.value = "current";
+            defaultMonthOpt.textContent = "—";
+            monthSelect.appendChild(defaultMonthOpt);
+            const monthNames = ["Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"];
+            for (let m = 0; m < 12; m++) {
+                const opt = document.createElement("option");
+                opt.value = (m + 1).toString().padStart(2, '0');
+                opt.textContent = monthNames[m];
+                monthSelect.appendChild(opt);
+            }
+             if (monthSelect.value === "") { monthSelect.value = "current"; }
+        } else { console.error("Month select element (#month) not found."); }
+        if (kuvatyyppiElement) {
+            kuvatyyppiElement.addEventListener('change', handleKuvatyyppiChange);
+         } else { console.error("Kuvatyyppi select not found for listener."); }
+         if (aikavalintaElement) {
+             aikavalintaElement.addEventListener('change', toggleAikaKentat);
+         } else { console.error("Aikavalinta select not found for listener."); }
+         if (pkuntaMkuntaChoiceElement) {
+            pkuntaMkuntaChoiceElement.addEventListener('change', handlePkuntaMkuntaChoice);
+         } else { console.error("pkuntaMkuntaChoice select not found for listener."); }
+         if (imageElement) {
+            imageElement.addEventListener('click', function() {
+                const largeMapUrl = this.dataset.largeMapUrl;
+                if (largeMapUrl) {
+                    window.open(largeMapUrl, '_blank');
+                }
+            });
+         } else { console.error("Image element (#kuva) not found for listener."); }
+         if (copyLinkButton) {
+            copyLinkButton.addEventListener('click', function() {
+                const urlToCopy = this.dataset.urlToCopy;
+                if (urlToCopy) {
+                    navigator.clipboard.writeText(urlToCopy)
+                        .then(() => {
+                            const originalText = this.textContent;
+                            this.textContent = "Kopioitu!";
+                            setTimeout(() => { this.textContent = originalText; }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Linkin kopiointi epäonnistui:', err);
+                             const originalText = this.textContent;
+                             this.textContent = "Kopiointi epäonnistui!";
+                             setTimeout(() => {
+                                this.textContent = originalText;
+                            }, 3000);
+                        });
+                }
+            });
+         } else { console.error("Copy link button (#copyLinkButton) not found for listener."); }
+         if (regionInfoIcon) {
+            regionInfoIcon.addEventListener('click', toggleRegionList);
+         } else { console.error("Region info icon (#regionInfoIcon) not found."); }
+         if (resetButton) {
+            resetButton.addEventListener('click', function() {
+                if (userElement) userElement.value = '';
+                if (kuvatyyppiElement) kuvatyyppiElement.value = 'matrix';
+                if (aikavalintaElement) aikavalintaElement.value = 'ei';
+                if (yearSelect) yearSelect.value = 'current';
+                if (monthSelect) monthSelect.value = 'current';
+                if (startdateElement) startdateElement.value = '';
+                if (enddateElement) enddateElement.value = '';
+                if (cachetypeElement) cachetypeElement.value = '';
+                if (pkuntaMkuntaChoiceElement) pkuntaMkuntaChoiceElement.value = 'none';
+                 if (locationFilterValueElement) locationFilterValueElement.value = '';
+                if (extraFilterElement) extraFilterElement.value = '';
+                try {
+                    localStorage.removeItem('statGeneratorSettings');
+                     console.log("Local Storage settings cleared by Reset button.");
+                } catch (e) {
+                    console.error("Could not clear Local Storage on reset:", e);
+                }
+                if (typeof handleKuvatyyppiChange === 'function') {
+                     handleKuvatyyppiChange();
+                } else {
+                     if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                     if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                     if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                 }
+                 if (imageWrapper) imageWrapper.style.display = 'none';
+                 if (overlayElement) overlayElement.style.display = 'none';
+                 if (linkElementBelow) linkElementBelow.style.display = 'none';
+                 if (copyLinkButton) copyLinkButton.style.display = 'none';
+                 if (imageElement) imageElement.src = '';
+                 if(regionListContainer) regionListContainer.style.display = 'none';
+                 console.log("Form reset complete.");
+            });
+         } else { console.error("Reset button (#resetButton) not found for listener."); }
+        try {
+            const savedSettings = localStorage.getItem('statGeneratorSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                if (userElement && settings.user !== undefined) userElement.value = settings.user;
+                if (kuvatyyppiElement && settings.kuvatyyppi !== undefined) kuvatyyppiElement.value = settings.kuvatyyppi;
+                if (aikavalintaElement && settings.aikavalinta !== undefined) aikavalintaElement.value = settings.aikavalinta;
+                if (yearSelect && settings.year !== undefined) yearSelect.value = settings.year;
+                if (monthSelect && settings.month !== undefined) monthSelect.value = settings.month;
+                if (startdateElement && settings.startdate !== undefined) startdateElement.value = settings.startdate;
+                if (enddateElement && settings.enddate !== undefined) enddateElement.value = settings.enddate;
+                if (pkuntaMkuntaChoiceElement && settings.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaChoiceElement.value = settings.pkuntaMkuntaChoice;
+                if (locationFilterValueElement && settings.locationFilterValue !== undefined) locationFilterValueElement.value = settings.locationFilterValue;
+                if (extraFilterElement && settings.extraFilter !== undefined) extraFilterElement.value = settings.extraFilter;
+                 if (typeof handleKuvatyyppiChange === 'function') {
+                     handleKuvatyyppiChange();
+                     if (cachetypeElement && settings.cachetype !== undefined) {
+                          let loadedCachetype = settings.cachetype;
+                          if (loadedCachetype !== '' && !cachetypeElement.querySelector(`option[value="${loadedCachetype}"]`)) {
+                               console.warn(`Loaded cachetype value "${loadedCachetype}" not found in select options. Resetting.`);
+                               loadedCachetype = '';
+                           }
+                          cachetypeElement.value = loadedCachetype;
+                     }
+                 } else {
+                      console.error("handleKuvatyyppiChange function not found during load.");
+                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                       if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
+                      if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                 }
+            } else {
+                 if (typeof handleKuvatyyppiChange === 'function') {
+                      handleKuvatyyppiChange();
+                  } else {
+                     if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                     if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                    if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                 }
+            }
+        } catch (e) {
+            console.error("Could not load settings from Local Storage", e);
+             if (typeof handleKuvatyyppiChange === 'function') {
+                  handleKuvatyyppiChange();
+              } else {
+                 if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                 if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                 if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+             }
+        }
+    });
+  </script>
+</body>
+</html>
