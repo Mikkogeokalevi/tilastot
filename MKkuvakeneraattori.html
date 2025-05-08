@@ -6,217 +6,283 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --bg-color-dark: #1e1e2e;
-      --text-color-light: #cdd6f4;
-      --card-bg: #313244;
-      --border-color: #45475a;
-      --accent-color: #89b4fa;
-      --button-bg: #585b70;
-      --button-hover-bg: #6c7086;
-      --border-radius: 8px;
+      /* Määritellään värejä CSS-muuttujiin, helpottaa ylläpitoa */
+      /*toimiva versio 8.5.2025 klo19:10 */
+      --bg-color-dark: #1e1e2e; /* Syvempi tumma tausta */
+      --text-color-light: #cdd6f4; /* Pehmeämpi vaalea teksti */
+      --card-bg: #313244; /* Elementtien tausta */
+      --border-color: #45475a; /* Reunusten väri */
+      --accent-color: #89b4fa; /* Korostusväri linkeille/napeille (valinnainen) */
+      --button-bg: #585b70; /* Nappien tausta */
+      --button-hover-bg: #6c7086; /* Nappien hover-tausta */
+      --border-radius: 8px; /* Yleinen kulmien pyöristys */
       --spacing-small: 0.5em;
       --spacing-medium: 1em;
       --spacing-large: 1.5em;
+
+      /* Uusia, pienempiä väljyyksiä mobiilille */
       --spacing-mobile-small: 0.3em;
       --spacing-mobile-medium: 0.8em;
       --spacing-mobile-large: 1em;
     }
+
     body {
       background-color: var(--bg-color-dark);
       color: var(--text-color-light);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Hiukan modernimpi fontti */
       margin: var(--spacing-medium);
       line-height: 1.6;
     }
+
     .container {
       max-width: 600px;
-      margin: var(--spacing-large) auto;
+      margin: var(--spacing-large) auto; /* Keskitetty ja ylä/alareunaan tilaa */
       padding: var(--spacing-large);
-      background-color: var(--card-bg);
+      background-color: var(--card-bg); /* Containerille oma tausta */
       border-radius: var(--border-radius);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Kevyt varjo */
     }
+
+    /* Uusi tyyli otsikkoalueelle, jossa logo ja teksti ovat rinnakkain */
     .header-area {
-      display: flex;
-      align-items: center;
-      margin-bottom: var(--spacing-large);
-      padding-bottom: var(--spacing-medium);
-      border-bottom: 1px solid var(--border-color);
+        display: flex; /* Käytetään flexboxia */
+        align-items: center; /* Keskitetään elementit pystysuunnassa */
+        margin-bottom: var(--spacing-large); /* Lisätään reilusti tilaa otsikkoalueen alle */
+        padding-bottom: var(--spacing-medium); /* Pieni sisäinen alareuna */
+        border-bottom: 1px solid var(--border-color); /* Kevyt erotinviiva */
     }
+
+    /* Tyyli logokuvalle otsikkoalueella */
     .header-area .logo {
-      width: 70px;
-      height: 70px;
-      margin-right: var(--spacing-medium);
-      border: none;
-      flex-shrink: 0;
-      border-radius: var(--border-radius);
+        width: 70px; /* Suurempi koko logolle */
+        height: 70px; /* Neliö */
+        margin-right: var(--spacing-medium); /* Lisää tilaa logon ja tekstin väliin */
+        border: none; /* Poista mahdollinen kuvan reunus */
+        flex-shrink: 0; /* Estää logoa kutistumasta liikaa pienellä näytöllä */
+        border-radius: var(--border-radius); /* Pyöristetään myös logon kulmia */
     }
+
+    /* Tyyli otsikkotekstille otsikkoalueella */
     .header-area h2 {
-      margin: 0;
-      font-size: 1.8em;
-      color: var(--text-color-light);
+        margin: 0; /* Poistaa h2:n oletusmarginaalit */
+        font-size: 1.8em; /* Hieman suurempi otsikko */
+        color: var(--text-color-light); /* Varmistetaan tekstin väri */
     }
+
     label {
       display: inline-block;
       margin-bottom: var(--spacing-small);
       margin-top: var(--spacing-medium);
-      font-weight: bold;
+      font-weight: bold; /* Labelit lihavoituina */
     }
+
     select, input[type="date"], input[type="text"] {
-      width: calc(100% - 1em);
+      width: calc(100% - 1em); /* Leveys 100% miinus padding, jotta pysyy containerissa */
       padding: var(--spacing-small);
       margin-bottom: var(--spacing-medium);
       border: 1px solid var(--border-color);
-      border-radius: var(--border-radius);
-      background-color: var(--bg-color-dark);
+      border-radius: var(--border-radius); /* Pyöreämmät kulmat */
+      background-color: var(--bg-color-dark); /* Sama tausta kuin bodyllä tai hieman tummempi */
       color: var(--text-color-light);
       font-size: 1em;
-      box-sizing: border-box;
+      box-sizing: border-box; /* Sisällytä padding ja border leveyteen */
     }
-    select:focus, input[type="date"]:focus, input[type="text"]:focus {
-        outline: none;
-        border-color: var(--accent-color);
-        box-shadow: 0 0 5px var(--accent-color);
+
+    /* Lomake-elementtien focus-tila */
+     select:focus, input[type="date"]:focus, input[type="text"]:focus {
+        outline: none; /* Poista oletus focus-reunus */
+        border-color: var(--accent-color); /* Korosta reunus focus-värillä */
+        box-shadow: 0 0 5px var(--accent-color); /* Lisää kevyt varjo */
      }
+
+
     .row {
       display: flex;
-      gap: var(--spacing-small);
+      gap: var(--spacing-small); /* Pienempi rako elementtien välissä */
       flex-wrap: wrap;
       width: 100%;
-      margin-bottom: var(--spacing-medium);
+      margin-bottom: var(--spacing-medium); /* Lisää tilaa rivin alle */
     }
+
     .row > div {
       flex: 1;
-      min-width: 100px;
+      min-width: 100px; /* Minimileveys riveillä (desktop) */
     }
+
     button {
       margin-top: var(--spacing-medium);
       padding: var(--spacing-small) var(--spacing-medium);
       background-color: var(--button-bg);
       color: var(--text-color-light);
       border: none;
-      border-radius: var(--border-radius);
+      border-radius: var(--border-radius); /* Pyöreämmät kulmat */
       cursor: pointer;
-      font-size: 1.1em;
-      transition: background-color 0.3s ease;
+      font-size: 1.1em; /* Hieman suurempi teksti napissa */
+      transition: background-color 0.3s ease; /* Animaatio hoveriin */
     }
+
     button:hover {
       background-color: var(--button-hover-bg);
     }
+
     a {
-      color: var(--accent-color);
+      color: var(--accent-color); /* Linkkien väri */
       display: inline-block;
       margin-top: var(--spacing-medium);
-      text-decoration: none;
+      text-decoration: none; /* Poista alleviivaus */
       transition: color 0.3s ease;
     }
+
     a:hover {
-        color: #a6e3a1;
-        text-decoration: underline;
+        color: #a6e3a1; /* Hieman eri sävy hoverissa */
+        text-decoration: underline; /* Lisää alleviivaus hoverissa */
     }
+
+    /* --- Säännöt kuvan ja overlayn wrapperille sekä overlaylle --- */
     .image-wrapper {
-        position: relative;
-        display: block;
-        margin-top: var(--spacing-medium);
-        max-width: 100%;
+        position: relative; /* Mahdollistaa suhteellisen sisällön */
+        display: block; /* Varmistaa, että vie tilaa */
+        margin-top: var(--spacing-medium); /* Tilaa wrapperin yläpuolelle */
+        max-width: 100%; /* Varmistaa, ettei wrapper mene yli containerin leveyden */
+        /* Piilotetaan oletuksena tai jos kuvaa ei ole */
         display: none;
-        text-align: center;
+        text-align: center; /* Keskitetään sekä teksti että kuva wrapperin sisällä */
     }
-    .image-wrapper #kuva {
-        display: block;
-        max-width: 100%;
-        height: auto;
+
+    .image-wrapper #kuva { /* Tyyli kuvalle wrapperin sisällä */
+        display: block; /* Kuva omalle rivilleen */
+        max-width: 100%; /* Kuva täyttää wrapperin leveyden */
+        height: auto; /* Säilyttää kuvasuhteen */
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
-        cursor: default;
-        margin: 0 auto;
+        cursor: default; /* Oletuskursori, JS muuttaa tarvittaessa */
+        margin: 0 auto; /* Keskitä kuva wrapperin sisällä */
     }
-    #map-overlay {
-        display: block;
-        text-align: center;
-        color: var(--text-color-light);
-        font-size: 0.9em;
-        margin-bottom: var(--spacing-small);
-        display: none;
+
+    #map-overlay { /* Tyyli tekstille kuvan YLÄPUOLELLA */
+        display: block; /* Varmistaa, että vie tilaa */
+        text-align: center; /* Keskitetään vaakasuunnassa */
+        color: var(--text-color-light); /* Tekstin väri */
+        font-size: 0.9em; /* Pienempi fonttikoko */
+        margin-bottom: var(--spacing-small); /* Tilaa tekstin ja kuvan väliin */
+        display: none; /* Piilotettu oletuksena */
     }
-    a#linkki {
+    /* --- Säännöt päättyvät --- */
+
+
+    /* Tyyli linkille ladatun kuvan alla */
+    a#linkki { /* Kohdennetaan tarkemmin linkkiin kuvan alla */
         margin-top: var(--spacing-medium);
-        display: none;
+        /* Piilotetaan oletuksena tai jos kuva itse on linkki */
+         display: none;
+         /* Muita linkkityylejä */
     }
+
+    /* Tyyli kopiointinapille */
     #copyLinkButton {
-        margin-top: var(--spacing-small);
-        padding: 0.4em 0.8em;
-        font-size: 0.9em;
-        display: none;
+        margin-top: var(--spacing-small); /* Ylämarginaali erottamaan linkistä/kuvasta */
+        padding: 0.4em 0.8em; /* Pienempi padding kuin päänapissa */
+        font-size: 0.9em; /* Pienempi fonttikoko */
+        display: none; /* Piilotettu oletuksena */
+        /* Perii muita nappityylejä (tausta, väri, reunat, kursori jne.) */
     }
+
+    /* --- Vuosikalenterin lisäsuodattimille --- */
     #yearSpecificFilters {
-        display: none;
+        display: none; /* Piilotettu oletuksena, JS näyttää kun valitaan vuosikalenteri */
         margin-top: var(--spacing-medium);
         padding-top: var(--spacing-medium);
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--border-color); /* Erotinviiva */
     }
+
+     /* Tyyli inputille kun se on disabloitu */
     #locationFilterValue:disabled {
-        background-color: #2a2a3a;
+        background-color: #2a2a3a; /* Hieman eri tausta */
         cursor: not-allowed;
-        color: #888;
+        color: #888; /* Harmaampi teksti */
     }
+     /* Paikkamerkkitekstin väri tummassa tilassa */
     input::placeholder {
       color: #a0a0a0;
       opacity: 1;
     }
+
+    /* --- Tyyli käyttäjänimikentän ja Nollaa-napin wrapperille --- */
     .user-input-container {
         display: flex;
-        align-items: flex-end;
-        gap: var(--spacing-small);
-         margin-bottom: var(--spacing-medium);
+        align-items: flex-end; /* Kohdista nappi syöttökentän alareunaan */
+        gap: var(--spacing-small); /* Rako syöttökentän ja napin väliin */
+         margin-bottom: var(--spacing-medium); /* Vastaa syöttökentän normaalia alareunamarginaalia */
     }
+
+    /* Säädä syöttökentän leveyttä flex-containerin sisällä */
     .user-input-container input[type="text"] {
-         flex-grow: 1;
-         width: auto;
-          margin-bottom: 0;
+         flex-grow: 1; /* Anna syöttökentälle tilaa kasvaa */
+         width: auto; /* Kumoa calc(100%-1em), flex hoitaa leveyden */
+          margin-bottom: 0; /* Poista syöttökentän oma alareunamarginaali flexissä */
     }
+
+     /* Säädä Nollaa-napin ulkoasua */
     #resetButton {
-        padding: var(--spacing-small);
-         font-size: 1em;
-         height: calc(1em + 2 * var(--spacing-small) + 2 * 1px);
-         margin-top: 0;
+        /* Perii pääosan nappityyleistä */
+        padding: var(--spacing-small); /* Pienempi padding */
+         font-size: 1em; /* Sama fonttikoko kuin syöttökentässä */
+         /* Yritä sovittaa napin korkeus syöttökentän korkeuteen */
+         height: calc(1em + 2 * var(--spacing-small) + 2 * 1px); /* font-size + 2*padding-top/bottom + 2*border-width */
+         margin-top: 0; /* Poista oletus ylämarginaali */
     }
+
+    /* --- Tyyli sijaintikentän ja infokuvakkeen wrapperille --- */
     .location-input-icon-container {
         display: flex;
-        align-items: center;
-        gap: var(--spacing-small);
+        align-items: center; /* Kohdista syöttökenttä ja kuvake pystysuunnassa */
+        gap: var(--spacing-small); /* Rako syöttökentän ja kuvakkeen väliin */
+         /* Inputin flex-grow pitää sisällään inputin leveyden */
     }
+
+    /* Säädä syöttökentän leveyttä icon-wrapperin sisällä */
     .location-input-icon-container input[type="text"] {
-        flex-grow: 1;
-         width: auto;
-         margin-bottom: 0;
+        flex-grow: 1; /* Anna syöttökentälle tilaa kasvaa */
+         width: auto; /* Anna flexin hallita leveyttä */
+         margin-bottom: 0; /* Poista alareunamarginaali */
     }
+
+    /* Tyyli info-kuvakkeelle (Maakunta) */
     .info-icon {
         cursor: pointer;
-        color: var(--accent-color);
+        color: var(--accent-color); /* Korostusväri */
         font-weight: bold;
-        flex-shrink: 0;
-        display: none;
+        flex-shrink: 0; /* Estä kuvaketta kutistumasta */
+        display: none; /* Piilotettu oletuksena, JS näyttää kun tarpeen (vain maakunnalle) */
     }
+
+
+    /* Tyyli maakuntalistan containerille */
     #regionListContainer {
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
         padding: var(--spacing-small);
         margin-top: var(--spacing-small);
-        max-height: 150px;
-        overflow-y: auto;
-        background-color: var(--card-bg);
-        z-index: 1;
-        position: relative;
-        font-size: 0.9em;
+        max-height: 150px; /* Rajoita korkeutta */
+        overflow-y: auto; /* Lisää vierityspalkki tarvittaessa */
+        background-color: var(--card-bg); /* Sama tausta kuin containerilla */
+        z-index: 1; /* Varmista, että näkyy muiden päällä tarvittaessa */
+        position: relative; /* Varmista position, jotta z-index toimii */
+        font-size: 0.9em; /* Pienempi teksti */
     }
+
+    /* Tyyli maakuntalistan yksittäisille kohteille */
     .region-list-item {
-        padding: var(--spacing-mobile-small);
+        padding: var(--spacing-mobile-small); /* Pienempi padding */
         cursor: pointer;
     }
+    /* Optional: hover effect for list items */
     .region-list-item:hover {
-        background-color: var(--button-hover-bg);
+        background-color: var(--button-hover-bg); /* Hover-väri */
     }
+
+
+    /* Mobiililaitteille (< 600px) */
     @media (max-width: 600px) {
         body { margin: var(--spacing-mobile-medium); }
         .container {
@@ -234,6 +300,8 @@
         .header-area h2 { font-size: 1.5em; }
         label { margin-top: var(--spacing-mobile-medium); margin-bottom: var(--spacing-mobile-small); }
         select, input[type="date"], input[type="text"] { margin-bottom: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small); }
+
+        /* Mobiili säännöt Aikarajauksen riveille */
         #aikaKentat > .row {
              flex-direction: row; flex-wrap: wrap;
              gap: var(--spacing-mobile-small);
@@ -242,12 +310,16 @@
         #aikaKentat > .row > div {
             min-width: 0; flex: 1 1 calc(50% - var(--spacing-mobile-small) / 2);
         }
+
+         /* Yleiset mobiili säännöt muille .row elementeille */
          .row:not(#aikaKentat > .row) {
              flex-direction: column;
              gap: var(--spacing-mobile-medium);
              margin-bottom: var(--spacing-mobile-medium);
          }
          .row:not(#aikaKentat > .row) > div { min-width: 100%; }
+
+        /* Mobiilisäädöt käyttäjänimikentälle ja Nollaa-napille */
         .user-input-container {
             flex-direction: column; align-items: stretch;
             gap: var(--spacing-mobile-small); margin-bottom: var(--spacing-mobile-medium);
@@ -256,30 +328,37 @@
              width: 100%; height: auto; flex-grow: 0;
         }
          #resetButton { padding: var(--spacing-mobile-small); }
+
+        /* Mobiilisäädöt sijaintikentän ja infokuvakkeen wrapperille */
          .location-input-icon-container {
-             flex-direction: row;
+             flex-direction: row; /* Pidä rinnakkain */
              align-items: center;
              gap: var(--spacing-mobile-small);
-             margin-bottom: var(--spacing-mobile-medium);
+             margin-bottom: var(--spacing-mobile-medium); /* Rako listaan tai seuraavaan elementtiin */
          }
           .location-input-icon-container input[type="text"] {
               width: auto; flex-grow: 1;
           }
           .info-icon {
               align-self: center; margin-bottom: 0;
-               width: auto;
+               width: auto; /* Auto width for icons */
           }
+
           #regionListContainer {
               max-height: 100px;
               padding: var(--spacing-mobile-small);
+              /* On mobile, this container might need to clear the float/flex-items above it if not in a stacked flow */
+              /* Adding a margin-top here helps ensure it's below the input/icon/button row */
               margin-top: var(--spacing-mobile-small);
          }
+
+
         button { margin-top: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); width: 100%; }
         a#linkki { margin-top: var(--spacing-mobile-medium); }
         #map-overlay { font-size: 0.8em; margin-bottom: var(--spacing-mobile-small); }
         #copyLinkButton { margin-top: var(--spacing-mobile-small); width: 100%; }
     }
-  </style>
+    </style>
 </head>
 <body>
   <div class="container">
@@ -287,6 +366,7 @@
         <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
         <h2>Kätkö tilastojen - Kuvageneraattori</h2>
     </div>
+
     <label for="user">Käyttäjätunnus:</label>
     <div class="user-input-container">
         <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
@@ -299,6 +379,8 @@
         </datalist>
          <button id="resetButton" type="button">Nollaa</button>
     </div>
+
+
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
       <option value="matrix">T/D-taulukko</option>
@@ -308,11 +390,13 @@
       <option value="hiddenday">Jasmer</option>
       <option value="saari">saarilöydöt</option>
     </select>
+
     <label for="aikavalinta">Aikarajaus:</label>
     <select id="aikavalinta" onchange="toggleAikaKentat()">
       <option value="ei">Ei aikarajausta</option>
       <option value="kylla">Valitse aikaväli</option>
     </select>
+
     <div id="aikaKentat" style="display:none;">
       <div class="row">
         <div>
@@ -339,6 +423,7 @@
         </div>
       </div>
     </div>
+
     <label for="cachetype">Kätkötyyppi:</label>
     <select id="cachetype">
       <option value="">—</option>
@@ -359,6 +444,7 @@
       <option value="98">Muut paitsi tradit</option>
       <option value="99">Kaikki event-tyypit</option>
       </select>
+
     <div id="yearSpecificFilters">
         <label>Vuosikalenterin lisäsuodatus:</label>
         <div class="row">
@@ -394,14 +480,23 @@
          </div>
     </div>
     <button onclick="luoLinkki()">Luo linkki ja kuva</button>
+
     <div class="image-wrapper">
       <div id="map-overlay">Klikkaa karttaa isommaksi</div>
       <img id="kuva" alt="">
     </div>
+
     <a id="linkki" href="#" target="_blank"></a>
+
     <button id="copyLinkButton">Kopioi linkki</button>
+
+
   </div>
+
   <script>
+    // Copyright (c) 2025 mikkokalevi
+
+    // Mappaus käyttäjien nimimerkkien ja userid:den välillä
     const userIds = {
         "mikkokalevi": 306478,
         "eukka": 36206,
@@ -409,7 +504,10 @@
         "lahjemies": 308779,
         "milde04": 29523
     };
+
     const tripletOptionData = { value: '90', text: 'Triplet-extra: tradi, multi, mysse löydöt' };
+
+    // Lista Suomen maakunnista (käytetään maakunta-valintaan)
     const suomenMaakunnat = [
         "Ahvenanmaa", "Etelä-Karjala", "Etelä-Pohjanmaa", "Etelä-Savo",
         "Kainuu", "Kanta-Häme", "Keski-Pohjanmaa", "Keski-Suomi",
@@ -417,6 +515,8 @@
         "Pohjois-Karjala", "Pohjois-Pohjanmaa", "Pohjois-Savo", "Päijät-Häme",
         "Satakunta", "Uusimaa", "Varsinais-Suomi"
     ].sort();
+
+
     function formatDate(input) {
       const parts = input.split("-");
       if (!parts || parts.length !== 3) {
@@ -425,6 +525,7 @@
       }
       return `${parts[2]}.${parts[1]}.${parts[0]}`;
     }
+
     function toggleAikaKentat() {
       const valinta = document.getElementById("aikavalinta")?.value || '';
       const aikaKentatDiv = document.getElementById("aikaKentat");
@@ -434,76 +535,110 @@
          console.error("Element #aikaKentat not found.");
        }
     }
+
+    // Funktio näyttämään/piilottamaan vuosikalenterin lisäsuodattimet
     function toggleYearSpecificFilters() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const yearSpecificFiltersDiv = document.getElementById("yearSpecificFilters");
+        // Haetaan tarvittavat elementit tässä
         const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
         const locationFilterValueInput = document.getElementById("locationFilterValue");
         const extraFilterSelect = document.getElementById("extraFilter");
         const regionInfoIcon = document.getElementById("regionInfoIcon");
+        // municipalitySelectButton poistettu tästä versiosta
         const regionListContainer = document.getElementById("regionListContainer");
+
+
         if (!kuvatyyppiSelect || !yearSpecificFiltersDiv || !pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !extraFilterSelect || !regionInfoIcon || !regionListContainer) {
              console.error("Required year specific filter elements not found in toggleYearSpecificFilters.");
+             // Tarkista puuttuvat elementit tarkemmin
              if (!kuvatyyppiSelect) console.error("Missing: #kuvatyyppi");
              if (!yearSpecificFiltersDiv) console.error("Missing: #yearSpecificFilters");
              if (!pkuntaMkuntaChoiceSelect) console.error("Missing: #pkuntaMkuntaChoice");
              if (!locationFilterValueInput) console.error("Missing: #locationFilterValue");
              if (!extraFilterSelect) console.error("Missing: #extraFilter");
-             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon");
+             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon"); // Tämä puuttuu nyt
              if (!regionListContainer) console.error("Missing: #regionListContainer");
              return;
         }
+
         if (kuvatyyppiSelect.value === 'year') {
             yearSpecificFiltersDiv.style.display = 'block';
+            // Päivitä sijaintikentän tila ja Valitse/Info -napin/iconin näkyvyys
              handlePkuntaMkuntaChoice();
         } else {
             yearSpecificFiltersDiv.style.display = 'none';
+            // Nollaa arvot, kun osio piilotetaan
             pkuntaMkuntaChoiceSelect.value = 'none';
             locationFilterValueInput.value = '';
             locationFilterValueInput.disabled = true;
             locationFilterValueInput.placeholder = "";
             extraFilterSelect.value = '';
+
+            // Piilota icon ja maakuntalista, kun osio piilotetaan
             regionInfoIcon.style.display = 'none';
+            // municipalitySelectButton poistettu tästä versiosta
             regionListContainer.style.display = 'none';
         }
     }
+
+    // Funktio käsittelemään paikkakunta/maakunta -valinnan yksinoikeutta ja nappien näyttämistä
     function handlePkuntaMkuntaChoice() {
         const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
         const locationFilterValueInput = document.getElementById("locationFilterValue");
-        const regionInfoIcon = document.getElementById("regionInfoIcon");
-        const regionListContainer = document.getElementById("regionListContainer");
-         if (!pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !regionInfoIcon || !regionListContainer) {
+        const regionInfoIcon = document.getElementById("regionInfoIcon"); // Maakunta icon
+        // municipalitySelectButton poistettu tästä versiosta
+        const regionListContainer = document.getElementById("regionListContainer"); // Maakunta lista container
+
+
+         if (!pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !regionInfoIcon || !regionListContainer) { // municipalitySelectButton poistettu tarkistuksesta
              console.error("Required pkunta/mkunta elements or buttons/icons not found in handler.");
+              // Tarkista puuttuvat elementit tarkemmin
              if (!pkuntaMkuntaChoiceSelect) console.error("Missing: #pkuntaMkuntaChoice in handler");
              if (!locationFilterValueInput) console.error("Missing: #locationFilterValue in handler");
-             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon in handler");
+             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon in handler"); // Tämä puuttuu nyt
+              // if (!municipalitySelectButton) console.error("Missing: #municipalitySelectButton in handler"); // Tämä poistettu
              if (!regionListContainer) console.error("Missing: #regionListContainer in handler");
              return;
          }
+
         const choice = pkuntaMkuntaChoiceSelect.value;
+
+        // Piilota icon ja maakuntalista aina aluksi
         regionInfoIcon.style.display = 'none';
+        // municipalitySelectButton poistettu tästä versiosta
         regionListContainer.style.display = 'none';
+
+        // Tyhjennä vanha maakuntalistan sisältö
         regionListContainer.innerHTML = '';
+
+
         if (choice === 'pkunta') {
             locationFilterValueInput.disabled = false;
             locationFilterValueInput.placeholder = "esim. Lahti, Heinola";
+            // Paikkakunta Valitse -nappia ei näytetä tässä versiossa
+
         } else if (choice === 'mkunta') {
              locationFilterValueInput.disabled = false;
              locationFilterValueInput.placeholder = "esim. Päijät-Häme, Pirkanmaa";
+             // Näytä Maakunta Info -kuvake
              regionInfoIcon.style.display = 'inline-block';
         }
-         else {
+         else { // choice === 'none'
             locationFilterValueInput.value = '';
             locationFilterValueInput.disabled = true;
             locationFilterValueInput.placeholder = "";
         }
     }
+
+    // Funktio populoi ja näyttää/piilottaa maakuntalistan (käytetään vain Maakunnalle)
     function toggleRegionList() {
          const regionListContainer = document.getElementById("regionListContainer");
          if (!regionListContainer) {
              console.error("Region list container not found for toggle.");
              return;
          }
+
          if (regionListContainer.style.display === 'block') {
              console.log("Hiding region list.");
              regionListContainer.style.display = 'none';
@@ -514,6 +649,7 @@
                      const regionItem = document.createElement('div');
                      regionItem.textContent = maakunta;
                      regionItem.classList.add('region-list-item');
+
                      regionItem.addEventListener('click', function() {
                           const locationInput = document.getElementById("locationFilterValue");
                           if (locationInput) {
@@ -521,36 +657,51 @@
                                if (currentValue) {
                                    if (!currentValue.endsWith(', ') && !currentValue.endsWith(',')) {
                                        locationInput.value += ', ';
-                                   } else if (currentValue.endsWith(',')) {
+                               } else if (currentValue.endsWith(',')) {
                                         locationInput.value += ' ';
-                                   }
                                }
                                locationInput.value += this.textContent;
                                locationInput.focus();
-                               toggleRegionList();
+                               toggleRegionList(); // Piilota lista valinnan jälkeen
                           }
                      });
+
                      regionListContainer.appendChild(regionItem);
                  });
                   console.log("Region list population complete.");
              } else {
                  console.log("Region list already populated.");
              }
+
              console.log("Showing region list.");
              regionListContainer.style.display = 'block';
          }
     }
+
+    // setMunicipality funktio poistettu tästä versiosta
+
+
+    // Funktio käsittelemään kuvatyypin muutoksia ja Triplet-option näyttämistä
     function handleKuvatyyppiChange() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const cachetypeSelect = document.getElementById("cachetype");
+
         if (!kuvatyyppiSelect || !cachetypeSelect) {
              console.error("Required select elements not found for kuvatyyppi change handler.");
              return;
         }
+
         const selectedType = kuvatyyppiSelect.value;
+
+        // Kutsu muut toggle-funktiot
         toggleAikaKentat();
+        // Tämä hoitaa nyt myös sijaintivalinnan (Paikkakunta/Maakunta) UI:n ja nappien/ikonin näytön
         toggleYearSpecificFilters();
+
+
+        // --- Käsittele Triplet-option näyttäminen/piilottaminen ---
         const existingTripletOption = cachetypeSelect.querySelector(`option[value="${tripletOptionData.value}"]`);
+
         if (selectedType === 'kunta') {
             if (!existingTripletOption) {
                 const opt = document.createElement("option");
@@ -567,22 +718,31 @@
             }
         }
     }
+
+
     function luoLinkki() {
+      // --- Hae kaikki tarvittavat elementit heti alussa ---
       const imageElement = document.getElementById("kuva");
       const linkElementBelow = document.getElementById("linkki");
       const overlayElement = document.getElementById("map-overlay");
       const imageWrapper = document.querySelector('.image-wrapper');
       const copyLinkButton = document.getElementById("copyLinkButton");
+
       if (!imageElement || !linkElementBelow || !overlayElement || !imageWrapper || !copyLinkButton) {
           console.error("Error: Required output elements not found in the DOM.");
           alert("Työkalussa tapahtui virhe (elementtejä puuttuu).");
           return;
       }
+
+      // --- Reset output elements visibility ---
       imageWrapper.style.display = 'none';
       overlayElement.style.display = 'none';
       linkElementBelow.style.display = 'none';
       copyLinkButton.style.display = 'none';
       imageElement.src = '';
+
+
+      // --- Hae lomakekenttien arvot ---
       const baseUrl = "https://www.geocache.fi/stat/";
       const kuvatyyppi = document.getElementById("kuvatyyppi")?.value || '';
       const user = document.getElementById("user")?.value.trim() || '';
@@ -592,17 +752,27 @@
       const aikavalinta = document.getElementById("aikavalinta")?.value || '';
       const year = document.getElementById("year")?.value || '';
       const month = document.getElementById("month")?.value || '';
+
+      // Hae vuosikalenterin lisäsuodatinarvot
       const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice")?.value || '';
       const locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || '';
       const extraFilter = document.getElementById("extraFilter")?.value || '';
+
+
+      // Tarkista käyttäjänimi heti
       if (!user) {
         alert("Syötä käyttäjänimi.");
         return;
       }
+
+      // Oletuksena muodostettava URL kuvalle
       let params = `?user=${encodeURIComponent(user)}`;
+
       if (kuvatyyppi === "hiddenday") {
         params += `&type=2`;
       }
+
+      // --- Aikavalinta-logiikka ---
       if (aikavalinta === "kylla") {
         if (start && end) {
            const formattedStart = formatDate(start);
@@ -614,6 +784,7 @@
                alert("Virheellinen päivämäärämuoto.");
                return;
            }
+
         } else {
           if (year && year !== "current") {
                params += `&year=${year}`;
@@ -623,8 +794,11 @@
           }
         }
       }
+
+      // --- Vuosikalenterin lisäsuodatus (pkunta, mkunta, extra) ---
       if (kuvatyyppi === "year") {
           if (locationFilterValue) {
+              // Lisätään parametri sen mukaan, mikä sijaintityyppi oli valittuna
               if (pkuntaMkuntaChoice === 'pkunta') {
                   params += `&pkunta=${encodeURIComponent(locationFilterValue)}`;
               } else if (pkuntaMkuntaChoice === 'mkunta') {
@@ -635,14 +809,26 @@
               params += `&extra=${extraFilter}`;
           }
       }
+
+
+      // --- Kätkötyyppi ---
       if (cachetype) {
         params += `&cachetype=${cachetype}`;
       }
+
       const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
+
+
+      // URL, joka kopioidaan leikepöydälle
       let urlToCopy = finalUrl;
+
+
+      // --- Kuntakartta-spesifi logiikka ---
       const selectedUserId = userIds[user];
+
       if (kuvatyyppi === "kunta" && selectedUserId) {
           let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
+
           if (cachetype) {
               largeMapUrl += `&cachetype=${cachetype}`;
           }
@@ -654,28 +840,40 @@
                    largeMapUrl += `&month=${month}`;
                }
           }
+
           urlToCopy = largeMapUrl;
+
           imageElement.src = finalUrl;
           imageElement.alt = "Kuntakartta (klikkaa isompaan kuvaan)";
           imageElement.dataset.largeMapUrl = largeMapUrl;
           imageElement.style.cursor = 'pointer';
           linkElementBelow.style.display = 'none';
           overlayElement.style.display = 'block';
+
+
       } else {
           imageElement.src = finalUrl;
           imageElement.alt = "Tilastokuva";
+
           delete imageElement.dataset.largeMapUrl;
           imageElement.style.cursor = 'default';
+
           linkElementBelow.href = finalUrl;
           linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
           linkElementBelow.style.display = 'inline-block';
+
           overlayElement.style.display = 'none';
       }
+
+      // --- Handle image/output area visibility & Copy Button ---
        if (finalUrl) {
             imageWrapper.style.display = 'block';
+
             copyLinkButton.style.display = 'inline-block';
             copyLinkButton.dataset.urlToCopy = urlToCopy;
             copyLinkButton.textContent = "Kopioi linkki";
+
+            // --- Tallenna valinnat Local Storageen ---
             const settingsToSave = {
                 user: user,
                 kuvatyyppi: kuvatyyppi,
@@ -694,6 +892,7 @@
             } catch (e) {
                 console.error("Could not save settings to Local Storage", e);
             }
+
         } else {
              console.error("Final URL was not generated or is invalid.");
             imageWrapper.style.display = 'none';
@@ -702,7 +901,11 @@
             copyLinkButton.style.display = 'none';
         }
     }
+
+    // --- DOMContentLoaded -tapahtumankäsittelijä ---
     document.addEventListener('DOMContentLoaded', (event) => {
+
+        // --- Hae kaikki tarvittavat elementit heti alussa ---
         const userElement = document.getElementById("user");
         const kuvatyyppiElement = document.getElementById("kuvatyyppi");
         const aikavalintaElement = document.getElementById("aikavalinta");
@@ -720,8 +923,12 @@
         const overlayElement = document.getElementById("map-overlay");
         const linkElementBelow = document.getElementById("linkki");
         const resetButton = document.getElementById("resetButton");
-        const regionInfoIcon = document.getElementById("regionInfoIcon");
-        const regionListContainer = document.getElementById("regionListContainer");
+        const regionInfoIcon = document.getElementById("regionInfoIcon"); // Maakunta icon
+        // municipalitySelectButton poistettu tästä versiosta
+        const regionListContainer = document.getElementById("regionListContainer"); // Maakunta lista container
+
+
+        // --- Populate dropdowns ---
         if (yearSelect) {
             const currentYear = new Date().getFullYear();
             yearSelect.innerHTML = '';
@@ -737,6 +944,7 @@
             }
              if (yearSelect.value === "") { yearSelect.value = "current"; }
         } else { console.error("Year select element (#year) not found."); }
+
         if (monthSelect) {
             monthSelect.innerHTML = '';
             const defaultMonthOpt = document.createElement("option");
@@ -752,15 +960,21 @@
             }
              if (monthSelect.value === "") { monthSelect.value = "current"; }
         } else { console.error("Month select element (#month) not found."); }
-        if (kuvatyyppiElement) {
+
+
+        // --- Add Event Listeners (check if elements exist) ---
+         if (kuvatyyppiElement) {
             kuvatyyppiElement.addEventListener('change', handleKuvatyyppiChange);
          } else { console.error("Kuvatyyppi select not found for listener."); }
+
          if (aikavalintaElement) {
              aikavalintaElement.addEventListener('change', toggleAikaKentat);
          } else { console.error("Aikavalinta select not found for listener."); }
+
          if (pkuntaMkuntaChoiceElement) {
             pkuntaMkuntaChoiceElement.addEventListener('change', handlePkuntaMkuntaChoice);
          } else { console.error("pkuntaMkuntaChoice select not found for listener."); }
+
          if (imageElement) {
             imageElement.addEventListener('click', function() {
                 const largeMapUrl = this.dataset.largeMapUrl;
@@ -769,6 +983,7 @@
                 }
             });
          } else { console.error("Image element (#kuva) not found for listener."); }
+
          if (copyLinkButton) {
             copyLinkButton.addEventListener('click', function() {
                 const urlToCopy = this.dataset.urlToCopy;
@@ -790,48 +1005,79 @@
                 }
             });
          } else { console.error("Copy link button (#copyLinkButton) not found for listener."); }
+
+        // --- Add listener for the Region Info Icon (Maakunta list popup) ---
+        // Tätä kuuntelijaa EI muutettu, se toimii edelleen vain maakunnalle ja avaa paikallisen listan
          if (regionInfoIcon) {
             regionInfoIcon.addEventListener('click', toggleRegionList);
          } else { console.error("Region info icon (#regionInfoIcon) not found."); }
+
+        // --- Municipality Select Button (Paikkakunta popup) poistettu tästä versiosta ---
+
+
+        // --- Lisää kuuntelija Nollaa-napille ---
          if (resetButton) {
             resetButton.addEventListener('click', function() {
+                // Nollaa lomakekentät
                 if (userElement) userElement.value = '';
                 if (kuvatyyppiElement) kuvatyyppiElement.value = 'matrix';
                 if (aikavalintaElement) aikavalintaElement.value = 'ei';
+
                 if (yearSelect) yearSelect.value = 'current';
                 if (monthSelect) monthSelect.value = 'current';
                 if (startdateElement) startdateElement.value = '';
                 if (enddateElement) enddateElement.value = '';
+
                 if (cachetypeElement) cachetypeElement.value = '';
+
                 if (pkuntaMkuntaChoiceElement) pkuntaMkuntaChoiceElement.value = 'none';
                  if (locationFilterValueElement) locationFilterValueElement.value = '';
                 if (extraFilterElement) extraFilterElement.value = '';
+
+
+                // Tyhjennä tallennetut asetukset
                 try {
                     localStorage.removeItem('statGeneratorSettings');
                      console.log("Local Storage settings cleared by Reset button.");
                 } catch (e) {
                     console.error("Could not clear Local Storage on reset:", e);
                 }
+
+                // Päivitä käyttöliittymän tila vastaamaan nollattuja arvoja
+                // handleKuvatyyppiChange kutsuu toggleAikaKentat ja toggleYearSpecificFilters (joka kutsuu handlePkuntaMkuntaChoice)
                 if (typeof handleKuvatyyppiChange === 'function') {
                      handleKuvatyyppiChange();
                 } else {
+                     // Fallback
                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                      // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa varmuuden vuoksi
                      if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
                  }
+
+
+                // Piilota kuvan tulostusalue
                  if (imageWrapper) imageWrapper.style.display = 'none';
                  if (overlayElement) overlayElement.style.display = 'none';
                  if (linkElementBelow) linkElementBelow.style.display = 'none';
                  if (copyLinkButton) copyLinkButton.style.display = 'none';
                  if (imageElement) imageElement.src = '';
+
+                 // Piilota myös maakuntalista jos se oli auki
                  if(regionListContainer) regionListContainer.style.display = 'none';
-                 console.log("Form reset complete.");
+
+
+                console.log("Form reset complete.");
             });
          } else { console.error("Reset button (#resetButton) not found for listener."); }
+
+
+        // --- Load settings from Local Storage ---
         try {
             const savedSettings = localStorage.getItem('statGeneratorSettings');
             if (savedSettings) {
                 const settings = JSON.parse(savedSettings);
+                // Täytä kentät
                 if (userElement && settings.user !== undefined) userElement.value = settings.user;
                 if (kuvatyyppiElement && settings.kuvatyyppi !== undefined) kuvatyyppiElement.value = settings.kuvatyyppi;
                 if (aikavalintaElement && settings.aikavalinta !== undefined) aikavalintaElement.value = settings.aikavalinta;
@@ -842,43 +1088,56 @@
                 if (pkuntaMkuntaChoiceElement && settings.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaChoiceElement.value = settings.pkuntaMkuntaChoice;
                 if (locationFilterValueElement && settings.locationFilterValue !== undefined) locationFilterValueElement.value = settings.locationFilterValue;
                 if (extraFilterElement && settings.extraFilter !== undefined) extraFilterElement.value = settings.extraFilter;
+
+                 // Kutsu handleKuvatyyppiChange asetusten latauksen jälkeen.
+                 // Tämä funktio kutsuu myös toggleAikaKentat ja toggleYearSpecificFilters (joka kutsuu handlePkuntaMkuntaChoice)
                  if (typeof handleKuvatyyppiChange === 'function') {
                      handleKuvatyyppiChange();
+                     // Aseta cachetype-arvo vasta kun handleKuvatyyppiChange on suoritettu
                      if (cachetypeElement && settings.cachetype !== undefined) {
                           let loadedCachetype = settings.cachetype;
                           if (loadedCachetype !== '' && !cachetypeElement.querySelector(`option[value="${loadedCachetype}"]`)) {
                                console.warn(`Loaded cachetype value "${loadedCachetype}" not found in select options. Resetting.`);
-                               loadedCachetype = '';
                            }
                           cachetypeElement.value = loadedCachetype;
                      }
                  } else {
                       console.error("handleKuvatyyppiChange function not found during load.");
+                       // Fallback
                       if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                       if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
                        if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
+                        // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa
                       if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
                  }
+
             } else {
+                 // Jos asetuksia ei löytynyt, varmista oikea tila alussa kutsumalla handleria
                  if (typeof handleKuvatyyppiChange === 'function') {
                       handleKuvatyyppiChange();
                   } else {
                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                     // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa
                     if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
                  }
             }
         } catch (e) {
             console.error("Could not load settings from Local Storage", e);
+             // Varmista oikea tila virheen sattuessa
              if (typeof handleKuvatyyppiChange === 'function') {
                   handleKuvatyyppiChange();
               } else {
                  if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
                  if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                  // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa
                  if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
              }
+            // localStorage.removeItem('statGeneratorSettings');
         }
-    });
+
+    }); // DOMContentLoaded päättyy
+
   </script>
 </body>
 </html>
