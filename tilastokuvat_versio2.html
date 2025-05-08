@@ -254,20 +254,14 @@
         font-weight: bold;
         flex-shrink: 0; /* Estä kuvaketta kutistumasta */
         display: none; /* Piilotettu oletuksena, JS näyttää kun tarpeen (vain maakunnalle) */
-         /* Optional: hover effect */
-        /*
-        &:hover {
-            opacity: 0.8;
-        }
-        */
     }
 
      /* --- UUSI: Tyyli paikkakunta-valinnan apuvalikoiden containerille --- */
     #municipalitySelectAids {
         /* Piilotettu oletuksena, JS näyttää kun Paikkakunta valitaan */
-        display: none;
+        display: none; /* Default tila CSS:ssä */
         /* Käytetään flexboxia valikoiden ja napin sijoitteluun riville */
-        /* display: flex;  -- tämä siirretään JS:ään */
+        /* display: flex;  -- tämä siirretään JS:ään kun näytetään */
         flex-wrap: wrap; /* Salli rivitys pienellä näytöllä */
         gap: var(--spacing-small); /* Rako elementtien välissä */
         align-items: flex-end; /* Kohdista napin alareuna valikoiden alareunaan */
@@ -440,7 +434,7 @@
 
 
     <label for="kuvatyyppi">Kuvan tyyppi:</label>
-    <select id="kuvatyyppi">
+    <select id="kuvatyyppi" onchange="handleKuvatyyppiChange()">
       <option value="matrix">T/D-taulukko</option>
       <option value="kunta">Kuntakartta</option>
       <option value="year">Vuosikalenteri</option>
@@ -508,14 +502,14 @@
         <div class="row">
             <div>
                 <label for="pkuntaMkuntaChoice">Sijainnin tyyppi:</label>
-                <select id="pkuntaMkuntaChoice">
+                <select id="pkuntaMkuntaChoice" onchange="handlePkuntaMkuntaChoice()">
                     <option value="none">Ei rajoitusta</option>
                     <option value="pkunta">Paikkakunta</option>
                     <option value="mkunta">Maakunta</option>
                 </select>
             </div>
             <div>
-                 <label for="locationFilterValue">Nimi (pilkulla erotettuna):</label>
+                 <label for="locationFilterValue">Nimi (pilkulla eroteltuna):</label>
                  <div class="location-input-row">
                      <input type="text" id="locationFilterValue" disabled placeholder="">
                      <span id="regionInfoIcon" class="info-icon" title="Näytä maakunnat">ⓘ</span>
@@ -614,6 +608,8 @@
     };
 
 
+    // --- FUNKTIOMÄÄRITTELYT (Globaalisti käytettävissä) ---
+
     function formatDate(input) {
       const parts = input.split("-");
       if (!parts || parts.length !== 3) {
@@ -630,7 +626,7 @@
        if (aikaKentatDiv) {
          aikaKentatDiv.style.display = valinta === "kylla" ? "block" : "none";
        } else {
-         console.error("Element #aikaKentat not found.");
+         console.error("Element #aikaKentat not found in toggleAikaKentat.");
        }
     }
 
@@ -640,14 +636,12 @@
         const yearSpecificFiltersDiv = document.getElementById("yearSpecificFilters");
         // Haetaan tarvittavat elementit tässä
         const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
-        // locationFilterValueInput haetaan handlePkuntaMkuntaChoice:ssa
-        // extraFilterSelect haetaan handlePkuntaMkuntaChoice:ssa
-        // regionInfoIcon haetaan handlePkuntaMkuntaChoice:ssa
         const municipalitySelectAids = document.getElementById("municipalitySelectAids"); // Haetaan apuvalikot
-        // regionListContainer haetaan handlePkuntaMkuntaChoice:ssa
+        const regionInfoIcon = document.getElementById("regionInfoIcon");
+        const regionListContainer = document.getElementById("regionListContainer");
 
 
-        if (!kuvatyyppiSelect || !yearSpecificFiltersDiv || !pkuntaMkuntaChoiceSelect || !municipalitySelectAids) { // Lisätty municipalitySelectAids
+        if (!kuvatyyppiSelect || !yearSpecificFiltersDiv || !pkuntaMkuntaChoiceSelect || !municipalitySelectAids || !regionInfoIcon || !regionListContainer) {
              console.error("Required core year specific filter elements not found in toggleYearSpecificFilters.");
              return;
         }
@@ -655,12 +649,10 @@
         if (kuvatyyppiSelect.value === 'year') {
             yearSpecificFiltersDiv.style.display = 'block';
             // Päivitä sijaintikentän tila ja apuelementtien näkyvyys
-             handlePkuntaMkuntaChoice();
+             handlePkuntaMkuntaChoice(); // Tämä kutsuu saveMunicipalitySelectState:a lopussa
         } else {
             yearSpecificFiltersDiv.style.display = 'none';
             // Nollaa arvot ja piilota elementit kun osio piilotetaan
-            const pkuntaMkuntaChoiceSelect = document.getElementById("pkuntaMkuntaChoice");
-             if(pkuntaMkuntaChoiceSelect) pkuntaMkuntaChoiceSelect.value = 'none';
             const locationFilterValueInput = document.getElementById("locationFilterValue");
              if(locationFilterValueInput) {
                  locationFilterValueInput.value = '';
@@ -671,14 +663,28 @@
              if(extraFilterSelect) extraFilterSelect.value = '';
 
              // Piilota kaikki sijaintiin liittyvät apuelementit
-             const regionInfoIcon = document.getElementById("regionInfoIcon");
-             if(regionInfoIcon) regionInfoIcon.style.display = 'none';
-             // municipalitySelectAids haettiin jo ylempänä
+             regionInfoIcon.style.display = 'none';
              municipalitySelectAids.style.display = 'none'; // Piilota apuvalikot
-             const regionListContainer = document.getElementById("regionListContainer");
-             if(regionListContainer) regionListContainer.style.display = 'none';
+             regionListContainer.style.display = 'none'; // Piilota maakuntalista container
              // Tyhjennä maakuntalista containerin sisältö varmuuden vuoksi
-             if(regionListContainer) regionListContainer.innerHTML = '';
+             regionListContainer.innerHTML = '';
+              // Tyhjennä myös paikkakunta-apuvalikot ja niiden tila
+             const municipalityRegionSelect = document.getElementById("municipalityRegionSelect");
+             const municipalitySelect = document.getElementById("municipalitySelect");
+             const addMunicipalityButton = document.getElementById("addMunicipalityButton");
+             if (municipalityRegionSelect) municipalityRegionSelect.value = ''; // Nollaa maakuntavalikko
+             if (municipalitySelect) {
+                  municipalitySelect.innerHTML = '<option value="">— Valitse kunta —</option>'; // Tyhjennä kuntavalikko
+                  municipalitySelect.disabled = true;
+             }
+             if (addMunicipalityButton) {
+                 addMunicipalityButton.disabled = true;
+                 addMunicipalityButton.style.backgroundColor = '#888';
+                 addMunicipalityButton.style.cursor = 'not-allowed';
+             }
+
+             // Tallenna apuvalikoiden tila (joka nyt on nollattu/piilotettu) Local Storageen
+             saveMunicipalitySelectState(); // Kutsu tallennusta tässäkin
         }
     }
 
@@ -698,15 +704,6 @@
 
          if (!pkuntaMkuntaChoiceSelect || !locationFilterValueInput || !regionInfoIcon || !municipalitySelectAids || !regionListContainer || !municipalityRegionSelect || !municipalitySelect || !addMunicipalityButton) {
              console.error("Required pkunta/mkunta elements or aids not found in handler.");
-              // Tarkista puuttuvat elementit tarkemmin
-             if (!pkuntaMkuntaChoiceSelect) console.error("Missing: #pkuntaMkuntaChoice in handler");
-             if (!locationFilterValueInput) console.error("Missing: #locationFilterValue in handler");
-             if (!regionInfoIcon) console.error("Missing: #regionInfoIcon in handler");
-             if (!municipalitySelectAids) console.error("Missing: #municipalitySelectAids in handler");
-             if (!regionListContainer) console.error("Missing: #regionListContainer in handler");
-             if (!municipalityRegionSelect) console.error("Missing: #municipalityRegionSelect in handler");
-             if (!municipalitySelect) console.error("Missing: #municipalitySelect in handler");
-             if (!addMunicipalityButton) console.error("Missing: #addMunicipalityButton in handler");
              return;
          }
 
@@ -760,7 +757,7 @@
             locationFilterValueInput.placeholder = "";
         }
          // Tallenna paikkakunta/maakunta valinnan tila Local Storageen aina, kun valinta muuttuu
-         saveMunicipalitySelectState(); // Kutsu tallennusta tässä
+         saveSettingsToLocalStorage(); // Kutsu yleistä tallennusta tässä
     }
 
     // Funktio populaamaan kuntavalikko maakuntavalinnan perusteella
@@ -825,9 +822,7 @@
 
              // Optional: Nollaa kuntavalikko tai disabloi lisää-nappi valinnan jälkeen
              // municipalitySelect.value = ''; // Reset select to default
-             // document.getElementById("addMunicipalityButton").disabled = true; // Disable button
-             // document.getElementById("addMunicipalityButton").style.backgroundColor = '#888'; // Harmaampi väri
-             // document.getElementById("addMunicipalityButton").style.cursor = 'not-allowed';
+             // handleMunicipalitySelectChange(); // Kutsu tätä päivittämään napin tila, jos select nollataan
 
              // Tallenna päivitetty locationFilterValue Local Storageen heti
              saveSettingsToLocalStorage(); // Kutsu yleistä tallennusfunktiota
@@ -914,30 +909,34 @@
 
     // Yleinen funktio asetusten tallentamiseen Local Storageen
     function saveSettingsToLocalStorage() {
-         const user = document.getElementById("user")?.value.trim() || '';
-         const kuvatyyppi = document.getElementById("kuvatyyppi")?.value || '';
-         const aikavalinta = document.getElementById("aikavalinta")?.value || '';
-         const year = document.getElementById("year")?.value || '';
-         const month = document.getElementById("month")?.value || '';
-         const startdate = document.getElementById("startdate")?.value || '';
-         const enddate = document.getElementById("enddate")?.value || '';
-         const cachetype = document.getElementById("cachetype")?.value || '';
-         const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice")?.value || '';
-         const locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || '';
-         const extraFilter = document.getElementById("extraFilter")?.value || '';
+         // Hae kaikki elementit arvojen saamiseksi
+         const userElement = document.getElementById("user");
+         const kuvatyyppiElement = document.getElementById("kuvatyyppi");
+         const aikavalintaElement = document.getElementById("aikavalinta");
+         const yearSelect = document.getElementById("year");
+         const monthSelect = document.getElementById("month");
+         const startdateElement = document.getElementById("startdate");
+         const enddateElement = document.getElementById("enddate");
+         const cachetypeElement = document.getElementById("cachetype");
+         const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
+         const locationFilterValueElement = document.getElementById("locationFilterValue");
+         const extraFilterElement = document.getElementById("extraFilter");
+         const municipalityRegionSelect = document.getElementById("municipalityRegionSelect");
+         const municipalitySelect = document.getElementById("municipalitySelect");
+
 
          const settingsToSave = {
-             user: user,
-             kuvatyyppi: kuvatyyppi,
-             aikavalinta: aikavalinta,
-             year: year,
-             month: month,
-             startdate: startdate,
-             enddate: enddate,
-             cachetype: cachetype,
-             pkuntaMkuntaChoice: pkuntaMkuntaChoice,
-             locationFilterValue: locationFilterValue,
-             extraFilter: extraFilter
+             user: userElement?.value.trim() || '',
+             kuvatyyppi: kuvatyyppiElement?.value || '',
+             aikavalinta: aikavalintaElement?.value || '',
+             year: yearSelect?.value || '',
+             month: monthSelect?.value || '',
+             startdate: startdateElement?.value || '',
+             enddate: enddateElement?.value || '',
+             cachetype: cachetypeElement?.value || '',
+             pkuntaMkuntaChoice: pkuntaMkuntaChoiceElement?.value || '',
+             locationFilterValue: locationFilterValueElement?.value.trim() || '',
+             extraFilter: extraFilterElement?.value || ''
              // Maakunta/Kunta apuvalikoiden arvot tallennetaan erikseen saveMunicipalitySelectState:ssa
          };
 
@@ -960,7 +959,7 @@
 
          try {
              localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave));
-             // console.log("Settings saved to Local Storage.");
+             console.log("Settings saved to Local Storage."); // Debugging
          } catch (e) {
              console.error("Could not save settings to Local Storage", e);
          }
@@ -968,6 +967,7 @@
 
 
     // Funktio asetusten tallentamiseen Local Storageen erityisesti paikkakunta-apuvalikoiden osalta
+    // Tätä kutsutaan vain, kun sijainnin tyyppi vaihtuu tai apuvalikoiden arvo muuttuu
     function saveMunicipalitySelectState() {
          const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
          const municipalityRegionSelect = document.getElementById("municipalityRegionSelect");
@@ -975,43 +975,40 @@
 
          if (!pkuntaMkuntaChoiceElement || !municipalityRegionSelect || !municipalitySelect) {
              console.error("Missing elements for saving municipality select state.");
+             // Kutsu yleistä tallennusta ilman apuvalikoiden tilaa
+             saveSettingsToLocalStorage();
              return;
          }
 
-        // Tallenna paikkakunta-apuvalikoiden tila vain jos Sijainnin tyyppi on Paikkakunta
-         if (pkuntaMkuntaChoiceElement.value === 'pkunta') {
-             try {
-                const savedSettingsString = localStorage.getItem('statGeneratorSettings');
-                let settingsToSave = savedSettingsString ? JSON.parse(savedSettingsString) : {};
+        // Lataa nykyiset asetukset, jotta ei ylikirjoiteta kaikkea
+         try {
+             const savedSettingsString = localStorage.getItem('statGeneratorSettings');
+             let settingsToSave = savedSettingsString ? JSON.parse(savedSettingsString) : {};
 
-                settingsToSave.municipalityRegionSelectValue = municipalityRegionSelect.value;
-                settingsToSave.municipalitySelectValue = municipalitySelect.value;
+            // Tallenna paikkakunta-apuvalikoiden tila vain jos Sijainnin tyyppi on Paikkakunta
+             if (pkuntaMkuntaChoiceElement.value === 'pkunta') {
+                 settingsToSave.municipalityRegionSelectValue = municipalityRegionSelect.value;
+                 settingsToSave.municipalitySelectValue = municipalitySelect.value;
+                  console.log("Saving municipality select state:", { region: municipalityRegionSelect.value, municipality: municipalitySelect.value }); // Debugging
 
-                localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave));
-                 console.log("Municipality select state saved.");
-
-             } catch (e) {
-                console.error("Could not save municipality select state to Local Storage", e);
+             } else {
+                 // Jos ei ole Paikkakunta-tilassa, poista mahdollisesti tallennetut apuvalikoiden arvot Local Storagesta
+                 delete settingsToSave.municipalityRegionSelectValue;
+                 delete settingsToSave.municipalitySelectValue;
+                 console.log("Municipality select state cleared from Storage."); // Debugging
              }
-         } else {
-             // Jos ei ole Paikkakunta-tilassa, poista mahdollisesti tallennetut apuvalikoiden arvot Local Storagesta
-             try {
-                  const savedSettingsString = localStorage.getItem('statGeneratorSettings');
-                  if (savedSettingsString) {
-                       let settingsToSave = JSON.parse(savedSettingsString);
-                       delete settingsToSave.municipalityRegionSelectValue;
-                       delete settingsToSave.municipalitySelectValue;
-                       localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave));
-                       console.log("Municipality select state cleared from Storage.");
-                  }
-             } catch (e) {
-                 console.error("Could not clear municipality select state from Local Storage", e);
-             }
+
+             localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave));
+
+
+         } catch (e) {
+             console.error("Could not save municipality select state to Local Storage", e);
          }
     }
 
 
     // Funktio asetusten lataamiseen Local Storagesta
+    // Tätä kutsutaan vain kerran DOMContentLoadedissa
     function loadSettingsFromLocalStorage() {
          try {
              const savedSettings = localStorage.getItem('statGeneratorSettings');
@@ -1048,6 +1045,7 @@
                  if (extraFilterElement && settings.extraFilter !== undefined) extraFilterElement.value = settings.extraFilter;
 
                  // Kutsu kuvatyypin vaihtohandleria, joka asettaa oikean UI-tilan ja kutsuu handlePkuntaMkuntaChoice:a
+                 // Tämä myös populoi paikkakunta-apuvalikoiden maakuntavalikon, jos Paikkakunta oli tallennettu.
                  if (typeof handleKuvatyyppiChange === 'function') {
                      handleKuvatyyppiChange();
 
@@ -1079,38 +1077,67 @@
 
 
                  } else {
-                      console.error("handleKuvatyyppiChange function not found during load.");
+                      console.error("handleKuvatyyppiChange function not found during load. Fallback UI setup.");
                        // Fallback logiikka, jos handleKuvatyyppiChange jostain syystä puuttuu
-                      if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
-                      if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                       // Hae elementit uudelleen varmuuden vuoksi fallbackissa
+                       const aikavalintaElement = document.getElementById("aikavalinta");
+                       const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
+
+                       if (aikavalintaElement && typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                       // toggleYearSpecificFilters kutsuu handlePkuntaMkuntaChoice:a
+                       if (pkuntaMkuntaChoiceElement && typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+
                        if (cachetypeElement && settings.cachetype !== undefined) cachetypeElement.value = settings.cachetype;
-                        // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa
-                      if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                        // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa varmuuden vuoksi
+                       if (pkuntaMkuntaChoiceElement && typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+
+                        // Yritä ladata apuvalikoiden arvot fallbackissa
+                       if (pkuntaMkuntaChoiceElement && pkuntaMkuntaChoiceElement.value === 'pkunta') {
+                           const municipalityRegionSelect = document.getElementById("municipalityRegionSelect");
+                           const municipalitySelect = document.getElementById("municipalitySelect");
+                           const addMunicipalityButton = document.getElementById("addMunicipalityButton");
+
+                            if (municipalityRegionSelect && settings.municipalityRegionSelectValue !== undefined) {
+                                 municipalityRegionSelect.value = settings.municipalityRegionSelectValue;
+                                  if (typeof populateMunicipalitySelect === 'function') populateMunicipalitySelect();
+                                   if (municipalitySelect && settings.municipalitySelectValue !== undefined) {
+                                      municipalitySelect.value = settings.municipalitySelectValue;
+                                       if (typeof handleMunicipalitySelectChange === 'function') handleMunicipalitySelectChange();
+                                   }
+                            }
+                       }
                  }
 
 
              } else {
-                 console.log("No settings found in Local Storage.");
+                 console.log("No settings found in Local Storage. Setting up default UI.");
                   // Jos asetuksia ei löytynyt, varmista oikea oletustila UI:lle
                  if (typeof handleKuvatyyppiChange === 'function') {
                       handleKuvatyyppiChange();
                   } else {
-                     if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
-                     if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
-                    if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                     // Fallback
+                     const aikavalintaElement = document.getElementById("aikavalinta");
+                     const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
+
+                     if (aikavalintaElement && typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                     if (pkuntaMkuntaChoiceElement && typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                      if (pkuntaMkuntaChoiceElement && typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
                  }
              }
          } catch (e) {
              console.error("Could not load settings from Local Storage", e);
              // Jos latauksessa virhe, poista rikkinäiset asetukset ja palauta oletustila
              localStorage.removeItem('statGeneratorSettings');
-              console.log("Cleared corrupted Local Storage settings.");
+              console.log("Cleared potentially corrupted Local Storage settings.");
+             // Varmista UI:n oletustila virheen sattuessa
              if (typeof handleKuvatyyppiChange === 'function') {
                   handleKuvatyyppiChange();
               } else {
-                 if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
-                 if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
-                if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                 const aikavalintaElement = document.getElementById("aikavalinta");
+                 const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
+                 if (aikavalintaElement && typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                 if (pkuntaMkuntaChoiceElement && typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                  if (pkuntaMkuntaChoiceElement && typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
              }
          }
     }
@@ -1157,6 +1184,7 @@
 
 
         // --- Add Event Listeners (check if elements exist) ---
+        // Event listeners for elements that are always in DOM or whose handlers are called by other handlers
         const kuvatyyppiElement = document.getElementById("kuvatyyppi");
         const aikavalintaElement = document.getElementById("aikavalinta");
         const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
@@ -1169,16 +1197,20 @@
         const addMunicipalityButton = document.getElementById("addMunicipalityButton"); // Paikkakunta Lisää -nappi
 
 
+         // Kuuntelijat elementeille, joiden handlerit on määritelty globaalisti
          if (kuvatyyppiElement) {
-            kuvatyyppiElement.addEventListener('change', handleKuvatyyppiChange);
+             // Tämä on jo onchange HTML:ssä, mutta addEventListener on yleensä parempi tapa
+             // kuvatyyppiElement.addEventListener('change', handleKuvatyyppiChange);
          } else { console.error("Kuvatyyppi select not found for listener."); }
 
          if (aikavalintaElement) {
-             aikavalintaElement.addEventListener('change', toggleAikaKentat);
+              // Tämä on jo onchange HTML:ssä
+             // aikavalintaElement.addEventListener('change', toggleAikaKentat);
          } else { console.error("Aikavalinta select not found for listener."); }
 
          if (pkuntaMkuntaChoiceElement) {
-            pkuntaMkuntaChoiceElement.addEventListener('change', handlePkuntaMkuntaChoice);
+              // Tämä on jo onchange HTML:ssä
+             // pkuntaMkuntaChoiceElement.addEventListener('change', handlePkuntaMkuntaChoice);
          } else { console.error("pkuntaMkuntaChoice select not found for listener."); }
 
          if (imageElement) {
@@ -1217,18 +1249,18 @@
             regionInfoIcon.addEventListener('click', toggleRegionList);
          } else { console.error("Region info icon (#regionInfoIcon) not found."); }
 
-        // --- UUSI: Kuuntelija maakuntavalikolle paikkakunta-apuvalikoissa ---
+        // --- Kuuntelija maakuntavalikolle paikkakunta-apuvalikoissa ---
         if (municipalityRegionSelect) {
             municipalityRegionSelect.addEventListener('change', populateMunicipalitySelect);
         } else { console.error("Municipality region select (#municipalityRegionSelect) not found."); }
 
-        // --- UUSI: Kuuntelija kuntavalikolle paikkakunta-apuvalikoissa (Lisää-napin aktivointi) ---
+        // --- Kuuntelija kuntavalikolle paikkakunta-apuvalikoissa (Lisää-napin aktivointi) ---
          if (municipalitySelect) {
             municipalitySelect.addEventListener('change', handleMunicipalitySelectChange);
          } else { console.error("Municipality select (#municipalitySelect) not found."); }
 
 
-        // --- UUSI: Kuuntelija "Lisää kunta" -napille ---
+        // --- Kuuntelija "Lisää kunta" -napille ---
         if (addMunicipalityButton) {
             addMunicipalityButton.addEventListener('click', addSelectedMunicipality);
         } else { console.error("Add municipality button (#addMunicipalityButton) not found."); }
@@ -1237,7 +1269,7 @@
         // --- Lisää kuuntelija Nollaa-napille ---
          if (resetButton) {
             resetButton.addEventListener('click', function() {
-                // Nollaa lomakekentät
+                // Hae kaikki elementit nollausta varten
                 const userElement = document.getElementById("user");
                 const kuvatyyppiElement = document.getElementById("kuvatyyppi");
                 const aikavalintaElement = document.getElementById("aikavalinta");
@@ -1249,6 +1281,12 @@
                 const pkuntaMkuntaChoiceElement = document.getElementById("pkuntaMkuntaChoice");
                 const locationFilterValueElement = document.getElementById("locationFilterValue");
                 const extraFilterElement = document.getElementById("extraFilter");
+                const municipalityRegionSelect = document.getElementById("municipalityRegionSelect");
+                const municipalitySelect = document.getElementById("municipalitySelect");
+                const addMunicipalityButton = document.getElementById("addMunicipalityButton");
+                const regionListContainer = document.getElementById("regionListContainer");
+                const municipalitySelectAids = document.getElementById("municipalitySelectAids");
+
 
                  if (userElement) userElement.value = '';
                  if (kuvatyyppiElement) kuvatyyppiElement.value = 'matrix';
@@ -1262,10 +1300,8 @@
                  if (locationFilterValueElement) locationFilterValueElement.value = '';
                  if (extraFilterElement) extraFilterElement.value = '';
 
+
                  // Nollaa myös paikkakunta-apuvalikot ja niiden tila
-                 const municipalityRegionSelect = document.getElementById("municipalityRegionSelect");
-                 const municipalitySelect = document.getElementById("municipalitySelect");
-                 const addMunicipalityButton = document.getElementById("addMunicipalityButton");
                  if (municipalityRegionSelect) municipalityRegionSelect.value = ''; // Nollaa maakuntavalikko
                  if (municipalitySelect) {
                       municipalitySelect.innerHTML = '<option value="">— Valitse kunta —</option>'; // Tyhjennä kuntavalikko
@@ -1292,11 +1328,11 @@
                 if (typeof handleKuvatyyppiChange === 'function') {
                      handleKuvatyyppiChange();
                 } else {
+                     console.error("handleKuvatyyppiChange function not found during reset. Fallback UI setup.");
                      // Fallback: kutsu tarvittavat handlerit erikseen
-                     if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
-                     if (typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
-                      // Kutsutaan handlePkuntaMkuntaChoice erikseen fallbackissa varmuuden vuoksi
-                     if (typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
+                     if (aikavalintaElement && typeof toggleAikaKentat === 'function') toggleAikaKentat();
+                     if (pkuntaMkuntaChoiceElement && typeof toggleYearSpecificFilters === 'function') toggleYearSpecificFilters();
+                     if (pkuntaMkuntaChoiceElement && typeof handlePkuntaMkuntaChoice === 'function') handlePkuntaMkuntaChoice();
                  }
 
 
@@ -1304,18 +1340,17 @@
                  const imageWrapper = document.querySelector('.image-wrapper');
                  const overlayElement = document.getElementById("map-overlay");
                  const linkElementBelow = document.getElementById("linkki");
-                 const copyLinkButton = document.getElementById("copyLinkButton");
                  const imageElement = document.getElementById("kuva");
 
                  if (imageWrapper) imageWrapper.style.display = 'none';
                  if (overlayElement) overlayElement.style.display = 'none';
                  if (linkElementBelow) linkElementBelow.style.display = 'none';
+                 // copyLinkButton haettiin jo ylempänä
                  if (copyLinkButton) copyLinkButton.style.display = 'none';
                  if (imageElement) imageElement.src = '';
 
+
                  // Piilota myös maakuntalista ja paikkakunta-apuvalikot
-                 const regionListContainer = document.getElementById("regionListContainer");
-                 const municipalitySelectAids = document.getElementById("municipalitySelectAids");
                  if(regionListContainer) regionListContainer.style.display = 'none';
                  if(municipalitySelectAids) municipalitySelectAids.style.display = 'none';
 
@@ -1326,17 +1361,10 @@
 
 
         // --- Lataa asetukset Local Storagesta ---
-        // Poistettu suora kutsu loadSettingsFromLocalStorage() tähän, kutsutaan heti alussa DOMContentLoadedin sisällä
+        // Kutsutaan asetusten latausta, joka kutsuu tarvittavia handlereita
+        loadSettingsFromLocalStorage();
 
     }); // DOMContentLoaded päättyy
-
-
-    // --- Kutsutaan asetusten latausta heti kun DOM on valmis ---
-    // Tätä kutsutaan vain kerran, kun sivu latautuu
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // Suoritetaan asetusten lataus, joka kutsuu tarvittavia handlereita
-        loadSettingsFromLocalStorage();
-    });
 
   </script>
 </body>
