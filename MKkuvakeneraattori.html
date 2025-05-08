@@ -367,7 +367,7 @@
         <h2>Kätkö tilastojen - Kuvageneraattori</h2>
     </div>
 
-    <label for="user">Käyttäjätunnus:</label>
+    <label for="user">Käyttäjänimikeskusta:</label>
     <div class="user-input-container">
         <input type="text" id="user" list="userlist" placeholder="esim. mikkokalevi">
         <datalist id="userlist">
@@ -459,8 +459,7 @@
             <div>
                  <label for="locationFilterValue">Nimi (pilkulla erotettuna):</label>
                  <div class="location-input-icon-container">
-                     <input type="text" id="locationFilterValue" disabled placeholder="">
-                     <span id="regionInfoIcon" class="info-icon" title="Näytä maakunnat">ⓘ</span>
+                     <input type="text" id="locationFilterValue" disabled placeholder="esim. Lahti,Heinola"> <span id="regionInfoIcon" class="info-icon" title="Näytä maakunnat">ⓘ</span>
                       </div>
                  <div id="regionListContainer" style="display: none;">
                      </div>
@@ -491,8 +490,7 @@
     <button id="copyLinkButton">Kopioi linkki</button>
 
 
-  </div>
-  <script>
+  </div> <script>
     // Copyright (c) 2025 mikkokalevi
 
     // Mappaus käyttäjien nimimerkkien ja userid:den välillä
@@ -522,7 +520,7 @@
           console.error("Invalid date format for formatDate:", input);
           return "";
       }
-      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+      return `<span class="math-inline">\{parts\[2\]\}\.</span>{parts[1]}.${parts[0]}`;
     }
 
     function toggleAikaKentat() {
@@ -614,12 +612,12 @@
 
         if (choice === 'pkunta') {
             locationFilterValueInput.disabled = false;
-            locationFilterValueInput.placeholder = "esim. Lahti, Heinola";
+            locationFilterValueInput.placeholder = "esim. Lahti,Heinola"; // <-- Changed this placeholder
             // Paikkakunta Valitse -nappia ei näytetä tässä versiossa
 
         } else if (choice === 'mkunta') {
              locationFilterValueInput.disabled = false;
-             locationFilterValueInput.placeholder = "esim. Päijät-Häme, Pirkanmaa";
+             locationFilterValueInput.placeholder = "esim. Päijät-Häme,Uusimaa"; // <-- Changed this placeholder
              // Näytä Maakunta Info -kuvake
              regionInfoIcon.style.display = 'inline-block';
         }
@@ -654,12 +652,10 @@
                          if (locationInput) {
                                const currentValue = locationInput.value.trim();
                                if (currentValue) {
-                                  if (!currentValue.endsWith(', ') && !currentValue.endsWith(',')) {
-                                      locationInput.value += ', ';
-                                  } else if (currentValue.endsWith(',')) {
-                                       locationInput.value += ' ';
-                                  }
+                                  // If there's already content, add a comma (no space)
+                                  locationInput.value += ','; // <-- Modified logic here
                                }
+                               // Add the clicked region name
                                locationInput.value += this.textContent;
                                locationInput.focus();
                                toggleRegionList(); // Piilota lista valinnan jälkeen
@@ -755,8 +751,10 @@
 
       // Hae vuosikalenterin lisäsuodatinarvot
       const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice")?.value || '';
-      const locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || '';
-      const extraFilter = document.getElementById("extraFilter")?.value || '';
+      let locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || ''; // <-- Use let
+
+      // Remove spaces after commas for consistency, in case the user typed them
+      locationFilterValue = locationFilterValue.replace(/,\s*/g, ','); // <-- Added cleanup
 
 
       // Tarkista käyttäjänimi heti
@@ -778,7 +776,7 @@
            const formattedStart = formatDate(start);
            const formattedEnd = formatDate(end);
            if (formattedStart && formattedEnd) {
-             params += `&startdate=${formattedStart}&enddate=${formattedEnd}`;
+             params += `&startdate=<span class="math-inline">\{formattedStart\}&enddate\=</span>{formattedEnd}`;
            } else {
               console.error("Invalid start or end date format.");
               alert("Virheellinen päivämäärämuoto.");
@@ -797,12 +795,12 @@
 
       // --- Vuosikalenterin lisäsuodatus (pkunta, mkunta, extra) ---
       if (kuvatyyppi === "year") {
-           if (locationFilterValue) {
+           if (locationFilterValue) { // Check the cleaned value
                // Lisätään parametri sen mukaan, mikä sijaintityyppi oli valittuna
                if (pkuntaMkuntaChoice === 'pkunta') {
-                   params += `&pkunta=${encodeURIComponent(locationFilterValue)}`;
+                   params += `&pkunta=${encodeURIComponent(locationFilterValue)}`; // <-- Use cleaned value
                } else if (pkuntaMkuntaChoice === 'mkunta') {
-                    params += `&mkunta=${encodeURIComponent(locationFilterValue)}`;
+                    params += `&mkunta=${encodeURIComponent(locationFilterValue)}`; // <-- Use cleaned value
                 }
            }
            if (extraFilter && extraFilter !== '') {
@@ -816,7 +814,7 @@
         params += `&cachetype=${cachetype}`;
       }
 
-      const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
+      const finalUrl = `<span class="math-inline">\{baseUrl\}</span>{kuvatyyppi}.php${params}`;
 
 
       // URL, joka kopioidaan leikepöydälle
@@ -827,7 +825,7 @@
       const selectedUserId = userIds[user];
 
       if (kuvatyyppi === "kunta" && selectedUserId) {
-           let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
+           let largeMapUrl = `<span class="math-inline">\{baseUrl\}kunta/?userid\=</span>{selectedUserId}&names=1`;
 
            if (cachetype) {
                largeMapUrl += `&cachetype=${cachetype}`;
@@ -884,7 +882,7 @@
                enddate: end,
                cachetype: cachetype,
                pkuntaMkuntaChoice: pkuntaMkuntaChoice,
-               locationFilterValue: locationFilterValue,
+               locationFilterValue: locationFilterValue, // Save cleaned value
                extraFilter: extraFilter
            };
            try {
@@ -1046,7 +1044,7 @@
                  // Päivitä käyttöliittymän tila vastaamaan nollattuja arvoja
                  // handleKuvatyyppiChange kutsuu toggleAikaKentat ja toggleYearSpecificFilters (joka kutsuu handlePkuntaMkuntaChoice)
                  if (typeof handleKuvatyyppiChange === 'function') {
-                      handleKuvatyyppiChange();
+                      handleKuvatyyppiChange(); // Completing the function call that was cut off
                  } else {
                       // Fallback
                       if (typeof toggleAikaKentat === 'function') toggleAikaKentat();
