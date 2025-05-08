@@ -1,14 +1,3 @@
-Nuo samat virheet kertovat edelleen siitä, että selaimen lataamassa tiedostossa funktioita luoLinkki ja handleKuvatyyppiChange ei löydy siitä paikasta (globaalista scope:sta), mistä HTML-attribuutit (onclick, onchange) niitä yrittävät kutsua.
-
-Koska siirsimme ne jo aiemmin DOMContentLoaded-lohkon ulkopuolelle, niiden pitäisi olla globaalisti saatavilla. Tämän kaltaiset sitkeät virheet johtuvat lähes poikkeuksetta selaimen välimuistista tai siitä, ettei tiedosto ole tallentunut/latautunut oikein palvelimelle/GitHubiin.
-
-Nollaa-napin toimiminen on hyvä merkki – se vahvistaa, että JavaScript-tiedosto ylipäätään latautuu ja DOMContentLoaded-koodi ajetaan (koska Nollaa-napin kuuntelija liitetään siellä addEventListener-metodilla). Mutta onclick/onchange-attribuutit eivät siis edelleenkään löydä funktioita globaalisti.
-
-Kokeillaan uudelleen korjattua koodia ja keskitytään välimuistin tyhjentämiseen tarkemmin.
-
-Tässä on sama, korjattu koodi uudelleen. Kopioi tämä kokonaisuudessaan ja korvaa sillä koko tilastokuvat_versio2.html-tiedostosi sisältö. Tallenna tiedosto huolellisesti.
-HTML
-
 <!DOCTYPE html>
 <html lang="fi">
 <head>
