@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LSBHRFCKEP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-LSBHRFCKEP');
-</script>
-
   <meta charset="UTF-8">
   <title>Kätkö tilastojen - Kuvageneraattori</title>
-
-
-
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LSBHRFCKEP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-LSBHRFCKEP');
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --bg-color-dark: #1e1e2e;
-      --text-color-light: #cdd6f4;
+      /* Oletus (Tumma/Sininen) teema */
+      --bg-color: #1e1e2e;
+      --text-color: #cdd6f4;
       --card-bg: #313244;
       --border-color: #45475a;
       --accent-color: #89b4fa;
       --button-bg: #585b70;
       --button-hover-bg: #6c7086;
+      --link-color: #89b4fa;
+      --link-hover-color: #a6e3a1;
+      --placeholder-color: #a0a0a0;
+      --disabled-bg-color: #2a2a3a;
+      --disabled-text-color: #888;
+
       --border-radius: 8px;
       --spacing-small: 0.5em;
       --spacing-medium: 1em;
@@ -35,30 +36,135 @@
       --spacing-mobile-large: 1em;
     }
 
+    /* Vihreä (Maasto) teema */
+    .theme-green {
+      --bg-color: #283618;
+      --text-color: #fefae0;
+      --card-bg: #3a5a40;
+      --border-color: #588157;
+      --accent-color: #a3b18a;
+      --button-bg: #588157;
+      --button-hover-bg: #3a5a40;
+      --link-color: #a3b18a;
+      --link-hover-color: #dda15e;
+      --placeholder-color: #dad7cd;
+      --disabled-bg-color: #2f3e24;
+      --disabled-text-color: #a3b18a;
+    }
+
+    /* Keltainen (Kevät) teema */
+    .theme-yellow {
+      --bg-color: #fffbe6; /* Vaalea keltainen tausta */
+      --text-color: #576000; /* Tumma oliivinvihreä teksti */
+      --card-bg: #fef9c3;   /* Vaaleampi keltainen korteille */
+      --border-color: #fde047; /* Kirkkaampi keltainen reunoille */
+      --accent-color: #a3bf58; /* Keväänvihreä korostus */
+      --button-bg: #fde047;   /* Kirkas keltainen napeille */
+      --button-hover-bg: #facc15; /* Tummempi keltainen hoverille */
+      --link-color: #a3bf58;
+      --link-hover-color: #84cc16;
+      --placeholder-color: #a1a1aa;
+      --disabled-bg-color: #fef9e7;
+      --disabled-text-color: #b0b08c;
+    }
+    /* Keltainen (Kevät) teema - korjataan input-kenttien tausta ja teksti */
+    .theme-yellow select, .theme-yellow input[type="date"], .theme-yellow input[type="text"],
+    .theme-yellow #regionListContainer, .theme-yellow #paikkakuntaSelectorModal {
+        background-color: #fffce8; /* Hieman tummempi kuin body, mutta vaalea */
+        color: var(--text-color); /* Perii teeman tekstivärin */
+        border: 1px solid var(--border-color);
+    }
+    .theme-yellow .modal-content li:hover {
+        background-color: #fef08a; /* Keltainen hover modaalilistoille */
+    }
+     .theme-yellow #locationFilterValue:disabled {
+        background-color: #fef9e7;
+        color: var(--disabled-text-color);
+    }
+
+
+    /* Punainen teema */
+    .theme-red {
+      --bg-color: #40000D;
+      --text-color: #ffe5e5;
+      --card-bg: #60001B;
+      --border-color: #A0002B;
+      --accent-color: #ff6666;
+      --button-bg: #A0002B;
+      --button-hover-bg: #800022;
+      --link-color: #ff6666;
+      --link-hover-color: #ff8c8c;
+      --placeholder-color: #f0c0c0;
+      --disabled-bg-color: #500014;
+      --disabled-text-color: #ccaaaa;
+    }
+
+    /* Ruskea teema */
+    .theme-brown {
+      --bg-color: #3d2b1f;
+      --text-color: #f5f5dc;
+      --card-bg: #5a3d2b;
+      --border-color: #7b5b3f;
+      --accent-color: #c8a070;
+      --button-bg: #7b5b3f;
+      --button-hover-bg: #5a3d2b;
+      --link-color: #c8a070;
+      --link-hover-color: #e0b98c;
+      --placeholder-color: #d3c0b1;
+      --disabled-bg-color: #4a3528;
+      --disabled-text-color: #bca593;
+    }
+
+
     body {
-      background-color: var(--bg-color-dark);
-      color: var(--text-color-light);
+      background-color: var(--bg-color); /* Vaihdettu CSS-muuttujaan */
+      color: var(--text-color); /* Vaihdettu CSS-muuttujaan */
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: var(--spacing-medium);
       line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
       max-width: 600px;
       margin: var(--spacing-large) auto;
       padding: var(--spacing-large);
-      background-color: var(--card-bg);
+      background-color: var(--card-bg); /* Vaihdettu CSS-muuttujaan */
       border-radius: var(--border-radius);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
     }
 
     .header-area {
         display: flex;
         align-items: center;
-        margin-bottom: var(--spacing-large);
+        margin-bottom: var(--spacing-medium); /* Pienennetty headerin ja teemavalitsimen väliä */
         padding-bottom: var(--spacing-medium);
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
+        transition: border-color 0.3s;
     }
+    #themeSelectorContainer {
+        margin-bottom: var(--spacing-large); /* Tilaa teemavalitsimen jälkeen */
+        padding: var(--spacing-small) 0;
+    }
+    #themeSelectorContainer label {
+        margin-right: var(--spacing-small);
+        margin-top:0; /* Poistetaan ylämarginaali, jotta linjassa selectin kanssa */
+        margin-bottom: 0;
+    }
+
+    #themeSelector {
+        padding: var(--spacing-small);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        background-color: var(--button-bg); /* Käytetään nappitaustaa, jotta erottuu */
+        color: var(--text-color);
+        font-size: 0.9em;
+        width: auto; /* Ei vie koko leveyttä */
+        margin-bottom: 0; /* Poistetaan oletus margin-bottom */
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
 
     .header-area .logo {
         width: 70px;
@@ -72,7 +178,7 @@
     .header-area h2 {
         margin: 0;
         font-size: 1.8em;
-        color: var(--text-color-light);
+        color: var(--text-color); /* Vaihdettu CSS-muuttujaan */
     }
 
     label {
@@ -86,18 +192,19 @@
       width: calc(100% - 1em);
       padding: var(--spacing-small);
       margin-bottom: var(--spacing-medium);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
       border-radius: var(--border-radius);
-      background-color: var(--bg-color-dark);
-      color: var(--text-color-light);
+      background-color: var(--bg-color); /* Vaihdettu CSS-muuttujaan */
+      color: var(--text-color); /* Vaihdettu CSS-muuttujaan */
       font-size: 1em;
       box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
      select:focus, input[type="date"]:focus, input[type="text"]:focus {
         outline: none;
-        border-color: var(--accent-color);
-        box-shadow: 0 0 5px var(--accent-color);
+        border-color: var(--accent-color); /* Vaihdettu CSS-muuttujaan */
+        box-shadow: 0 0 5px var(--accent-color); /* Vaihdettu CSS-muuttujaan */
      }
 
     .row {
@@ -116,21 +223,21 @@
     button, .modal-button {
       margin-top: var(--spacing-medium);
       padding: var(--spacing-small) var(--spacing-medium);
-      background-color: var(--button-bg);
-      color: var(--text-color-light);
+      background-color: var(--button-bg); /* Vaihdettu CSS-muuttujaan */
+      color: var(--text-color); /* Vaihdettu CSS-muuttujaan */
       border: none;
       border-radius: var(--border-radius);
       cursor: pointer;
       font-size: 1.1em;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     button:hover, .modal-button:hover {
-      background-color: var(--button-hover-bg);
+      background-color: var(--button-hover-bg); /* Vaihdettu CSS-muuttujaan */
     }
 
     a {
-      color: var(--accent-color);
+      color: var(--link-color); /* Vaihdettu CSS-muuttujaan */
       display: inline-block;
       margin-top: var(--spacing-medium);
       text-decoration: none;
@@ -138,7 +245,7 @@
     }
 
     a:hover {
-        color: #a6e3a1;
+        color: var(--link-hover-color); /* Vaihdettu CSS-muuttujaan */
         text-decoration: underline;
     }
 
@@ -154,16 +261,17 @@
         display: block;
         max-width: 100%;
         height: auto;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
         border-radius: var(--border-radius);
         cursor: default;
         margin: 0 auto;
+        transition: border-color 0.3s;
     }
 
     #map-overlay {
         display: none; 
         text-align: center;
-        color: var(--text-color-light);
+        color: var(--text-color); /* Vaihdettu CSS-muuttujaan */
         font-size: 0.9em;
         margin-bottom: var(--spacing-small);
     }
@@ -184,17 +292,18 @@
         display: none;
         margin-top: var(--spacing-medium);
         padding-top: var(--spacing-medium);
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
+        transition: border-color 0.3s;
     }
 
     #locationFilterValue:disabled {
-        background-color: #2a2a3a;
+        background-color: var(--disabled-bg-color); /* Vaihdettu CSS-muuttujaan */
         cursor: not-allowed;
-        color: #888;
+        color: var(--disabled-text-color); /* Vaihdettu CSS-muuttujaan */
     }
 
     input::placeholder {
-      color: #a0a0a0;
+      color: var(--placeholder-color); /* Vaihdettu CSS-muuttujaan */
       opacity: 1;
     }
 
@@ -232,7 +341,7 @@
 
     .info-icon, #paikkakuntaSelectIcon { 
         cursor: pointer;
-        color: var(--accent-color);
+        color: var(--accent-color); /* Vaihdettu CSS-muuttujaan */
         font-weight: bold;
         font-size: 1.1em; 
         padding: 0 0.3em;
@@ -242,16 +351,17 @@
     }
 
     #regionListContainer {
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
         border-radius: var(--border-radius);
         padding: var(--spacing-small);
         margin-top: var(--spacing-small);
         max-height: 150px;
         overflow-y: auto;
-        background-color: var(--card-bg);
+        background-color: var(--card-bg); /* Vaihdettu CSS-muuttujaan */
         z-index: 10; 
         position: relative;
         font-size: 0.9em;
+        transition: background-color 0.3s, border-color 0.3s;
     }
 
     .region-list-item {
@@ -259,7 +369,7 @@
         cursor: pointer;
     }
     .region-list-item:hover {
-        background-color: var(--button-hover-bg);
+        background-color: var(--button-hover-bg); /* Vaihdettu CSS-muuttujaan */
     }
 
     .modal-overlay {
@@ -268,14 +378,14 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.6);
+        background-color: rgba(0,0,0,0.6); /* Pidetään tummana erottuvuuden vuoksi */
         display: none; 
         justify-content: center;
         align-items: center;
         z-index: 1000;
     }
     #paikkakuntaSelectorModal {
-        background-color: var(--card-bg);
+        background-color: var(--card-bg); /* Vaihdettu CSS-muuttujaan */
         padding: var(--spacing-large);
         border-radius: var(--border-radius);
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -284,12 +394,14 @@
         max-height: 80vh;
         display: flex;
         flex-direction: column;
+        transition: background-color 0.3s;
     }
     .modal-header {
         font-size: 1.2em;
         margin-bottom: var(--spacing-medium);
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
         padding-bottom: var(--spacing-small);
+        transition: border-color 0.3s;
     }
     .modal-content {
         overflow-y: auto;
@@ -304,13 +416,14 @@
     .modal-content li {
         padding: var(--spacing-small) 0;
         cursor: pointer;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color); /* Vaihdettu CSS-muuttujaan */
+        transition: border-color 0.3s;
     }
     .modal-content li:last-child {
         border-bottom: none;
     }
     .modal-content li:hover {
-        background-color: var(--button-hover-bg);
+        background-color: var(--button-hover-bg); /* Vaihdettu CSS-muuttujaan */
     }
     .modal-content .municipality-item label {
         display: flex; 
@@ -324,6 +437,7 @@
         width: auto; 
         margin-right: var(--spacing-small); 
         margin-bottom: 0;
+        /* Lisätään tyyli teeman mukauttamiseksi, jos tarpeen myöhemmin */
     }
     .modal-footer {
         display: flex;
@@ -335,7 +449,6 @@
         font-size: 0.9em; 
         margin-top: 0; 
     }
-
 
     @media (max-width: 600px) {
         body { margin: var(--spacing-mobile-medium); }
@@ -421,11 +534,21 @@
     }
   </style>
 </head>
-<body>
-  <div class="container">
+<body> <div class="container">
     <div class="header-area">
         <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
         <h2>Kätkö tilastojen - Kuvageneraattori</h2>
+    </div>
+
+    <div id="themeSelectorContainer">
+        <label for="themeSelector">Valitse teema:</label>
+        <select id="themeSelector">
+            <option value="default">Oletus (Tumma)</option>
+            <option value="theme-green">Vihreä (Maasto)</option>
+            <option value="theme-yellow">Keltainen (Kevät)</option>
+            <option value="theme-red">Punainen</option>
+            <option value="theme-brown">Ruskea</option>
+        </select>
     </div>
 
     <label for="user">Käyttäjätunnus:</label>
@@ -595,14 +718,14 @@
         "Kainuu": ["Hyrynsalmi", "Kajaani", "Kuhmo", "Paltamo", "Puolanka", "Ristijärvi", "Sotkamo", "Suomussalmi"].sort(),
         "Kanta-Häme": ["Forssa", "Hattula", "Hausjärvi", "Humppila", "Hämeenlinna", "Janakkala", "Jokioinen", "Loppi", "Riihimäki", "Tammela", "Ypäjä"].sort(),
         "Keski-Pohjanmaa": ["Halsua", "Kannus", "Kaustinen", "Kokkola", "Lestijärvi", "Perho", "Toholampi", "Veteli"].sort(),
-        "Keski-Suomi": ["Hankasalmi", "Joutsa", "Jyväskylä", "Jämsä", "Kannonkoski", "Karstula", "Keuruu", "Kinnula", "Kivijärvi", "Konnevesi", "Kuhmoinen", "Kyyjärvi", "Laukaa", "Luhanka", "Multia", "Muurame", "Petäjävesi", "Pihtipudas", "Saarijärvi", "Toivakka", "Uurainen", "Viitasaari", "Äänekoski"].sort(), // Kuhmoinen lisätty Keski-Suomeen useiden lähteiden perusteella
+        "Keski-Suomi": ["Hankasalmi", "Joutsa", "Jyväskylä", "Jämsä", "Kannonkoski", "Karstula", "Keuruu", "Kinnula", "Kivijärvi", "Konnevesi", "Kuhmoinen", "Kyyjärvi", "Laukaa", "Luhanka", "Multia", "Muurame", "Petäjävesi", "Pihtipudas", "Saarijärvi", "Toivakka", "Uurainen", "Viitasaari", "Äänekoski"].sort(),
         "Kymenlaakso": ["Hamina", "Kotka", "Kouvola", "Miehikkälä", "Pyhtää", "Virolahti"].sort(),
         "Lappi": ["Enontekiö", "Inari", "Kemi", "Kemijärvi", "Keminmaa", "Kittilä", "Kolari", "Muonio", "Pelkosenniemi", "Pello", "Posio", "Ranua", "Rovaniemi", "Salla", "Savukoski", "Simo", "Sodankylä", "Tervola", "Tornio", "Utsjoki", "Ylitornio"].sort(),
-        "Pirkanmaa": ["Akaa", "Hämeenkyrö", "Ikaalinen", "Juupajoki", "Kangasala", "Kihniö", "Lempäälä", "Mänttä-Vilppula", "Nokia", "Orivesi", "Parkano", "Pirkkala", "Punkalaidun", "Pälkäne", "Ruovesi", "Sastamala", "Tampere", "Urjala", "Valkeakoski", "Vesilahti", "Virrat", "Ylöjärvi"].sort(), // Kuhmoinen poistettu Pirkanmaalta, koska lisätty Keski-Suomeen
+        "Pirkanmaa": ["Akaa", "Hämeenkyrö", "Ikaalinen", "Juupajoki", "Kangasala", "Kihniö", "Lempäälä", "Mänttä-Vilppula", "Nokia", "Orivesi", "Parkano", "Pirkkala", "Punkalaidun", "Pälkäne", "Ruovesi", "Sastamala", "Tampere", "Urjala", "Valkeakoski", "Vesilahti", "Virrat", "Ylöjärvi"].sort(),
         "Pohjanmaa": ["Kaskinen", "Korsnäs", "Kristiinankaupunki", "Kruunupyy", "Laihia", "Luoto", "Maalahti", "Mustasaari", "Närpiö", "Pedersöre", "Pietarsaari", "Uusikaarlepyy", "Vaasa", "Vöyri"].sort(),
         "Pohjois-Karjala": ["Heinävesi", "Ilomantsi", "Joensuu", "Juuka", "Kitee", "Kontiolahti", "Lieksa", "Liperi", "Nurmes", "Outokumpu", "Polvijärvi", "Rääkkylä", "Tohmajärvi"].sort(),
         "Pohjois-Pohjanmaa": ["Alavieska", "Haapajärvi", "Haapavesi", "Hailuoto", "Ii", "Kalajoki", "Kärsämäki", "Kempele", "Kuusamo", "Liminka", "Lumijoki", "Merijärvi", "Muhos", "Nivala", "Oulainen", "Oulu", "Pudasjärvi", "Pyhäjoki", "Pyhäjärvi", "Pyhäntä", "Raahe", "Reisjärvi", "Sievi", "Siikajoki", "Siikalatva", "Taivalkoski", "Tyrnävä", "Utajärvi", "Vaala", "Ylivieska"].sort(),
-        "Pohjois-Savo": ["Iisalmi", "Joroinen", "Kaavi", "Keitele", "Kiuruvesi", "Kuopio", "Lapinlahti", "Leppävirta", "Pielavesi", "Rautalampi", "Rautavaara", "Siilinjärvi", "Sonkajärvi", "Suonenjoki", "Tervo", "Tuusniemi", "Varkaus", "Vesanto", "Vieremä"].sort(), // Joroinen lisätty Pohjois-Savoon
+        "Pohjois-Savo": ["Iisalmi", "Joroinen", "Kaavi", "Keitele", "Kiuruvesi", "Kuopio", "Lapinlahti", "Leppävirta", "Pielavesi", "Rautalampi", "Rautavaara", "Siilinjärvi", "Sonkajärvi", "Suonenjoki", "Tervo", "Tuusniemi", "Varkaus", "Vesanto", "Vieremä"].sort(),
         "Päijät-Häme": ["Asikkala", "Hartola", "Heinola", "Hollola", "Iitti", "Kärkölä", "Lahti", "Orimattila", "Padasjoki", "Sysmä"].sort(),
         "Satakunta": ["Eura", "Eurajoki", "Harjavalta", "Huittinen", "Jämijärvi", "Kankaanpää", "Karvia", "Kokemäki", "Merikarvia", "Nakkila", "Pomarkku", "Pori", "Rauma", "Siikainen", "Säkylä", "Ulvila"].sort(),
         "Uusimaa": ["Askola", "Espoo", "Hanko", "Helsinki", "Hyvinkää", "Inkoo", "Järvenpää", "Karkkila", "Kauniainen", "Kerava", "Kirkkonummi", "Lapinjärvi", "Lohja", "Loviisa", "Myrskylä", "Mäntsälä", "Nurmijärvi", "Pornainen", "Porvoo", "Pukkila", "Raasepori", "Sipoo", "Siuntio", "Tuusula", "Vantaa", "Vihti"].sort(),
@@ -621,6 +744,15 @@
       if (aikaKentatDiv) aikaKentatDiv.style.display = valinta === "kylla" ? "block" : "none";
     }
 
+    function applyTheme(themeName) {
+        document.body.className = ''; // Poista kaikki aiemmat teemaluokat
+        if (themeName !== 'default') {
+            document.body.classList.add(themeName);
+        }
+        localStorage.setItem('selectedTheme', themeName);
+    }
+
+
     function toggleYearSpecificFilters() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const yearSpecificFiltersDiv = document.getElementById("yearSpecificFilters");
@@ -633,14 +765,19 @@
             handlePkuntaMkuntaChoice();
         } else {
             yearSpecificFiltersDiv.style.display = 'none';
-            pkuntaMkuntaChoiceSelect.value = 'none';
-            locationFilterValueInput.value = '';
-            locationFilterValueInput.disabled = true;
-            locationFilterValueInput.placeholder = "";
-            extraFilterSelect.value = '';
-            document.getElementById("regionInfoIcon").style.display = 'none';
-            document.getElementById("paikkakuntaSelectIcon").style.display = 'none';
-            document.getElementById("regionListContainer").style.display = 'none';
+            if (pkuntaMkuntaChoiceSelect) pkuntaMkuntaChoiceSelect.value = 'none';
+            if (locationFilterValueInput) {
+                locationFilterValueInput.value = '';
+                locationFilterValueInput.disabled = true;
+                locationFilterValueInput.placeholder = "";
+            }
+            if (extraFilterSelect) extraFilterSelect.value = '';
+            const regionIcon = document.getElementById("regionInfoIcon");
+            const paikkaIcon = document.getElementById("paikkakuntaSelectIcon");
+            const regionList = document.getElementById("regionListContainer");
+            if (regionIcon) regionIcon.style.display = 'none';
+            if (paikkaIcon) paikkaIcon.style.display = 'none';
+            if (regionList) regionList.style.display = 'none';
             closePaikkakuntaModal();
         }
     }
@@ -686,7 +823,13 @@
                      item.addEventListener('click', function() {
                           const locInput = document.getElementById("locationFilterValue");
                           let currentVal = locInput.value.trim();
-                          if (currentVal && !currentVal.endsWith(',')) currentVal += ',';
+                          // Korjattu: Lisää pilkku vain jos kentässä on jo tekstiä
+                          if (currentVal && !currentVal.endsWith(',')) {
+                              currentVal += ',';
+                          } else if (currentVal && currentVal.endsWith(',')) {
+                              // Ei lisätä tuplapilkkua, mutta ei myöskään välilyöntiä, jos käyttäjä haluaa ilman.
+                              // Käyttäjä voi lisätä välilyönnin manuaalisesti tarvittaessa.
+                          }
                           locInput.value = currentVal + this.textContent;
                           locInput.focus();
                           toggleRegionList();
@@ -710,22 +853,21 @@
     const selectAllMunCheckbox = document.getElementById('selectAllMunicipalities');
 
     function openPaikkakuntaModal() {
-        modalOverlay.style.display = 'flex';
+        if(modalOverlay) modalOverlay.style.display = 'flex';
         showModalRegionSelection();
     }
     function closePaikkakuntaModal() {
-        modalOverlay.style.display = 'none';
+        if(modalOverlay) modalOverlay.style.display = 'none';
     }
 
     function showModalRegionSelection() {
         modalHeader.textContent = 'Valitse maakunta';
         modalRegionUL.innerHTML = '';
         modalMunListContainer.style.display = 'none';
-        modalMunUL.innerHTML = ''; // Varmista että myös kuntalista tyhjennetään
+        modalMunUL.innerHTML = ''; 
         modalBackBtn.style.display = 'none';
         modalAddBtn.style.display = 'none';
         selectAllMunCheckbox.checked = false;
-
 
         suomenMaakunnat.forEach(region => {
             if (maakuntienKunnat[region] && maakuntienKunnat[region].length > 0) {
@@ -781,11 +923,12 @@
                                                 .map(s => s.trim())
                                                 .filter(s => s); 
             
-            const combinedArray = existingPaikkakunnatArray.concat(selectedMunicipalities.filter(item => !existingPaikkakunnatArray.includes(item)));
-            const uniqueCombinedArray = [...new Set(combinedArray)]; // Varmistaa uniikit nimet
-            locationInput.value = uniqueCombinedArray.join(',');
+            const newUniqueMunicipalities = selectedMunicipalities.filter(item => !existingPaikkakunnatArray.includes(item));
+            const combinedArray = existingPaikkakunnatArray.concat(newUniqueMunicipalities);
+            
+            locationInput.value = combinedArray.join(',');
         }
-        showModalRegionSelection(); // Palaa maakuntavalintaan
+        showModalRegionSelection(); 
     });
 
     if (paikkakuntaIconGlobal) paikkakuntaIconGlobal.addEventListener('click', openPaikkakuntaModal);
@@ -796,6 +939,7 @@
     function handleKuvatyyppiChange() {
         const kuvatyyppiSelect = document.getElementById("kuvatyyppi");
         const cachetypeSelect = document.getElementById("cachetype");
+        if (!kuvatyyppiSelect || !cachetypeSelect) return;
         const selectedType = kuvatyyppiSelect.value;
         toggleAikaKentat();
         toggleYearSpecificFilters(); 
@@ -827,20 +971,20 @@
       overlayElement.style.display = 'none';
       linkElementBelow.style.display = 'none';
       copyLinkButton.style.display = 'none';
-      imageElement.src = '';
+      if(imageElement) imageElement.src = '';
 
       const baseUrl = "https://www.geocache.fi/stat/";
-      const kuvatyyppi = document.getElementById("kuvatyyppi").value;
-      const user = document.getElementById("user").value.trim();
-      const start = document.getElementById("startdate").value;
-      const end = document.getElementById("enddate").value;
-      const cachetype = document.getElementById("cachetype").value;
-      const aikavalinta = document.getElementById("aikavalinta").value;
-      const yearVal = document.getElementById("year").value;
-      const monthVal = document.getElementById("month").value;
-      const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice").value;
-      const locationFilterValue = document.getElementById("locationFilterValue").value.trim();
-      const extraFilter = document.getElementById("extraFilter").value;
+      const kuvatyyppi = document.getElementById("kuvatyyppi")?.value || '';
+      const user = document.getElementById("user")?.value.trim() || '';
+      const start = document.getElementById("startdate")?.value || '';
+      const end = document.getElementById("enddate")?.value || '';
+      const cachetype = document.getElementById("cachetype")?.value || '';
+      const aikavalinta = document.getElementById("aikavalinta")?.value || '';
+      const yearVal = document.getElementById("year")?.value || '';
+      const monthVal = document.getElementById("month")?.value || '';
+      const pkuntaMkuntaChoice = document.getElementById("pkuntaMkuntaChoice")?.value || '';
+      const locationFilterValue = document.getElementById("locationFilterValue")?.value.trim() || '';
+      const extraFilter = document.getElementById("extraFilter")?.value || '';
 
       if (!user) { alert("Syötä käyttäjänimi."); return; }
 
@@ -888,28 +1032,35 @@
           linkElementBelow.style.display = 'none';
           overlayElement.style.display = 'block';
       } else {
-          imageElement.src = finalUrl;
-          imageElement.alt = "Tilastokuva";
-          delete imageElement.dataset.largeMapUrl;
-          imageElement.style.cursor = 'default';
-          linkElementBelow.href = finalUrl;
-          linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
-          linkElementBelow.style.display = 'inline-block';
-          overlayElement.style.display = 'none';
+          if(imageElement) {
+            imageElement.src = finalUrl;
+            imageElement.alt = "Tilastokuva";
+            delete imageElement.dataset.largeMapUrl;
+            imageElement.style.cursor = 'default';
+          }
+          if(linkElementBelow) {
+            linkElementBelow.href = finalUrl;
+            linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
+            linkElementBelow.style.display = 'inline-block';
+          }
+          if(overlayElement) overlayElement.style.display = 'none';
       }
 
        if (finalUrl) {
-            imageWrapper.style.display = 'block';
-            copyLinkButton.style.display = 'inline-block';
-            copyLinkButton.dataset.urlToCopy = urlToCopy;
-            copyLinkButton.textContent = "Kopioi linkki";
+            if(imageWrapper) imageWrapper.style.display = 'block';
+            if(copyLinkButton) {
+                copyLinkButton.style.display = 'inline-block';
+                copyLinkButton.dataset.urlToCopy = urlToCopy;
+                copyLinkButton.textContent = "Kopioi linkki";
+            }
             const settingsToSave = {
                 user, kuvatyyppi, aikavalinta, year: yearVal, month: monthVal, startdate: start, enddate: end, 
                 cachetype, pkuntaMkuntaChoice, locationFilterValue, extraFilter
+                // Teemavalintaa ei tallenneta tähän, koska se on erillinen localStorage-item
             };
             try { localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave)); } catch (e) { console.error(e); }
         } else {
-            imageWrapper.style.display = 'none';
+            if(imageWrapper) imageWrapper.style.display = 'none';
         }
     }
 
@@ -921,7 +1072,19 @@
               enddateEl = id("enddate"), cachetypeEl = id("cachetype"), pkuntaMkuntaEl = id("pkuntaMkuntaChoice"),
               locationValEl = id("locationFilterValue"), extraFilterEl = id("extraFilter"),
               imgEl = id("kuva"), copyBtn = id("copyLinkButton"), imgWrapper = D.querySelector('.image-wrapper'),
-              resetBtn = id("resetButton"), regionInfoIcn = id("regionInfoIcon");
+              resetBtn = id("resetButton"), regionInfoIcn = id("regionInfoIcon"),
+              themeSelector = id("themeSelector");
+
+        // Teeman käsittely
+        if(themeSelector) {
+            themeSelector.addEventListener('change', (e) => {
+                applyTheme(e.target.value);
+            });
+            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+            applyTheme(savedTheme);
+            themeSelector.value = savedTheme;
+        }
+
 
         if (yearSel) {
             const currentY = new Date().getFullYear();
@@ -947,12 +1110,13 @@
         resetBtn?.addEventListener('click', () => {
             [userEl, startdateEl, enddateEl, locationValEl].forEach(el => el ? el.value = '' : null);
             [kuvatyyppiEl, aikavalintaEl, yearSel, monthSel, cachetypeEl, pkuntaMkuntaEl, extraFilterEl].forEach(sel => {
-                if(sel) sel.value = sel.options[0]?.value || ''; // Oletusarvo tai tyhjä
-                if(sel === yearSel || sel === monthSel) sel.value = 'current';
-                if(sel === kuvatyyppiEl) sel.value = 'matrix';
-                if(sel === aikavalintaEl) sel.value = 'ei';
-                if(sel === pkuntaMkuntaEl) sel.value = 'none';
-
+                if(sel) {
+                    if (sel.id === 'year' || sel.id === 'month') sel.value = 'current';
+                    else if (sel.id === 'kuvatyyppi') sel.value = 'matrix';
+                    else if (sel.id === 'aikavalinta') sel.value = 'ei';
+                    else if (sel.id === 'pkuntaMkuntaChoice') sel.value = 'none';
+                    else sel.value = sel.options[0]?.value || '';
+                }
             });
             try { localStorage.removeItem('statGeneratorSettings'); } catch (e) { console.error(e); }
             handleKuvatyyppiChange();
@@ -964,20 +1128,20 @@
             const saved = localStorage.getItem('statGeneratorSettings');
             if (saved) {
                 const S = JSON.parse(saved);
-                if(userEl) userEl.value = S.user || '';
-                if(kuvatyyppiEl) kuvatyyppiEl.value = S.kuvatyyppi || 'matrix';
-                if(aikavalintaEl) aikavalintaEl.value = S.aikavalinta || 'ei';
-                if(yearSel) yearSel.value = S.year || 'current';
-                if(monthSel) monthSel.value = S.month || 'current';
-                if(startdateEl) startdateEl.value = S.startdate || '';
-                if(enddateEl) enddateEl.value = S.enddate || '';
-                if(pkuntaMkuntaEl) pkuntaMkuntaEl.value = S.pkuntaMkuntaChoice || 'none';
-                if(locationValEl) locationValEl.value = S.locationFilterValue || '';
-                if(extraFilterEl) extraFilterEl.value = S.extraFilter || '';
+                if(userEl && S.user !== undefined) userEl.value = S.user;
+                if(kuvatyyppiEl && S.kuvatyyppi !== undefined) kuvatyyppiEl.value = S.kuvatyyppi;
+                if(aikavalintaEl && S.aikavalinta !== undefined) aikavalintaEl.value = S.aikavalinta;
+                if(yearSel && S.year !== undefined) yearSel.value = S.year;
+                if(monthSel && S.month !== undefined) monthSel.value = S.month;
+                if(startdateEl && S.startdate !== undefined) startdateEl.value = S.startdate;
+                if(enddateEl && S.enddate !== undefined) enddateEl.value = S.enddate;
+                if(pkuntaMkuntaEl && S.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaEl.value = S.pkuntaMkuntaChoice;
+                if(locationValEl && S.locationFilterValue !== undefined) locationValEl.value = S.locationFilterValue;
+                if(extraFilterEl && S.extraFilter !== undefined) extraFilterEl.value = S.extraFilter;
                 
                 handleKuvatyyppiChange();
-                if (cachetypeEl) {
-                    let ct = S.cachetype || '';
+                if (cachetypeEl && S.cachetype !== undefined) {
+                    let ct = S.cachetype;
                     if (ct && !cachetypeEl.querySelector(`option[value="${ct}"]`)) ct = '';
                     cachetypeEl.value = ct;
                 }
