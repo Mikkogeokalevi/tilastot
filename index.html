@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tilastogeneraattorit - Etusivu</title> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      /* Uudelleen käytetään samoja CSS-muuttujia tyylin yhtenäisyyteen */
+      --bg-color-dark: #1e1e2e; /* Syvempi tumma tausta */
+      --text-color-light: #cdd6f4; /* Pehmeämpi vaalea teksti */
+      --card-bg: #313244; /* Elementtien tausta */
+      --border-color: #45475a; /* Reunusten väri */
+      --accent-color: #89b4fa; /* Korostusväri linkeille/napeille */
+      --border-radius: 8px; /* Yleinen kulmien pyöristys */
+      --spacing-small: 0.5em;
+      --spacing-medium: 1em;
+      --spacing-large: 1.5em;
+
+      /* Mobiiliväljyyksiä */
+      --spacing-mobile-small: 0.3em;
+      --spacing-mobile-medium: 0.8em;
+      --spacing-mobile-large: 1em;
+    }
+
+    body {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: var(--spacing-medium);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: var(--spacing-large) auto; /* Keskitetty ja ylä/alareunaan tilaa */
+      padding: var(--spacing-large);
+      background-color: var(--card-bg); /* Containerille oma tausta */
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Kevyt varjo */
+    }
+
+    /* Uudelleen käytetään tyyli otsikkoalueelle, jossa logo ja teksti ovat rinnakkain */
+    .header-area {
+        display: flex; /* Käytetään flexboxia */
+        align-items: center; /* Keskitetään elementit pystysuunnassa */
+        margin-bottom: var(--spacing-large); /* Lisätään reilusti tilaa otsikkoalueen alle */
+        padding-bottom: var(--spacing-medium); /* Pieni sisäinen alareuna */
+        border-bottom: 1px solid var(--border-color); /* Kevyt erotinviiva */
+    }
+
+    /* Uudelleen käytetään tyyli logokuvalle otsikkoalueella */
+    .header-area .logo {
+        width: 70px; /* Suurempi koko logolle */
+        height: 70px; /* Neliö */
+        margin-right: var(--spacing-medium); /* Lisää tilaa logon ja tekstin väliin */
+        border: none;
+        flex-shrink: 0;
+        border-radius: var(--border-radius);
+    }
+
+    /* Uudelleen käytetään tyyli otsikkotekstille otsikkoalueella */
+    .header-area h2 {
+        margin: 0;
+        font-size: 1.8em;
+        color: var(--text-color-light);
+    }
+
+    /* Tyyli linkkilistalle */
+    .link-list {
+        list-style: none; /* Poistaa oletuslista tyylin */
+        padding: 0;
+        margin: 0;
+    }
+
+    .link-list li {
+        margin-bottom: var(--spacing-medium); /* Tilaa linkkien väliin */
+    }
+
+    /* Uudelleen käytetään tyyli linkeille */
+    .link-list a {
+      color: var(--accent-color); /* Linkkien väri */
+      text-decoration: none; /* Poistaa alleviivauksen */
+      font-size: 1.2em; /* Hieman suurempi fontti linkeissä */
+      transition: color 0.3s ease;
+    }
+
+    .link-list a:hover {
+        color: #a6e3a1; /* Hieman eri sävy hoverissa */
+        text-decoration: underline; /* Lisää alleviivaus hoverissa */
+    }
+
+    /* Mobiililaitteille (< 600px) - säädetään vain tarvittavia osia */
+    @media (max-width: 600px) {
+        body { margin: var(--spacing-mobile-medium); }
+        .container {
+            padding: var(--spacing-mobile-large);
+            margin: var(--spacing-mobile-large) auto;
+        }
+        .header-area {
+            flex-direction: column; align-items: flex-start;
+             margin-bottom: var(--spacing-mobile-large);
+        }
+        .header-area .logo {
+            margin-right: 0; margin-bottom: var(--spacing-mobile-medium);
+            width: 60px; height: 60px;
+        }
+        .header-area h2 { font-size: 1.5em; }
+        .link-list li { margin-bottom: var(--spacing-mobile-medium); }
+        .link-list a { font-size: 1.1em; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-area">
+        <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
+        <h2>Tilastogeneraattorit</h2> </div>
+
+    <ul class="link-list">
+      <li>
+        <a href="MKkuvakeneraattori.html">Kuvageneraattori</a>
+      </li>
+      <li>
+        <a href="tilastot.html">Tilastokuvat</a>
+      </li>
+      </ul>
+
+  </div>
+</body>
+</html>
