@@ -2,137 +2,292 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
-  <title>Tilastogeneraattorit - Etusivu</title> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tilastogeneraattorit - Etusivu</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LSBHRFCKEP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-LSBHRFCKEP');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      /* Uudelleen käytetään samoja CSS-muuttujia tyylin yhtenäisyyteen */
-      --bg-color-dark: #1e1e2e; /* Syvempi tumma tausta */
-      --text-color-light: #cdd6f4; /* Pehmeämpi vaalea teksti */
-      --card-bg: #313244; /* Elementtien tausta */
-      --border-color: #45475a; /* Reunusten väri */
-      --accent-color: #89b4fa; /* Korostusväri linkeille/napeille */
-      --border-radius: 8px; /* Yleinen kulmien pyöristys */
+      /* Oletus (Tumma/Sininen) teema */
+      --bg-color: #1e1e2e;
+      --text-color: #cdd6f4;
+      --card-bg: #313244;
+      --border-color: #45475a;
+      --accent-color: #89b4fa; /* Käytetään linkeissä ja korostuksissa */
+      --button-bg: #585b70; /* Oletusnappien tausta, jos niitä tulisi */
+      --button-hover-bg: #6c7086; /* Oletusnappien hover, jos niitä tulisi */
+      --link-color: var(--accent-color); /* Määritellään linkeille */
+      --link-hover-color: #a6e3a1; /* Linkkien hover-väri */
+      
+      --border-radius: 8px;
       --spacing-small: 0.5em;
       --spacing-medium: 1em;
       --spacing-large: 1.5em;
-
-      /* Mobiiliväljyyksiä */
       --spacing-mobile-small: 0.3em;
       --spacing-mobile-medium: 0.8em;
       --spacing-mobile-large: 1em;
     }
 
+    /* Vihreä (Maasto) teema */
+    .theme-green {
+      --bg-color: #283618;
+      --text-color: #fefae0;
+      --card-bg: #3a5a40;
+      --border-color: #588157;
+      --accent-color: #a3b18a;
+      --button-bg: #588157;
+      --button-hover-bg: #3a5a40;
+      --link-color: #a3b18a;
+      --link-hover-color: #dda15e;
+    }
+
+    /* Keltainen (Kevät) teema */
+    .theme-yellow {
+      --bg-color: #fffbe6;
+      --text-color: #576000;
+      --card-bg: #fef9c3;
+      --border-color: #fde047;
+      --accent-color: #a3bf58;
+      --button-bg: #fde047;
+      --button-hover-bg: #facc15;
+      --link-color: #a3bf58;
+      --link-hover-color: #84cc16;
+    }
+    /* Keltainen (Kevät) teema - korjataan mahdolliset input-kenttien taustat, jos niitä lisättäisiin */
+    .theme-yellow select, .theme-yellow input {
+        background-color: #fffce8;
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Punainen teema */
+    .theme-red {
+      --bg-color: #40000D;
+      --text-color: #ffe5e5;
+      --card-bg: #60001B;
+      --border-color: #A0002B;
+      --accent-color: #ff6666;
+      --button-bg: #A0002B;
+      --button-hover-bg: #800022;
+      --link-color: #ff6666;
+      --link-hover-color: #ff8c8c;
+    }
+
+    /* Ruskea teema */
+    .theme-brown {
+      --bg-color: #3d2b1f;
+      --text-color: #f5f5dc;
+      --card-bg: #5a3d2b;
+      --border-color: #7b5b3f;
+      --accent-color: #c8a070;
+      --button-bg: #7b5b3f;
+      --button-hover-bg: #5a3d2b;
+      --link-color: #c8a070;
+      --link-hover-color: #e0b98c;
+    }
+
     body {
-      background-color: var(--bg-color-dark);
-      color: var(--text-color-light);
+      background-color: var(--bg-color);
+      color: var(--text-color);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: var(--spacing-medium);
       line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
       max-width: 600px;
-      margin: var(--spacing-large) auto; /* Keskitetty ja ylä/alareunaan tilaa */
+      margin: var(--spacing-large) auto;
       padding: var(--spacing-large);
-      background-color: var(--card-bg); /* Containerille oma tausta */
+      background-color: var(--card-bg);
       border-radius: var(--border-radius);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Kevyt varjo */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
     }
 
-    /* Uudelleen käytetään tyyli otsikkoalueelle, jossa logo ja teksti ovat rinnakkain */
     .header-area {
-        display: flex; /* Käytetään flexboxia */
-        align-items: center; /* Keskitetään elementit pystysuunnassa */
-        margin-bottom: var(--spacing-large); /* Lisätään reilusti tilaa otsikkoalueen alle */
-        padding-bottom: var(--spacing-medium); /* Pieni sisäinen alareuna */
-        border-bottom: 1px solid var(--border-color); /* Kevyt erotinviiva */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-large);
+        padding-bottom: var(--spacing-medium);
+        border-bottom: 1px solid var(--border-color);
+        transition: border-color 0.3s;
+        flex-wrap: wrap;
+    }
+    
+    .header-title-area {
+        display: flex;
+        align-items: center;
     }
 
-    /* Uudelleen käytetään tyyli logokuvalle otsikkoalueella */
     .header-area .logo {
-        width: 70px; /* Suurempi koko logolle */
-        height: 70px; /* Neliö */
-        margin-right: var(--spacing-medium); /* Lisää tilaa logon ja tekstin väliin */
+        width: 60px;
+        height: 60px;
+        margin-right: var(--spacing-medium);
         border: none;
         flex-shrink: 0;
         border-radius: var(--border-radius);
     }
 
-    /* Uudelleen käytetään tyyli otsikkotekstille otsikkoalueella */
     .header-area h2 {
         margin: 0;
-        font-size: 1.8em;
-        color: var(--text-color-light);
+        font-size: 1.6em;
+        color: var(--text-color);
+    }
+    
+    #themeSelectorContainer {
+        display: flex;
+        align-items: center;
+        margin-top: var(--spacing-small); /* Pieni marginaali yläpuolelle, jos rivittyy */
+    }
+    #themeSelectorContainer label {
+        margin-right: var(--spacing-small);
+        margin-top:0;
+        margin-bottom: 0;
+        font-size: 0.8em;
+        font-weight: normal;
+        color: var(--text-color); /* Varmistetaan tekstin väri teeman mukaan */
     }
 
-    /* Tyyli linkkilistalle */
+    #themeSelector {
+        padding: 0.3em 0.5em;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        background-color: var(--button-bg); 
+        color: var(--text-color);
+        font-size: 0.8em;
+        width: auto; 
+        margin-bottom: 0; 
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    
     .link-list {
-        list-style: none; /* Poistaa oletuslista tyylin */
+        list-style: none;
         padding: 0;
-        margin: 0;
+        margin: var(--spacing-medium) 0 0 0; /* Lisätty ylämarginaali */
     }
 
     .link-list li {
-        margin-bottom: var(--spacing-medium); /* Tilaa linkkien väliin */
+        margin-bottom: var(--spacing-medium);
     }
 
-    /* Uudelleen käytetään tyyli linkeille */
     .link-list a {
-      color: var(--accent-color); /* Linkkien väri */
-      text-decoration: none; /* Poistaa alleviivauksen */
-      font-size: 1.2em; /* Hieman suurempi fontti linkeissä */
+      color: var(--link-color); 
+      text-decoration: none;
+      font-size: 1.2em;
       transition: color 0.3s ease;
     }
 
     .link-list a:hover {
-        color: #a6e3a1; /* Hieman eri sävy hoverissa */
-        text-decoration: underline; /* Lisää alleviivaus hoverissa */
+        color: var(--link-hover-color); 
+        text-decoration: underline;
     }
 
-    /* Mobiililaitteille (< 600px) - säädetään vain tarvittavia osia */
+    @media (max-width: 700px) {
+        .header-area {
+            flex-direction: column; 
+            align-items: flex-start; 
+        }
+        .header-title-area {
+            margin-bottom: var(--spacing-small); 
+        }
+        #themeSelectorContainer {
+            margin-left: 0; 
+            width: 100%; 
+            justify-content: flex-start; 
+        }
+    }
+
     @media (max-width: 600px) {
         body { margin: var(--spacing-mobile-medium); }
         .container {
             padding: var(--spacing-mobile-large);
             margin: var(--spacing-mobile-large) auto;
         }
-        .header-area {
-            flex-direction: column; align-items: flex-start;
-             margin-bottom: var(--spacing-mobile-large);
-        }
         .header-area .logo {
-            margin-right: 0; margin-bottom: var(--spacing-mobile-medium);
-            width: 60px; height: 60px;
+            width: 50px; height: 50px;
+            margin-bottom: var(--spacing-mobile-small); /* Säädetty marginaalia logolle */
         }
-        .header-area h2 { font-size: 1.5em; }
+        .header-area h2 { font-size: 1.4em; }
+        #themeSelectorContainer label { font-size: 0.75em; }
+        #themeSelector { font-size: 0.75em; padding: 0.2em 0.4em;}
         .link-list li { margin-bottom: var(--spacing-mobile-medium); }
         .link-list a { font-size: 1.1em; }
     }
-
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header-area">
-        <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
-        <h2>Tilastogeneraattorit ja kätkösivulinkit</h2> </div>
+        <div class="header-title-area">
+            <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
+            <h2>Tilastogeneraattorit ja kätkösivulinkit</h2>
+        </div>
+        <div id="themeSelectorContainer">
+            <label for="themeSelector">Teema:</label>
+            <select id="themeSelector">
+                <option value="default">Oletus</option>
+                <option value="theme-green">Vihreä</option>
+                <option value="theme-yellow">Keltainen</option>
+                <option value="theme-red">Punainen</option>
+                <option value="theme-brown">Ruskea</option>
+            </select>
+        </div>
+    </div>
 
     <ul class="link-list">
       <li>
-        <a href="MKkuvakeneraattori.html">Kuvageneraattori</a>
+        <a href="MKkuvakeneraattori.html">Kuvageneraattori (MK)</a>
       </li>
       <li>
-        <a href="tilastot.html">Tilastokuvat</a>
+        <a href="tilastot.html">Tilastokuvat (Vanhempi)</a>
       </li>
       <li>
-        <a href="https://www.geocachingtoolbox.com/">https://www.geocachingtoolbox.com/</a>
+        <a href="https://www.geocachingtoolbox.com/" target="_blank" rel="noopener noreferrer">Geocaching Toolbox</a>
       </li>
-
-      </ul>
-
-
-
-
+    </ul>
   </div>
+
+  <script>
+    function applyTheme(themeName) {
+        document.body.className = ''; // Poista kaikki aiemmat teemaluokat
+        if (themeName !== 'default') {
+            document.body.classList.add(themeName);
+        }
+        localStorage.setItem('selectedTheme', themeName);
+
+        // Erityiskäsittely keltaiselle teemalle, jos input-kenttiä olisi
+        if (themeName === 'theme-yellow') {
+            // Tällä sivulla ei ole input-kenttiä, joihin tämä vaikuttaisi suoraan,
+            // mutta pidetään logiikka samana kuin tilastosivulla yhtenäisyyden vuoksi.
+            document.querySelectorAll('.theme-yellow select, .theme-yellow input').forEach(el => {
+                 // Varmistetaan, ettei tämä vaikuta itse teemavalitsimeen väärin
+                if (el.id !== 'themeSelector') {
+                    el.style.backgroundColor = 'var(--bg-color)'; 
+                    el.style.color = 'var(--text-color)';
+                }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeSelector = document.getElementById('themeSelector');
+        if (themeSelector) {
+            themeSelector.addEventListener('change', (e) => {
+                applyTheme(e.target.value);
+            });
+            // Ladataan tallennettu teema tai käytetään oletusta
+            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+            applyTheme(savedTheme);
+            themeSelector.value = savedTheme; // Asetetaan valitsimen arvo vastaamaan ladattua teemaa
+        }
+    });
+  </script>
 </body>
 </html>
