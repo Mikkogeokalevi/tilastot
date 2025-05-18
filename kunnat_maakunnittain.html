@@ -431,7 +431,7 @@
                 for (const category in municipalities) {
                     municipalities[category].forEach(kunta => {
                         // allMunicipalitiesInSource.add(kunta); // Not strictly needed
-                        console.log(`Processing municipality for region mapping: "${kunta}"`); // DEBUG: Log municipality name
+                        console.log(`Processing municipality for region mapping: "${kunta}"`); // DEBUG: Log municipality name with quotes
                         const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
 
                         if (!municipalitiesByRegionAndCategory[region]) {
@@ -456,10 +456,10 @@
                              if(municipalitiesByRegionAndCategory[region][category]) { // Ensure the category key is valid
                                 municipalitiesByRegionAndCategory[region][category].push(kunta);
                              } else {
-                                 console.warn(`Municipality "${kunta}" assigned to unknown category "${category}" from source.`);
+                                 console.warn(`Municipality "<span class="math-inline">\{kunta\}" assigned to unknown category "</span>{category}" from source.`);
                              }
                          } else {
-                              // console.log(`Municipality "${kunta}" already added to a category in region "${region}". Skipping.`);
+                              // console.log(`Municipality "<span class="math-inline">\{kunta\}" already added to a category in region "</span>{region}". Skipping.`);
                          }
 
                     });
