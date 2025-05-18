@@ -38,143 +38,328 @@
         </div>
 
     <script>
-        const sourceUrl = 'https://mikkogeokalevi.github.io/triplettikunnat.html';
+        const sourceUrl = 'https://mikkogeokalevi.github.io/triplettikunnat.html'; // TARKISTA TÄMÄ OSOITE!
+
+        // Kartoitus kunnista maakuntiin
         const municipalityRegionMap = {
-            // Ahvenanmaa
-            'Brändö': 'Ahvenanmaa', 'Eckerö': 'Ahvenanmaa', 'Finström': 'Ahvenanmaa', 'Föglö': 'Ahvenanmaa',
-            'Geta': 'Ahvenanmaa', 'Hammarland': 'Ahvenanmaa', 'Jomala': 'Ahvenanmaa', 'Kumlinge': 'Ahvenanmaa',
-            'Kökar': 'Ahvenanmaa', 'Lemland': 'Ahvenanmaa', 'Lumparland': 'Ahvenanmaa', 'Maarianhamina': 'Ahvenanmaa',
-            'Saltvik': 'Ahvenanmaa', 'Sottunga': 'Ahvenanmaa', 'Sund': 'Ahvenanmaa', 'Vårdö': 'Ahvenanmaa',
-            // Etelä-Karjala
-            'Imatra': 'Etelä-Karjala', 'Lappeenranta': 'Etelä-Karjala', 'Lemi': 'Etelä-Karjala', 'Luumäki': 'Etelä-Karjala',
-            'Miehikkälä': 'Etelä-Karjala', 'Parikkala': 'Etelä-Karjala', 'Rautjärvi': 'Etelä-Karjala', 'Ruokolahti': 'Etelä-Karjala',
-            'Savitaipale': 'Etelä-Karjala', 'Taipalsaari': 'Etelä-Karjala', 'Virolahti': 'Etelä-Karjala',
-            // Etelä-Pohjanmaa
-            'Alajärvi': 'Etelä-Pohjanmaa', 'Alavus': 'Etelä-Pohjanmaa', 'Evijärvi': 'Etelä-Pohjanmaa', 'Ilmajoki': 'Etelä-Pohjanmaa',
-            'Isojoki': 'Etelä-Pohjanmaa', 'Isokyrö': 'Etelä-Pohjanmaa', 'Karijoki': 'Etelä-Pohjanmaa', 'Kauhajoki': 'Etelä-Pohjanmaa',
-            'Kauhava': 'Etelä-Pohjanmaa', 'Kuortane': 'Etelä-Pohjanmaa', 'Kurikka': 'Etelä-Pohjanmaa', 'Lappajärvi': 'Etelä-Pohjanmaa',
-            'Lapua': 'Etelä-Pohjanmaa', 'Seinäjoki': 'Etelä-Pohjanmaa', 'Soini': 'Etelä-Pohjanmaa', 'Teuva': 'Etelä-Pohjanmaa',
-            'Vimpeli': 'Etelä-Pohjanmaa',
-            // Etelä-Savo
-            'Enonkoski': 'Etelä-Savo', 'Hirvensalmi': 'Etelä-Savo', 'Joroinen': 'Etelä-Savo', 'Juva': 'Etelä-Savo',
-            'Kangasniemi': 'Etelä-Savo', 'Mikkeli': 'Etelä-Savo', 'Mäntyharju': 'Etelä-Savo', 'Pieksämäki': 'Etelä-Savo',
-            'Puumala': 'Etelä-Savo', 'Rantasalmi': 'Etelä-Savo', 'Savonlinna': 'Etelä-Savo', 'Sulkava': 'Etelä-Savo',
-            // Kainuu
-            'Hyrynsalmi': 'Kainuu', 'Kajaani': 'Kainuu', 'Kuhmo': 'Kainuu', 'Paltamo': 'Kainuu',
-            'Puolanka': 'Kainuu', 'Ristijärvi': 'Kainuu', 'Sotkamo': 'Kainuu', 'Suomussalmi': 'Kainuu',
-            // Kanta-Häme
-            'Akaa': 'Kanta-Häme', // Akaa is split between Pirkanmaa and Kanta-Häme, using Kanta-Häme based on common lists
+            'Akaa': 'Pirkanmaa',
+            'Alajärvi': 'Etelä-Pohjanmaa',
+            'Alavieska': 'Pohjois-Pohjanmaa',
+            'Alavus': 'Etelä-Pohjanmaa',
+            'Asikkala': 'Päijät-Häme',
+            'Askola': 'Uusimaa',
+            'Aura': 'Varsinais-Suomi',
+            'Brändö': 'Ahvenanmaa',
+            'Eckerö': 'Ahvenanmaa',
+            'Enonkoski': 'Etelä-Savo',
+            'Enontekiö': 'Lappi',
+            'Espoo': 'Uusimaa',
+            'Eura': 'Satakunta',
+            'Eurajoki': 'Satakunta',
+            'Evijärvi': 'Etelä-Pohjanmaa',
+            'Finström': 'Ahvenanmaa',
             'Forssa': 'Kanta-Häme',
-            'Hattula': 'Kanta-Häme', 'Hausjärvi': 'Kanta-Häme', 'Humppila': 'Kanta-Häme', 'Hämeenlinna': 'Kanta-Häme',
-            'Janakkala': 'Kanta-Häme', 'Jokioinen': 'Kanta-Häme', 'Loppi': 'Kanta-Häme', 'Riihimäki': 'Kanta-Häme',
-            'Tammela': 'Kanta-Häme', 'Urjala': 'Kanta-Häme', 'Ypäjä': 'Kanta-Häme',
-            // Keski-Pohjanmaa
-            'Halsua': 'Keski-Pohjanmaa', 'Kannus': 'Keski-Pohjanmaa', 'Kaustinen': 'Keski-Pohjanmaa', 'Kokkola': 'Keski-Pohjanmaa',
-            'Lestijärvi': 'Keski-Pohjanmaa', 'Perho': 'Keski-Pohjanmaa', 'Toholampi': 'Keski-Pohjanmaa', 'Veteli': 'Keski-Pohjanmaa',
-             'Nivala': 'Keski-Pohjanmaa', // Nivala is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
-             'Reisjärvi': 'Keski-Pohjanmaa', // Reisjärvi is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
-             'Sievi': 'Keski-Pohjanmaa', // Sievi is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
-             'Toholampi': 'Keski-Pohjanmaa',
-             'Ylivieska': 'Keski-Pohjanmaa', // Ylivieska is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
-            // Keski-Suomi
-            'Hankasalmi': 'Keski-Suomi', 'Joutsa': 'Keski-Suomi', 'Jyväskylä': 'Keski-Suomi', 'Jämsä': 'Keski-Suomi',
-            'Kannonkoski': 'Keski-Suomi', 'Karstula': 'Keski-Suomi', 'Keuruu': 'Keski-Suomi', 'Kinnula': 'Keski-Suomi',
-            'Kivijärvi': 'Keski-Suomi', 'Konnevesi': 'Keski-Suomi', 'Kuhmoinen': 'Keski-Suomi', 'Kyyjärvi': 'Keski-Suomi',
-            'Laukaa': 'Keski-Suomi', 'Luhanka': 'Keski-Suomi', 'Multia': 'Keski-Suomi', 'Muurame': 'Keski-Suomi',
-            'Petäjävesi': 'Keski-Suomi', 'Pihtipudas': 'Keski-Suomi', 'Saarijärvi': 'Keski-Suomi', 'Toivakka': 'Keski-Suomi',
-            'Uurainen': 'Keski-Suomi', 'Viitasaari': 'Keski-Suomi', 'Äänekoski': 'Keski-Suomi',
-            // Kymenlaakso
-            'Hamina': 'Kymenlaakso', 'Iitti': 'Kymenlaakso', 'Kotka': 'Kymenlaakso', 'Kouvola': 'Kymenlaakso',
-            'Miehikkälä': 'Kymenlaakso', // Miehikkälä is listed under South Karelia in some sources, using Kymenlaakso based on common divisions
-            'Pyhtää': 'Kymenlaakso', 'Virolahti': 'Kymenlaakso', // Virolahti is listed under South Karelia in some sources, using Kymenlaakso based on common divisions
-            // Lappi
-            'Enontekiö': 'Lappi', 'Inari': 'Lappi', 'Kemi': 'Lappi', 'Kemijärvi': 'Lappi',
-            'Keminmaa': 'Lappi', 'Kittilä': 'Lappi', 'Kolari': 'Lappi', 'Muonio': 'Lappi',
-            'Pelkosenniemi': 'Lappi', 'Pello': 'Lappi', 'Posio': 'Lappi', 'Ranua': 'Lappi',
-            'Rovaniemi': 'Lappi', 'Salla': 'Lappi', 'Savukoski': 'Lappi', 'Simo': 'Lappi',
-            'Sodankylä': 'Lappi', 'Taivalkoski': 'Lappi', 'Tervola': 'Lappi', 'Tornio': 'Lappi',
-            'Utsjoki': 'Lappi', 'Ylitornio': 'Lappi',
-            // Pirkanmaa
-            'Akaa': 'Pirkanmaa', // Akaa is split between Pirkanmaa and Kanta-Häme, using Pirkanmaa based on common lists
-            'Hämeenkyrö': 'Pirkanmaa', 'Ikaalinen': 'Pirkanmaa', 'Juupajoki': 'Pirkanmaa', 'Kangasala': 'Pirkanmaa',
-            'Kihniö': 'Pirkanmaa', 'Kuhmoinen': 'Pirkanmaa', 'Lempäälä': 'Pirkanmaa', 'Mänttä-Vilppula': 'Pirkanmaa',
-            'Nokia': 'Pirkanmaa', 'Orivesi': 'Pirkanmaa', 'Parkano': 'Pirkanmaa', 'Pirkkala': 'Pirkanmaa',
-            'Punkalaidun': 'Pirkanmaa', 'Pälkäne': 'Pirkanmaa', 'Ruovesi': 'Pirkanmaa', 'Sastamala': 'Pirkanmaa',
-            'Tampere': 'Pirkanmaa', 'Urjala': 'Pirkanmaa', 'Valkeakoski': 'Pirkanmaa', 'Vesilahti': 'Pirkanmaa',
-            'Virrat': 'Pirkanmaa', 'Ylöjärvi': 'Pirkanmaa', 'Ähtäri': 'Pirkanmaa',
-            // Pohjanmaa
-            'Kaskinen': 'Pohjanmaa', 'Korsnäs': 'Pohjanmaa', 'Kristiinankaupunki': 'Pohjanmaa', 'Kruunupyy': 'Pohjanmaa',
-            'Laihia': 'Pohjanmaa', 'Luoto': 'Pohjanmaa', 'Maalahti': 'Pohjanmaa', 'Mustasaari': 'Pohjanmaa',
-            'Närpiö': 'Pohjanmaa', 'Pedersören kunta': 'Pohjanmaa', 'Pietarsaari': 'Pohjanmaa', 'Uusikaarlepyy': 'Pohjanmaa',
-            'Vaasa': 'Pohjanmaa', 'Vöyri': 'Pohjanmaa',
-            // Pohjois-Karjala
-            'Ilomantsi': 'Pohjois-Karjala', 'Joensuu': 'Pohjois-Karjala', 'Juuka': 'Pohjois-Karjala', 'Kitee': 'Pohjois-Karjala',
-            'Kontiolahti': 'Pohjois-Karjala', 'Lieksa': 'Pohjois-Karjala', 'Liperi': 'Pohjois-Karjala', 'Nurmes': 'Pohjois-Karjala',
-            'Outokumpu': 'Pohjois-Karjala', 'Polvijärvi': 'Pohjois-Karjala', 'Rääkkylä': 'Pohjois-Karjala', 'Tohmajärvi': 'Pohjois-Karjala',
-            // Pohjois-Pohjanmaa
-            'Alavieska': 'Pohjois-Pohjanmaa', 'Haapajärvi': 'Pohjois-Pohjanmaa', 'Haapavesi': 'Pohjois-Pohjanmaa', 'Hailuoto': 'Pohjois-Pohjanmaa',
-            'Ii': 'Pohjois-Pohjanmaa', 'Kempele': 'Pohjois-Pohjanmaa', 'Kuusamo': 'Pohjois-Pohjanmaa', 'Kärsämäki': 'Pohjois-Pohjanmaa',
-            'Liminka': 'Pohjois-Pohjanmaa', 'Lumijoki': 'Pohjois-Pohjanmaa', 'Merijärvi': 'Pohjois-Pohjanmaa', 'Muhos': 'Pohjois-Pohjanmaa',
-            'Oulainen': 'Pohjois-Pohjanmaa', 'Oulu': 'Pohjois-Pohjanmaa', 'Pudasjärvi': 'Pohjois-Pohjanmaa', 'Pyhäjoki': 'Pohjois-Pohjanmaa',
-            'Pyhäjärvi': 'Pohjois-Pohjanmaa', 'Pyhäntä': 'Pohjois-Pohjanmaa', 'Raahe': 'Pohjois-Pohjanmaa', 'Siikajoki': 'Pohjois-Pohjanmaa',
-            'Siikalatva': 'Pohjois-Pohjanmaa', 'Tyrnävä': 'Pohjois-Pohjanmaa', 'Utajärvi': 'Pohjois-Pohjanmaa',
-            // Pohjois-Savo
-            'Iisalmi': 'Pohjois-Savo', 'Joroinen': 'Pohjois-Savo', // Joroinen is listed under Etelä-Savo in some sources, using Pohjois-Savo based on common divisions
-            'Kaavi': 'Pohjois-Savo', 'Keitele': 'Pohjois-Savo', 'Kiuruvesi': 'Pohjois-Savo', 'Kuopio': 'Pohjois-Savo',
-            'Lapinlahti': 'Pohjois-Savo', 'Leppävirta': 'Pohjois-Savo', 'Pielavesi': 'Pohjois-Savo', 'Rautalampi': 'Pohjois-Savo',
-            'Rautavaara': 'Pohjois-Savo', 'Siilinjärvi': 'Pohjois-Savo', 'Sonkajärvi': 'Pohjois-Savo', 'Suonenjoki': 'Pohjois-Savo',
-            'Tervo': 'Pohjois-Savo', 'Tuusniemi': 'Pohjois-Savo', 'Varkaus': 'Pohjois-Savo', 'Vesanto': 'Pohjois-Savo',
-            'Vieremä': 'Pohjois-Savo',
-            // Päijät-Häme
-             'Asikkala': 'Päijät-Häme',
-             'Hartola': 'Päijät-Häme',
-             'Heinola': 'Päijät-Häme',
-             'Hollola': 'Päijät-Häme',
-             'Kärkölä': 'Päijät-Häme',
-             'Lahti': 'Päijät-Häme',
-             'Orimattila': 'Päijät-Häme',
-             'Padasjoki': 'Päijät-Häme',
-             'Sysmä': 'Päijät-Häme',
-            // Satakunta
-            'Eura': 'Satakunta', 'Eurajoki': 'Satakunta', 'Harjavalta': 'Satakunta', 'Huittinen': 'Satakunta',
-            'Jämijärvi': 'Satakunta', 'Kankaanpää': 'Satakunta', 'Karvia': 'Satakunta', 'Kokemäki': 'Satakunta',
-            'Merikarvia': 'Satakunta', 'Nakkila': 'Satakunta', 'Pomarkku': 'Satakunta', 'Pori': 'Satakunta',
-            'Pyhäranta': 'Satakunta', 'Rauma': 'Satakunta', 'Siikainen': 'Satakunta', 'Säkylä': 'Satakunta',
+            'Föglö': 'Ahvenanmaa',
+            'Geta': 'Ahvenanmaa',
+            'Haapajärvi': 'Pohjois-Pohjanmaa',
+            'Haapavesi': 'Pohjois-Pohjanmaa',
+            'Hailuoto': 'Pohjois-Pohjanmaa',
+            'Halsua': 'Keski-Pohjanmaa',
+            'Hamina': 'Kymenlaakso',
+            'Hammarland': 'Ahvenanmaa',
+            'Hankasalmi': 'Keski-Suomi',
+            'Hanko': 'Uusimaa',
+            'Harjavalta': 'Satakunta',
+            'Hartola': 'Päijät-Häme',
+            'Hattula': 'Kanta-Häme',
+            'Hausjärvi': 'Kanta-Häme',
+            'Heinola': 'Päijät-Häme',
+            'Heinävesi': 'Pohjois-Karjala', // Siirretty Pohjois-Karjalaan yleisen luokituksen mukaan
+            'Helsinki': 'Uusimaa',
+            'Hirvensalmi': 'Etelä-Savo',
+            'Hollola': 'Päijät-Häme',
+            'Huittinen': 'Pirkanmaa', // Siirretty Pirkanmaalle yleisen luokituksen mukaan
+            'Humppila': 'Kanta-Häme',
+            'Hyrynsalmi': 'Kainuu',
+            'Hyvinkää': 'Uusimaa',
+            'Hämeenkyrö': 'Pirkanmaa',
+            'Hämeenlinna': 'Kanta-Häme',
+            'Ii': 'Pohjois-Pohjanmaa',
+            'Iisalmi': 'Pohjois-Savo',
+            'Iitti': 'Kymenlaakso',
+            'Ikaalinen': 'Pirkanmaa',
+            'Ilmajoki': 'Etelä-Pohjanmaa',
+            'Ilomantsi': 'Pohjois-Karjala',
+            'Imatra': 'Etelä-Karjala',
+            'Inari': 'Lappi',
+            'Inkoo': 'Uusimaa',
+            'Isojoki': 'Etelä-Pohjanmaa',
+            'Isokyrö': 'Etelä-Pohjanmaa',
+            'Janakkala': 'Kanta-Häme',
+            'Joensuu': 'Pohjois-Karjala',
+            'Jokioinen': 'Kanta-Häme',
+            'Jomala': 'Ahvenanmaa',
+            'Joroinen': 'Pohjois-Savo', // Siirretty Pohjois-Savoon yleisen luokituksen mukaan
+            'Joutsa': 'Keski-Suomi',
+            'Juuka': 'Pohjois-Karjala',
+            'Juupajoki': 'Pirkanmaa',
+            'Juva': 'Etelä-Savo',
+            'Jyväskylä': 'Keski-Suomi',
+            'Jämijärvi': 'Satakunta',
+            'Jämsä': 'Keski-Suomi',
+            'Järvenpää': 'Uusimaa',
+            'Kaarina': 'Varsinais-Suomi',
+            'Kaavi': 'Pohjois-Savo',
+            'Kajaani': 'Kainuu',
+            'Kalajoki': 'Pohjois-Pohjanmaa',
+            'Kangasala': 'Pirkanmaa',
+            'Kangasniemi': 'Etelä-Savo',
+            'Kankaanpää': 'Satakunta',
+            'Kannonkoski': 'Keski-Suomi',
+            'Kannus': 'Keski-Pohjanmaa',
+            'Karijoki': 'Etelä-Pohjanmaa',
+            'Karkkila': 'Uusimaa',
+            'Karstula': 'Keski-Suomi',
+            'Karvia': 'Satakunta',
+            'Kaskinen': 'Pohjanmaa',
+            'Kauhajoki': 'Etelä-Pohjanmaa',
+            'Kauhava': 'Etelä-Pohjanmaa',
+            'Kauniainen': 'Uusimaa',
+            'Kaustinen': 'Keski-Pohjanmaa',
+            'Kemi': 'Lappi',
+            'Kemijärvi': 'Lappi',
+            'Keminmaa': 'Lappi',
+            'Kempele': 'Pohjois-Pohjanmaa',
+            'Kerava': 'Uusimaa',
+            'Keitele': 'Pohjois-Savo',
+            'Keuruu': 'Keski-Suomi',
+            'Kihniö': 'Pirkanmaa',
+            'Kinnula': 'Keski-Suomi',
+            'Kirkkonummi': 'Uusimaa',
+            'Kitee': 'Pohjois-Karjala',
+            'Kittilä': 'Lappi',
+            'Kiuruvesi': 'Pohjois-Savo',
+            'Kivijärvi': 'Keski-Suomi',
+            'Kokemäki': 'Satakunta',
+            'Kokkola': 'Keski-Pohjanmaa',
+            'Kolari': 'Lappi',
+            'Konnevesi': 'Keski-Suomi',
+            'Kontiolahti': 'Pohjois-Karjala',
+            'Korsnäs': 'Pohjanmaa',
+            'Koski Tl': 'Varsinais-Suomi',
+            'Kotka': 'Kymenlaakso',
+            'Kouvola': 'Kymenlaakso',
+            'Kristiinankaupunki': 'Pohjanmaa',
+            'Kruunupyy': 'Pohjanmaa',
+            'Kuhmo': 'Kainuu',
+            'Kuhmoinen': 'Keski-Suomi',
+            'Kumlinge': 'Ahvenanmaa',
+            'Kuopio': 'Pohjois-Savo',
+            'Kuortane': 'Etelä-Pohjanmaa',
+            'Kurikka': 'Etelä-Pohjanmaa',
+            'Kustavi': 'Varsinais-Suomi',
+            'Kuusamo': 'Pohjois-Pohjanmaa',
+            'Kyyjärvi': 'Keski-Suomi',
+            'Kärkölä': 'Päijät-Häme',
+            'Kärsämäki': 'Pohjois-Pohjanmaa',
+            'Kökar': 'Ahvenanmaa',
+            'Lahti': 'Päijät-Häme',
+            'Laihia': 'Pohjanmaa',
+            'Laitila': 'Varsinais-Suomi',
+            'Lapinjärvi': 'Uusimaa',
+            'Lapinlahti': 'Pohjois-Savo',
+            'Lappajärvi': 'Etelä-Pohjanmaa',
+            'Lappeenranta': 'Etelä-Karjala',
+            'Lapua': 'Etelä-Pohjanmaa',
+            'Laukaa': 'Keski-Suomi',
+            'Lemi': 'Etelä-Karjala',
+            'Lemland': 'Ahvenanmaa',
+            'Lempäälä': 'Pirkanmaa',
+            'Leppävirta': 'Pohjois-Savo',
+            'Lestijärvi': 'Keski-Pohjanmaa',
+            'Lieksa': 'Pohjois-Karjala',
+            'Lieto': 'Varsinais-Suomi',
+            'Liminka': 'Pohjois-Pohjanmaa',
+            'Liperi': 'Pohjois-Karjala',
+            'Lohja': 'Uusimaa',
+            'Loimaa': 'Varsinais-Suomi',
+            'Loppi': 'Kanta-Häme',
+            'Loviisa': 'Uusimaa',
+            'Luhanka': 'Keski-Suomi',
+            'Lumijoki': 'Pohjois-Pohjanmaa',
+            'Lumparland': 'Ahvenanmaa',
+            'Luoto': 'Pohjanmaa',
+            'Luumäki': 'Etelä-Karjala',
+            'Maalahti': 'Pohjanmaa',
+            'Maarianhamina': 'Ahvenanmaa',
+            'Marttila': 'Varsinais-Suomi',
+            'Masku': 'Varsinais-Suomi',
+            'Merijärvi': 'Pohjois-Pohjanmaa',
+            'Merikarvia': 'Satakunta',
+            'Miehikkälä': 'Kymenlaakso', // Siirretty Kymenlaaksoon yleisen luokituksen mukaan
+            'Mikkeli': 'Etelä-Savo',
+            'Muhos': 'Pohjois-Pohjanmaa',
+            'Multia': 'Keski-Suomi',
+            'Muurame': 'Keski-Suomi',
+            'Myrskylä': 'Uusimaa',
+            'Mynämäki': 'Varsinais-Suomi',
+            'Mäntsälä': 'Uusimaa',
+            'Mänttä-Vilppula': 'Pirkanmaa',
+            'Naantali': 'Varsinais-Suomi',
+            'Nakkila': 'Satakunta',
+            'Närpiö': 'Pohjanmaa',
+            'Nivala': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Nokia': 'Pirkanmaa',
+            'Nousiainen': 'Varsinais-Suomi',
+            'Nurmes': 'Pohjois-Karjala',
+            'Nurmijärvi': 'Uusimaa',
+            'Oripää': 'Varsinais-Suomi',
+            'Orivesi': 'Pirkanmaa',
+            'Oulainen': 'Pohjois-Pohjanmaa',
+            'Oulu': 'Pohjois-Pohjanmaa',
+            'Outokumpu': 'Pohjois-Karjala',
+            'Padasjoki': 'Päijät-Häme',
+            'Paimio': 'Varsinais-Suomi',
+            'Paltamo': 'Kainuu',
+            'Parainen': 'Varsinais-Suomi',
+            'Parikkala': 'Etelä-Karjala',
+            'Parkano': 'Pirkanmaa',
+            'Pedersören kunta': 'Pohjanmaa',
+            'Pelkosenniemi': 'Lappi',
+            'Pello': 'Lappi',
+            'Perho': 'Keski-Pohjanmaa',
+            'Petäjävesi': 'Keski-Suomi',
+            'Pieksämäki': 'Etelä-Savo',
+            'Pielavesi': 'Pohjois-Savo',
+            'Pietarsaari': 'Pohjanmaa',
+            'Pihtipudas': 'Keski-Suomi',
+            'Pirkkala': 'Pirkanmaa',
+            'Polvijärvi': 'Pohjois-Karjala',
+            'Pomarkku': 'Satakunta',
+            'Pori': 'Satakunta',
+            'Pornainen': 'Uusimaa',
+            'Porvoo': 'Uusimaa',
+            'Posio': 'Lappi',
+            'Pudasjärvi': 'Pohjois-Pohjanmaa',
+            'Pukkila': 'Uusimaa',
+            'Punkalaidun': 'Pirkanmaa',
+            'Puolanka': 'Kainuu',
+            'Puumala': 'Etelä-Savo',
+            'Pyhtää': 'Kymenlaakso',
+            'Pyhäjoki': 'Pohjois-Pohjanmaa',
+            'Pyhäjärvi': 'Pohjois-Pohjanmaa',
+            'Pyhäntä': 'Pohjois-Pohjanmaa',
+            'Pyhäranta': 'Satakunta', // Siirretty Satakuntaan yleisen luokituksen mukaan
+            'Pälkäne': 'Pirkanmaa',
+            'Pöytyä': 'Varsinais-Suomi',
+            'Raahe': 'Pohjois-Pohjanmaa',
+            'Raasepori': 'Uusimaa',
+            'Raisio': 'Varsinais-Suomi',
+            'Rantasalmi': 'Etelä-Savo',
+            'Ranua': 'Lappi',
+            'Rauma': 'Satakunta',
+            'Rautalampi': 'Pohjois-Savo',
+            'Rautavaara': 'Pohjois-Savo',
+            'Rautjärvi': 'Etelä-Karjala',
+            'Reisjärvi': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Riihimäki': 'Kanta-Häme',
+            'Ristijärvi': 'Kainuu',
+            'Rovaniemi': 'Lappi',
+            'Ruokolahti': 'Etelä-Karjala',
+            'Ruovesi': 'Pirkanmaa',
+            'Rusko': 'Varsinais-Suomi',
+            'Saarijärvi': 'Keski-Suomi',
+            'Salla': 'Lappi',
+            'Salo': 'Varsinais-Suomi',
+            'Saltvik': 'Ahvenanmaa',
+            'Sastamala': 'Pirkanmaa',
+            'Sauvo': 'Varsinais-Suomi',
+            'Savitaipale': 'Etelä-Karjala',
+            'Savonlinna': 'Etelä-Savo',
+            'Savukoski': 'Lappi',
+            'Seinäjoki': 'Etelä-Pohjanmaa',
+            'Sievi': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Siikainen': 'Satakunta',
+            'Siikajoki': 'Pohjois-Pohjanmaa',
+            'Siikalatva': 'Pohjois-Pohjanmaa',
+            'Siilinjärvi': 'Pohjois-Savo',
+            'Simo': 'Lappi',
+            'Sipoo': 'Uusimaa',
+            'Siuntio': 'Uusimaa',
+            'Sodankylä': 'Lappi',
+            'Soini': 'Etelä-Pohjanmaa',
+            'Somero': 'Varsinais-Suomi',
+            'Sonkajärvi': 'Pohjois-Savo',
+            'Sotkamo': 'Kainuu', // Siirretty Kainuuseen
+            'Sottunga': 'Ahvenanmaa',
+            'Sulkava': 'Etelä-Savo',
+            'Sund': 'Ahvenanmaa',
+            'Suomussalmi': 'Kainuu',
+            'Suonenjoki': 'Pohjois-Savo',
+            'Sysmä': 'Päijät-Häme',
+            'Säkylä': 'Satakunta',
+            'Taipalsaari': 'Etelä-Karjala',
+            'Taivalkoski': 'Lappi',
+            'Taivassalo': 'Varsinais-Suomi',
+            'Tammela': 'Kanta-Häme',
+            'Tampere': 'Pirkanmaa',
+            'Tervo': 'Pohjois-Savo',
+            'Tervola': 'Lappi',
+            'Teuva': 'Etelä-Pohjanmaa',
+            'Tohmajärvi': 'Pohjois-Karjala',
+            'Toholampi': 'Keski-Pohjanmaa',
+            'Toivakka': 'Keski-Suomi',
+            'Tornio': 'Lappi',
+            'Turku': 'Varsinais-Suomi',
+            'Tuusniemi': 'Pohjois-Savo',
+            'Tuusula': 'Uusimaa',
+            'Tyrnävä': 'Pohjois-Pohjanmaa',
             'Ulvila': 'Satakunta',
-            // Uusimaa
-            'Askola': 'Uusimaa', 'Espoo': 'Uusimaa', 'Hanko': 'Uusimaa', 'Helsinki': 'Uusimaa',
-            'Hyvinkää': 'Uusimaa', 'Inkoo': 'Uusimaa', 'Järvenpää': 'Uusimaa', 'Kauniainen': 'Uusimaa',
-            'Kerava': 'Uusimaa', 'Kirkkonummi': 'Uusimaa', 'Lapinjärvi': 'Uusimaa', 'Lohja': 'Uusimaa',
-            'Loviisa': 'Uusimaa', 'Myrskylä': 'Uusimaa', 'Mäntsälä': 'Uusimaa', 'Pornainen': 'Uusimaa',
-            'Porvoo': 'Uusimaa', 'Pukkila': 'Uusimaa', 'Raasepori': 'Uusimaa', 'Riihimäki': 'Uusimaa',
-             'Sipoo': 'Uusimaa', 'Siuntio': 'Uusimaa', 'Tuusula': 'Uusimaa', 'Vantaa': 'Uusimaa',
+            'Urjala': 'Pirkanmaa', // Siirretty Pirkanmaalle
+            'Utajärvi': 'Pohjois-Pohjanmaa',
+            'Utsjoki': 'Lappi',
+            'Uurainen': 'Keski-Suomi',
+            'Uusikaarlepyy': 'Pohjanmaa',
+            'Uusikaupunki': 'Varsinais-Suomi',
+            'Vaala': 'Kainuu', // Siirretty Kainuuseen
+            'Vaasa': 'Pohjanmaa',
+            'Valkeakoski': 'Pirkanmaa',
+            'Vantaa': 'Uusimaa',
+            'Varkaus': 'Pohjois-Savo',
+            'Vehmaa': 'Varsinais-Suomi',
+            'Vesanto': 'Pohjois-Savo',
+            'Vesilahti': 'Pirkanmaa',
+            'Veteli': 'Keski-Pohjanmaa',
+            'Vieremä': 'Pohjois-Savo',
             'Vihti': 'Uusimaa',
-            // Varsinais-Suomi
-            'Aura': 'Varsinais-Suomi', 'Kaarina': 'Varsinais-Suomi', 'Kemiönsaari': 'Varsinais-Suomi', 'Koski Tl': 'Varsinais-Suomi',
-            'Kustavi': 'Varsinais-Suomi', 'Laitila': 'Varsinais-Suomi', 'Lieto': 'Varsinais-Suomi', 'Loimaa': 'Varsinais-Suomi',
-            'Marttila': 'Varsinais-Suomi', 'Masku': 'Varsinais-Suomi', 'Mynämäki': 'Varsinais-Suomi', 'Naantali': 'Varsinais-Suomi',
-            'Nousiainen': 'Varsinais-Suomi', 'Oripää': 'Varsinais-Suomi', 'Paimio': 'Varsinais-Suomi', 'Parainen': 'Varsinais-Suomi',
-            'Pöytyä': 'Varsinais-Suomi', 'Raisio': 'Varsinais-Suomi', 'Rusko': 'Varsinais-Suomi', 'Salo': 'Varsinais-Suomi',
-            'Sauvo': 'Varsinais-Suomi', 'Somero': 'Varsinais-Suomi', 'Taivassalo': 'Varsinais-Suomi', 'Turku': 'Varsinais-Suomi',
-            'Uusikaupunki': 'Varsinais-Suomi', 'Vehmaa': 'Varsinais-Suomi',
-            // Kunnat ilman löytöjä, jotka eivät olleet edellisissä maakunnissa
-             'Brändö': 'Ahvenanmaa', 'Eckerö': 'Ahvenanmaa', 'Finström': 'Ahvenanmaa', 'Föglö': 'Ahvenanmaa',
-            'Geta': 'Ahvenanmaa', 'Hammarland': 'Ahvenanmaa', 'Jomala': 'Ahvenanmaa', 'Kumlinge': 'Ahvenanmaa',
-            'Lumparland': 'Ahvenanmaa', 'Maarianhamina': 'Ahvenanmaa', 'Saltvik': 'Ahvenanmaa', 'Vårdö': 'Ahvenanmaa',
-             'Halsua': 'Keski-Pohjanmaa', 'Kannus': 'Keski-Pohjanmaa', 'Kaustinen': 'Keski-Pohjanmaa', 'Kokkola': 'Keski-Pohjanmaa',
-            'Lestijärvi': 'Keski-Pohjanmaa', 'Toholampi': 'Keski-Pohjanmaa', 'Veteli': 'Keski-Pohjanmaa',
-             'Kaskinen': 'Pohjanmaa', 'Korsnäs': 'Pohjanmaa', 'Kristiinankaupunki': 'Pohjanmaa', 'Kruunupyy': 'Pohjanmaa',
-            'Laihia': 'Pohjanmaa', 'Luoto': 'Pohjanmaa', 'Maalahti': 'Pohjanmaa', 'Närpiö': 'Pohjanmaa',
-            'Pedersören kunta': 'Pohjanmaa', 'Pietarsaari': 'Pohjanmaa', 'Uusikaarlepyy': 'Pohjanmaa', 'Vöyri': 'Pohjanmaa',
-
-
+            'Viitasaari': 'Keski-Suomi',
+            'Vimpeli': 'Etelä-Pohjanmaa',
+            'Virolahti': 'Kymenlaakso', // Siirretty Kymenlaaksoon
+            'Virrat': 'Pirkanmaa',
+            'Vårdö': 'Ahvenanmaa',
+            'Vöyri': 'Pohjanmaa',
+            'Ylitornio': 'Lappi',
+            'Ylivieska': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Ylöjärvi': 'Pirkanmaa',
+            'Ypäjä': 'Kanta-Häme',
+            'Ähtäri': 'Pirkanmaa', // Siirretty Pirkanmaalle
+            'Äänekoski': 'Keski-Suomi'
         };
 
+
         async function fetchAndProcessData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+             document.getElementById('timestamp').innerText = 'Ladataan tietoja...';
+             document.getElementById('content').innerHTML = '';
+
+
             try {
                 const response = await fetch(sourceUrl);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Log the status and text for debugging
+                    console.error(`HTTP error! status: ${response.status}, text: ${await response.text()}`);
+                    throw new Error(`HTTP status ${response.status}`);
                 }
                 const html = await response.text();
                 const parser = new DOMParser();
@@ -194,7 +379,9 @@
                 // Extract timestamp
                 const timestampElement = doc.querySelector('.timestamp');
                 if(timestampElement) {
-                    document.getElementById('timestamp').innerText = `Perustuu tiedostoon, luotu viimeksi: ${timestampElement.innerText.replace('Luotu viimeksi: ', '')}`;
+                    document.getElementById('timestamp').innerText = `Perustuu tiedostoon, ${timestampElement.innerText.trim()}`;
+                } else {
+                     document.getElementById('timestamp').innerText = `Perustuu tiedostoon (aikaleimaa ei löytynyt)`;
                 }
 
 
@@ -221,18 +408,29 @@
                         categoryKey = 'tradi_multi_mysse';
                     }
 
-                    kuntaList.forEach(li => {
-                        const kuntaName = li.innerText.split(':')[0].trim();
-                        if (categoryKey) {
-                             municipalities[categoryKey].push(kuntaName);
-                        }
-                    });
+                    if (categoryKey) {
+                         kuntaList.forEach(li => {
+                            const kuntaNameMatch = li.innerText.match(/^[^:]+/); // Extract municipality name before ':'
+                            if (kuntaNameMatch && kuntaNameMatch[0]) {
+                                const kuntaName = kuntaNameMatch[0].trim();
+                                municipalities[categoryKey].push(kuntaName);
+                            }
+                        });
+                    }
                 });
 
+                 // Remove duplicates within each category just in case
+                for (const category in municipalities) {
+                    municipalities[category] = [...new Set(municipalities[category])];
+                }
+
+
                 const municipalitiesByRegionAndCategory = {};
+                 const allMunicipalitiesInSource = new Set();
 
                 for (const category in municipalities) {
                     municipalities[category].forEach(kunta => {
+                         allMunicipalitiesInSource.add(kunta); // Track all municipalities found in the source
                         const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
                         if (!municipalitiesByRegionAndCategory[region]) {
                             municipalitiesByRegionAndCategory[region] = {
@@ -246,12 +444,47 @@
                                 'tradi_multi_mysse': []
                             };
                         }
-                        municipalitiesByRegionAndCategory[region][category].push(kunta);
+                         // Prevent adding municipality to multiple categories within the same region (based on source classification)
+                         let alreadyAdded = false;
+                         for(const cat in municipalitiesByRegionAndCategory[region]) {
+                             if(municipalitiesByRegionAndCategory[region][cat].includes(kunta)) {
+                                 alreadyAdded = true;
+                                 break;
+                             }
+                         }
+                         if(!alreadyAdded) {
+                              municipalitiesByRegionAndCategory[region][category].push(kunta);
+                         }
+
                     });
                 }
 
+                 // Add municipalities with no finds from the map that were in the source
+                 if(municipalities['ei_loytoja']) {
+                     municipalities['ei_loytoja'].forEach(kunta => {
+                          const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
+                            if (!municipalitiesByRegionAndCategory[region]) {
+                                municipalitiesByRegionAndCategory[region] = {
+                                    'ei_loytoja': [], 'vain_tradi': [], 'vain_multi': [], 'vain_mysse': [],
+                                    'tradi_multi': [], 'multi_mysse': [], 'tradi_mysse': [], 'tradi_multi_mysse': []
+                                };
+                            }
+                            let alreadyAdded = false;
+                            for(const cat in municipalitiesByRegionAndCategory[region]) {
+                                if(municipalitiesByRegionAndCategory[region][cat].includes(kunta)) {
+                                    alreadyAdded = true;
+                                    break;
+                                }
+                            }
+                            if(!alreadyAdded) {
+                                municipalitiesByRegionAndCategory[region]['ei_loytoja'].push(kunta);
+                            }
+                     });
+                 }
+
+
                 const contentDiv = document.getElementById('content');
-                contentDiv.innerHTML = ''; // Clear loading message
+
 
                 // Sort regions alphabetically
                 const sortedRegions = Object.keys(municipalitiesByRegionAndCategory).sort();
