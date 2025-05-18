@@ -54,13 +54,13 @@
 
     /* Keltainen (Kevät) teema */
     .theme-yellow {
-      --bg-color: #fffbe6;
-      --text-color: #576000;
-      --card-bg: #fef9c3;
-      --border-color: #fde047;
-      --accent-color: #a3bf58;
-      --button-bg: #fde047;
-      --button-hover-bg: #facc15;
+      --bg-color: #fffbe6; 
+      --text-color: #576000; 
+      --card-bg: #fef9c3;   
+      --border-color: #fde047; 
+      --accent-color: #a3bf58; 
+      --button-bg: #fde047;   
+      --button-hover-bg: #facc15; 
       --link-color: #a3bf58;
       --link-hover-color: #84cc16;
       --placeholder-color: #a1a1aa;
@@ -69,17 +69,18 @@
     }
     .theme-yellow select, .theme-yellow input[type="date"], .theme-yellow input[type="text"],
     .theme-yellow #regionListContainer, .theme-yellow #paikkakuntaSelectorModal {
-        background-color: #fffce8;
-        color: var(--text-color);
+        background-color: #fffce8; 
+        color: var(--text-color); 
         border: 1px solid var(--border-color);
     }
     .theme-yellow .modal-content li:hover {
-        background-color: #fef08a;
+        background-color: #fef08a; 
     }
      .theme-yellow #locationFilterValue:disabled {
         background-color: #fef9e7;
         color: var(--disabled-text-color);
     }
+
 
     /* Punainen teema */
     .theme-red {
@@ -134,22 +135,22 @@
 
     .header-area {
         display: flex;
-        align-items: center; /* Pitää elementit pystysuunnassa keskitettyinä */
-        justify-content: space-between; /* Jakaa tilan: logo+otsikko vasemmalle, teemavalitsin oikealle */
+        align-items: center; 
+        justify-content: space-between; 
         margin-bottom: var(--spacing-large); 
         padding-bottom: var(--spacing-medium);
         border-bottom: 1px solid var(--border-color);
         transition: border-color 0.3s;
-        flex-wrap: wrap; /* Sallii rivittymisen pienillä näytöillä tarvittaessa */
+        flex-wrap: wrap; 
     }
     
-    .header-title-area { /* Uusi wrapper logolle ja otsikolle */
+    .header-title-area { 
         display: flex;
         align-items: center;
     }
 
     .header-area .logo {
-        width: 60px; /* Hieman pienennetty logo */
+        width: 60px; 
         height: 60px;
         margin-right: var(--spacing-medium);
         border: none;
@@ -159,31 +160,30 @@
 
     .header-area h2 {
         margin: 0;
-        font-size: 1.6em; /* Hieman pienennetty otsikko */
+        font-size: 1.6em; 
         color: var(--text-color);
     }
     
     #themeSelectorContainer {
-        /* margin-left: auto; Poistettu, koska justify-content: space-between header-areassa hoitaa asemointia */
-        display: flex; /* Asettaa labelin ja selectin vierekkäin */
-        align-items: center; /* Kesyttää labelin ja selectin pystysuunnassa */
-        margin-top: var(--spacing-small); /* Pieni marginaali yläpuolelle, jos rivittyy */
+        display: flex; 
+        align-items: center; 
+        margin-top: var(--spacing-small); 
     }
     #themeSelectorContainer label {
         margin-right: var(--spacing-small);
         margin-top:0;
         margin-bottom: 0;
-        font-size: 0.8em; /* Pienennetty labelin fonttikokoa */
-        font-weight: normal; /* Ei lihavoitua */
+        font-size: 0.8em; 
+        font-weight: normal; 
     }
 
     #themeSelector {
-        padding: 0.3em 0.5em; /* Pienennetty paddingia */
+        padding: 0.3em 0.5em; 
         border-radius: var(--border-radius);
         border: 1px solid var(--border-color);
         background-color: var(--button-bg); 
         color: var(--text-color);
-        font-size: 0.8em; /* Pienennetty select-elementin fonttikokoa */
+        font-size: 0.8em; 
         width: auto; 
         margin-bottom: 0; 
         transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -208,8 +208,7 @@
       box-sizing: border-box;
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
-    /* Varmistetaan, että #themeSelector ei peri tätä yleistä leveyttä */
-    select#themeSelector {
+    select#themeSelector { /* Varmistetaan, että teemavalitsin ei peri tätä yleistä leveyttä */
         width: auto;
     }
 
@@ -233,7 +232,7 @@
       min-width: 100px;
     }
 
-    button, .modal-button {
+    button, .modal-button { /* Yleiset nappityylit */
       margin-top: var(--spacing-medium);
       padding: var(--spacing-small) var(--spacing-medium);
       background-color: var(--button-bg); 
@@ -244,20 +243,45 @@
       font-size: 1.1em;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
-
     button:hover, .modal-button:hover {
       background-color: var(--button-hover-bg); 
     }
 
-    a {
+    /* Nappien ryhmittely kuvatuloksen alla */
+    .output-actions {
+        display: flex;
+        gap: var(--spacing-small);
+        flex-wrap: wrap; /* Rivitä tarvittaessa pienillä näytöillä */
+        margin-top: var(--spacing-medium);
+    }
+    .output-actions button, .output-actions a {
+        flex-grow: 1; /* Jaa tilaa tasaisesti */
+        margin-top: 0; /* Poista yksittäisten nappien ylämarginaali, koska wrapperilla on */
+        text-align: center; /* Varmista tekstin keskitys linkissä */
+        font-size: 0.9em; /* Hieman pienempi fontti näille napeille */
+        padding: var(--spacing-small) var(--spacing-small); /* Yhtenäinen padding */
+    }
+     .output-actions a#linkki { /* Linkki-nappi */
+        background-color: var(--button-bg);
+        color: var(--text-color);
+        border-radius: var(--border-radius);
+        display: inline-flex; /* Jotta padding ja keskitys toimii paremmin */
+        align-items: center;
+        justify-content: center;
+        line-height: normal; /* Palauta normaali riviväli */
+    }
+    .output-actions a#linkki:hover {
+        background-color: var(--button-hover-bg);
+        text-decoration: none; /* Poista alleviivaus hoverissa, koska se on nappi */
+    }
+
+
+    a { /* Yleinen linkkityyli, joka ei ole nappi */
       color: var(--link-color); 
-      display: inline-block;
-      margin-top: var(--spacing-medium);
       text-decoration: none;
       transition: color 0.3s ease;
     }
-
-    a:hover {
+    a:not(.output-actions a):hover { /* Vain ei-nappimaisille linkeille */
         color: var(--link-hover-color); 
         text-decoration: underline;
     }
@@ -289,18 +313,6 @@
         margin-bottom: var(--spacing-small);
     }
 
-    a#linkki {
-        margin-top: var(--spacing-medium);
-        display: none; 
-    }
-
-    #copyLinkButton {
-        margin-top: var(--spacing-small);
-        padding: 0.4em 0.8em;
-        font-size: 0.9em;
-        display: none; 
-    }
-
     #yearSpecificFilters {
         display: none;
         margin-top: var(--spacing-medium);
@@ -327,17 +339,19 @@
          margin-bottom: var(--spacing-medium);
     }
 
-    .user-input-container input[type="text"] {
-         flex-grow: 1;
-         width: auto;
-          margin-bottom: 0;
+    .user-input-container input[type="text"]#user {
+         flex-grow: 1; 
+         width: auto; 
+         margin-bottom: 0; 
     }
 
     #resetButton {
-        padding: var(--spacing-small);
-         font-size: 1em;
-         height: calc(1em + 2 * var(--spacing-small) + 2 * 1px);
-         margin-top: 0;
+        padding: var(--spacing-small) 0.8em; /* Säädetty padding */
+        font-size: 1em; 
+        /* height: calc(1em + 2 * var(--spacing-small) + 2 * 1px); Poistettu kiinteä korkeus, anna paddingin määrittää */
+        line-height: 1.4; /* Varmistaa tekstin pystysuuntaisen keskityksen paremmin */
+        margin-top: 0; 
+        flex-shrink: 0; 
     }
 
     .location-input-icon-container {
@@ -462,21 +476,20 @@
         margin-top: 0; 
     }
 
-    @media (max-width: 700px) { /* Laajennettu breakpointti, jotta teemavalitsin rivittyy aiemmin */
+    @media (max-width: 700px) { 
         .header-area {
             flex-direction: column; 
-            align-items: flex-start; /* Kohdista kaikki vasemmalle kun rivittyy */
+            align-items: flex-start; 
         }
         .header-title-area {
-            margin-bottom: var(--spacing-small); /* Tilaa otsikon ja teemavalitsimen väliin kun rivittyy */
+            margin-bottom: var(--spacing-small); 
         }
         #themeSelectorContainer {
-            margin-left: 0; /* Ei enää tarvita automaattista marginaalia */
-            width: 100%; /* Vie koko leveyden kun rivittyy */
-            justify-content: flex-start; /* Kohdista vasemmalle */
+            margin-left: 0; 
+            width: 100%; 
+            justify-content: flex-start; 
         }
     }
-
 
     @media (max-width: 600px) {
         body { margin: var(--spacing-mobile-medium); }
@@ -484,25 +497,19 @@
             padding: var(--spacing-mobile-large);
             margin: var(--spacing-mobile-large) auto;
         }
-        /* .header-area tyylit ovat jo yllä @media (max-width: 700px) */
-
         .header-area .logo {
-            margin-right: 0; margin-bottom: var(--spacing-mobile-medium);
-            width: 50px; height: 50px; /* Pienennetty logoa mobiilissa */
+            width: 50px; height: 50px;
+            margin-bottom: var(--spacing-mobile-small); 
         }
-        .header-area h2 { font-size: 1.4em; } /* Pienennetty otsikkoa mobiilissa */
-
+        .header-area h2 { font-size: 1.4em; }
         #themeSelectorContainer label { font-size: 0.75em; }
         #themeSelector { font-size: 0.75em; padding: 0.2em 0.4em;}
 
-
         label { margin-top: var(--spacing-mobile-medium); margin-bottom: var(--spacing-mobile-small); }
         select, input[type="date"], input[type="text"] { margin-bottom: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small); }
-         /* Varmistetaan, että #themeSelector ei peri tätä yleistä leveyttä mobiilissakaan */
         select#themeSelector {
             width: auto;
         }
-
 
         #aikaKentat > .row {
              flex-direction: row; flex-wrap: wrap;
@@ -520,14 +527,22 @@
          }
          .row:not(#aikaKentat > .row) > div { min-width: 100%; }
 
+        /* Mobiilisäädöt käyttäjänimikentälle ja Nollaa-napille */
         .user-input-container {
-            flex-direction: column; align-items: stretch;
-            gap: var(--spacing-mobile-small); margin-bottom: var(--spacing-mobile-medium);
+            /* display: flex; on oletuksena jo yllä */
+            /* align-items: flex-end; on oletuksena jo yllä */
+            gap: var(--spacing-mobile-small); 
         }
-        .user-input-container input[type="text"], #resetButton {
-             width: 100%; height: auto; flex-grow: 0;
+        .user-input-container input[type="text"]#user {
+             /* flex-grow: 1; periytyy */
         }
-         #resetButton { padding: var(--spacing-mobile-small); }
+        #resetButton {
+             padding: var(--spacing-mobile-small) 0.6em; 
+             font-size: 0.85em; /* Pienennetty fonttikokoa mobiilissa */
+             height: auto; 
+             line-height: 1.3; /* Säädetty riviväliä */
+             white-space: nowrap; /* Estä tekstin rivittyminen napissa */
+        }
 
          .location-input-icon-container {
              flex-direction: row; 
@@ -562,18 +577,35 @@
          .modal-footer .modal-button:last-child {
             margin-bottom: 0;
         }
+        .output-actions { /* Varmista, että nämä napit rivittyvät mobiilissa */
+            flex-direction: column;
+        }
+        .output-actions button, .output-actions a {
+            width: 100%; /* Täysi leveys mobiilissa */
+            margin-bottom: var(--spacing-mobile-small);
+        }
+         .output-actions > *:last-child {
+            margin-bottom: 0;
+        }
 
-        button { margin-top: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); width: 100%; }
-        a#linkki { margin-top: var(--spacing-mobile-medium); }
-        #map-overlay { font-size: 0.8em; margin-bottom: var(--spacing-mobile-small); }
-        #copyLinkButton { margin-top: var(--spacing-mobile-small); width: 100%; }
+
+        button { margin-top: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); }
+         /* Yleinen button leveys 100% mobiilissa, paitsi jos se on flex-item kuten #resetButton */
+        button:not(#resetButton):not(.modal-button):not(#copyLinkButton):not(#downloadImageButton) {
+            width: 100%;
+        }
+        /* Kopioi ja Lataa -napeille myös täysi leveys mobiilissa, jos eivät output-actions sisällä */
+        #copyLinkButton, #downloadImageButton {
+            width: 100%; /* Tämä on jo .output-actions alla, mutta varmistus */
+        }
     }
   </style>
 </head>
 <body> 
   <div class="container">
     <div class="header-area">
-        <div class="header-title-area"> <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
+        <div class="header-title-area">
+            <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
             <h2>Kätkö tilastojen - Kuvageneraattori</h2>
         </div>
         <div id="themeSelectorContainer">
@@ -707,8 +739,11 @@
       <img id="kuva" alt="">
     </div>
 
-    <a id="linkki" href="#" target="_blank"></a>
-    <button id="copyLinkButton">Kopioi linkki</button>
+    <div class="output-actions"> <a id="linkki" href="#" target="_blank">Avaa kuva uudessa ikkunassa</a>
+        <button id="copyLinkButton" type="button">Kopioi linkki</button>
+        <button id="downloadImageButton" type="button" style="display:none;">Lataa kuva</button>
+    </div>
+
   </div>
 
   <div id="paikkakuntaModalOverlay" class="modal-overlay">
@@ -787,13 +822,6 @@
             document.body.classList.add(themeName);
         }
         localStorage.setItem('selectedTheme', themeName);
-        // Varmistetaan, että keltainen teema saa oikeat input-kenttien värit heti
-        if (themeName === 'theme-yellow') {
-            document.querySelectorAll('.theme-yellow select, .theme-yellow input[type="date"], .theme-yellow input[type="text"]').forEach(el => {
-                el.style.backgroundColor = 'var(--bg-color)'; // Käytä teeman omaa taustaväriä inputeille
-                el.style.color = 'var(--text-color)';
-            });
-        }
     }
 
     function toggleYearSpecificFilters() {
@@ -836,7 +864,7 @@
         locationInput.placeholder = "";
         regionIcon.style.display = 'none';
         paikkakuntaIcon.style.display = 'none';
-        regionListDiv.style.display = 'none';
+        if(regionListDiv) regionListDiv.style.display = 'none';
         closePaikkakuntaModal();
 
         const choice = choiceSelect.value;
@@ -855,6 +883,7 @@
 
     function toggleRegionList() {
          const regionListContainer = document.getElementById("regionListContainer");
+         if (!regionListContainer) return;
          if (regionListContainer.style.display === 'block') {
              regionListContainer.style.display = 'none';
          } else {
@@ -906,7 +935,7 @@
         modalMunUL.innerHTML = ''; 
         modalBackBtn.style.display = 'none';
         modalAddBtn.style.display = 'none';
-        selectAllMunCheckbox.checked = false;
+        if(selectAllMunCheckbox) selectAllMunCheckbox.checked = false;
 
         suomenMaakunnat.forEach(region => {
             if (maakuntienKunnat[region] && maakuntienKunnat[region].length > 0) {
@@ -923,7 +952,7 @@
         modalHeader.textContent = `Valitse kunnat (${region})`;
         modalRegionUL.style.display = 'none';
         modalMunUL.innerHTML = '';
-        selectAllMunCheckbox.checked = false;
+        if(selectAllMunCheckbox) selectAllMunCheckbox.checked = false;
 
         const municipalities = maakuntienKunnat[region] || [];
         municipalities.forEach(mun => {
@@ -945,30 +974,34 @@
         modalAddBtn.style.display = 'inline-block';
     }
     
-    selectAllMunCheckbox.addEventListener('change', function() {
-        const checkboxes = modalMunUL.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
-    });
-
-    modalAddBtn.addEventListener('click', () => {
-        const locationInput = document.getElementById('locationFilterValue');
-        const selectedMunicipalities = [];
-        modalMunUL.querySelectorAll('input[name="modal_municipality"]:checked').forEach(cb => {
-            selectedMunicipalities.push(cb.value);
+    if(selectAllMunCheckbox) {
+        selectAllMunCheckbox.addEventListener('change', function() {
+            const checkboxes = modalMunUL.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
         });
+    }
 
-        if (selectedMunicipalities.length > 0) {
-            let existingPaikkakunnatArray = locationInput.value.split(',')
-                                                .map(s => s.trim())
-                                                .filter(s => s); 
-            
-            const newUniqueMunicipalities = selectedMunicipalities.filter(item => !existingPaikkakunnatArray.includes(item));
-            const combinedArray = existingPaikkakunnatArray.concat(newUniqueMunicipalities);
-            
-            locationInput.value = combinedArray.join(',');
-        }
-        showModalRegionSelection(); 
-    });
+    if(modalAddBtn) {
+        modalAddBtn.addEventListener('click', () => {
+            const locationInput = document.getElementById('locationFilterValue');
+            const selectedMunicipalities = [];
+            modalMunUL.querySelectorAll('input[name="modal_municipality"]:checked').forEach(cb => {
+                selectedMunicipalities.push(cb.value);
+            });
+
+            if (selectedMunicipalities.length > 0) {
+                let existingPaikkakunnatArray = locationInput.value.split(',')
+                                                    .map(s => s.trim())
+                                                    .filter(s => s); 
+                
+                const newUniqueMunicipalities = selectedMunicipalities.filter(item => !existingPaikkakunnatArray.includes(item));
+                const combinedArray = existingPaikkakunnatArray.concat(newUniqueMunicipalities);
+                
+                locationInput.value = combinedArray.join(',');
+            }
+            showModalRegionSelection(); 
+        });
+    }
 
     if (paikkakuntaIconGlobal) paikkakuntaIconGlobal.addEventListener('click', openPaikkakuntaModal);
     if (modalCloseBtn) modalCloseBtn.addEventListener('click', closePaikkakuntaModal);
@@ -1005,11 +1038,14 @@
       const overlayElement = document.getElementById("map-overlay");
       const imageWrapper = document.querySelector('.image-wrapper');
       const copyLinkButton = document.getElementById("copyLinkButton");
+      const downloadImageBtn = document.getElementById("downloadImageButton");
+
 
       imageWrapper.style.display = 'none'; 
-      overlayElement.style.display = 'none';
       linkElementBelow.style.display = 'none';
       copyLinkButton.style.display = 'none';
+      downloadImageBtn.style.display = 'none';
+      if(overlayElement) overlayElement.style.display = 'none';
       if(imageElement) imageElement.src = '';
 
       const baseUrl = "https://www.geocache.fi/stat/";
@@ -1063,13 +1099,13 @@
                if (yearVal && yearVal !== "current") largeMapUrl += `&year=${yearVal}`;
                if (monthVal && monthVal !== "current") largeMapUrl += `&month=${monthVal}`;
           }
-          urlToCopy = largeMapUrl;
-          imageElement.src = finalUrl;
+          urlToCopy = largeMapUrl; // Kuntakartan tapauksessa kopioidaan isomman kartan linkki
+          imageElement.src = finalUrl; // Pienempi esikatselukuva
           imageElement.alt = "Kuntakartta (klikkaa isompaan kuvaan)";
           imageElement.dataset.largeMapUrl = largeMapUrl;
           imageElement.style.cursor = 'pointer';
-          linkElementBelow.style.display = 'none';
-          overlayElement.style.display = 'block';
+          linkElementBelow.style.display = 'none'; // Ei näytetä "Avaa uudessa ikkunassa" kun kartta on klikattava
+          if(overlayElement) overlayElement.style.display = 'block';
       } else {
           if(imageElement) {
             imageElement.src = finalUrl;
@@ -1079,8 +1115,8 @@
           }
           if(linkElementBelow) {
             linkElementBelow.href = finalUrl;
-            linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa";
-            linkElementBelow.style.display = 'inline-block';
+            // linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa"; // Teksti asetetaan HTML:ssä
+            linkElementBelow.style.display = 'inline-flex'; // inline-flex jotta padding toimii kuten napeissa
           }
           if(overlayElement) overlayElement.style.display = 'none';
       }
@@ -1089,8 +1125,11 @@
             if(imageWrapper) imageWrapper.style.display = 'block';
             if(copyLinkButton) {
                 copyLinkButton.style.display = 'inline-block';
-                copyLinkButton.dataset.urlToCopy = urlToCopy;
-                copyLinkButton.textContent = "Kopioi linkki";
+                copyLinkButton.dataset.urlToCopy = urlToCopy; // Käytä mahdollisesti muokattua urlToCopy
+            }
+            if(downloadImageBtn) {
+                downloadImageBtn.style.display = 'inline-block';
+                downloadImageBtn.dataset.imageUrl = finalUrl; // Lataa aina näytettävä kuva
             }
             const settingsToSave = {
                 user, kuvatyyppi, aikavalinta, year: yearVal, month: monthVal, startdate: start, enddate: end, 
@@ -1111,7 +1150,7 @@
               locationValEl = id("locationFilterValue"), extraFilterEl = id("extraFilter"),
               imgEl = id("kuva"), copyBtn = id("copyLinkButton"), imgWrapper = D.querySelector('.image-wrapper'),
               resetBtn = id("resetButton"), regionInfoIcn = id("regionInfoIcon"),
-              themeSelector = id("themeSelector");
+              themeSelector = id("themeSelector"), downloadImageBtn = id("downloadImageButton");
 
         if(themeSelector) {
             themeSelector.addEventListener('change', (e) => {
@@ -1142,6 +1181,23 @@
                 .then(() => { this.textContent = "Kopioitu!"; setTimeout(() => { this.textContent = "Kopioi linkki"; }, 2000); })
                 .catch(() => { this.textContent = "Kopiointi epäonnistui!"; setTimeout(() => { this.textContent = "Kopioi linkki"; }, 3000); });
         });
+        if(downloadImageBtn) {
+            downloadImageBtn.addEventListener('click', function() {
+                const imageUrl = this.dataset.imageUrl;
+                if (imageUrl) {
+                    const userN = id("user")?.value.trim() || 'tuntematon';
+                    const kuvatyyppiN = id("kuvatyyppi")?.value || 'kuva';
+                    const filename = `tilasto_${userN}_${kuvatyyppiN}.png`;
+
+                    const link = D.createElement('a');
+                    link.href = imageUrl;
+                    link.download = filename; 
+                    D.body.appendChild(link); 
+                    link.click();
+                    D.body.removeChild(link);
+                }
+            });
+        }
         regionInfoIcn?.addEventListener('click', toggleRegionList);
         resetBtn?.addEventListener('click', () => {
             [userEl, startdateEl, enddateEl, locationValEl].forEach(el => el ? el.value = '' : null);
@@ -1157,6 +1213,12 @@
             try { localStorage.removeItem('statGeneratorSettings'); } catch (e) { console.error(e); }
             handleKuvatyyppiChange();
             if(imgWrapper) imgWrapper.style.display = 'none';
+            const linkki = id("linkki");
+            const copyNappi = id("copyLinkButton");
+            const downNappi = id("downloadImageButton");
+            if(linkki) linkki.style.display = 'none';
+            if(copyNappi) copyNappi.style.display = 'none';
+            if(downNappi) downNappi.style.display = 'none';
             closePaikkakuntaModal();
         });
 
