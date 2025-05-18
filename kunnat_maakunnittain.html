@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kätkölöytöjen Yhteenveto Maakunnittain (Automaattisesti Päivittyvä)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        .timestamp { margin-top: 5px; margin-bottom: 20px; font-size: 0.9em; color: #666; }
+        .region { margin-bottom: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f0f0f0; }
+        .region h2 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .category { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; }
+        .category h3 { margin-top: 0; margin-bottom: 10px; color: #555; }
+        .kunta-list { list-style: inside; padding: 0; columns: 1; } /* Default to 1 column */
+        /* Adjust column count based on screen width */
+        @media (min-width: 600px) {
+            .kunta-list {
+                columns: 2;
+            }
+        }
+         @media (min-width: 900px) {
+            .kunta-list {
+                columns: 3;
+            }
+        }
+        .kunta-list li { margin-bottom: 5px; }
+        #loading { font-size: 1.2em; color: #007BFF; }
+        #error { font-size: 1.2em; color: #DC3545; }
+    </style>
+</head>
+<body>
+    <h1>Kätkölöytöjen Yhteenveto Maakunnittain</h1>
+    <p class="timestamp" id="timestamp">Latautaan tietoja...</p>
+    <div id="loading">Ladataan kuntatietoja...</div>
+    <div id="error" style="display:none;">Tietojen lataaminen epäonnistui. Tarkista lähdetiedoston osoite ja internetyhteys.</div>
+    <div id="content">
+        </div>
+
+    <script>
+        const sourceUrl = 'https://mikkogeokalevi.github.io/triplettikunnat.html';
+        const municipalityRegionMap = {
+            // Ahvenanmaa
+            'Brändö': 'Ahvenanmaa', 'Eckerö': 'Ahvenanmaa', 'Finström': 'Ahvenanmaa', 'Föglö': 'Ahvenanmaa',
+            'Geta': 'Ahvenanmaa', 'Hammarland': 'Ahvenanmaa', 'Jomala': 'Ahvenanmaa', 'Kumlinge': 'Ahvenanmaa',
+            'Kökar': 'Ahvenanmaa', 'Lemland': 'Ahvenanmaa', 'Lumparland': 'Ahvenanmaa', 'Maarianhamina': 'Ahvenanmaa',
+            'Saltvik': 'Ahvenanmaa', 'Sottunga': 'Ahvenanmaa', 'Sund': 'Ahvenanmaa', 'Vårdö': 'Ahvenanmaa',
+            // Etelä-Karjala
+            'Imatra': 'Etelä-Karjala', 'Lappeenranta': 'Etelä-Karjala', 'Lemi': 'Etelä-Karjala', 'Luumäki': 'Etelä-Karjala',
+            'Miehikkälä': 'Etelä-Karjala', 'Parikkala': 'Etelä-Karjala', 'Rautjärvi': 'Etelä-Karjala', 'Ruokolahti': 'Etelä-Karjala',
+            'Savitaipale': 'Etelä-Karjala', 'Taipalsaari': 'Etelä-Karjala', 'Virolahti': 'Etelä-Karjala',
+            // Etelä-Pohjanmaa
+            'Alajärvi': 'Etelä-Pohjanmaa', 'Alavus': 'Etelä-Pohjanmaa', 'Evijärvi': 'Etelä-Pohjanmaa', 'Ilmajoki': 'Etelä-Pohjanmaa',
+            'Isojoki': 'Etelä-Pohjanmaa', 'Isokyrö': 'Etelä-Pohjanmaa', 'Karijoki': 'Etelä-Pohjanmaa', 'Kauhajoki': 'Etelä-Pohjanmaa',
+            'Kauhava': 'Etelä-Pohjanmaa', 'Kuortane': 'Etelä-Pohjanmaa', 'Kurikka': 'Etelä-Pohjanmaa', 'Lappajärvi': 'Etelä-Pohjanmaa',
+            'Lapua': 'Etelä-Pohjanmaa', 'Seinäjoki': 'Etelä-Pohjanmaa', 'Soini': 'Etelä-Pohjanmaa', 'Teuva': 'Etelä-Pohjanmaa',
+            'Vimpeli': 'Etelä-Pohjanmaa',
+            // Etelä-Savo
+            'Enonkoski': 'Etelä-Savo', 'Hirvensalmi': 'Etelä-Savo', 'Joroinen': 'Etelä-Savo', 'Juva': 'Etelä-Savo',
+            'Kangasniemi': 'Etelä-Savo', 'Mikkeli': 'Etelä-Savo', 'Mäntyharju': 'Etelä-Savo', 'Pieksämäki': 'Etelä-Savo',
+            'Puumala': 'Etelä-Savo', 'Rantasalmi': 'Etelä-Savo', 'Savonlinna': 'Etelä-Savo', 'Sulkava': 'Etelä-Savo',
+            // Kainuu
+            'Hyrynsalmi': 'Kainuu', 'Kajaani': 'Kainuu', 'Kuhmo': 'Kainuu', 'Paltamo': 'Kainuu',
+            'Puolanka': 'Kainuu', 'Ristijärvi': 'Kainuu', 'Sotkamo': 'Kainuu', 'Suomussalmi': 'Kainuu',
+            // Kanta-Häme
+            'Akaa': 'Kanta-Häme', // Akaa is split between Pirkanmaa and Kanta-Häme, using Kanta-Häme based on common lists
+            'Forssa': 'Kanta-Häme',
+            'Hattula': 'Kanta-Häme', 'Hausjärvi': 'Kanta-Häme', 'Humppila': 'Kanta-Häme', 'Hämeenlinna': 'Kanta-Häme',
+            'Janakkala': 'Kanta-Häme', 'Jokioinen': 'Kanta-Häme', 'Loppi': 'Kanta-Häme', 'Riihimäki': 'Kanta-Häme',
+            'Tammela': 'Kanta-Häme', 'Urjala': 'Kanta-Häme', 'Ypäjä': 'Kanta-Häme',
+            // Keski-Pohjanmaa
+            'Halsua': 'Keski-Pohjanmaa', 'Kannus': 'Keski-Pohjanmaa', 'Kaustinen': 'Keski-Pohjanmaa', 'Kokkola': 'Keski-Pohjanmaa',
+            'Lestijärvi': 'Keski-Pohjanmaa', 'Perho': 'Keski-Pohjanmaa', 'Toholampi': 'Keski-Pohjanmaa', 'Veteli': 'Keski-Pohjanmaa',
+             'Nivala': 'Keski-Pohjanmaa', // Nivala is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
+             'Reisjärvi': 'Keski-Pohjanmaa', // Reisjärvi is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
+             'Sievi': 'Keski-Pohjanmaa', // Sievi is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
+             'Toholampi': 'Keski-Pohjanmaa',
+             'Ylivieska': 'Keski-Pohjanmaa', // Ylivieska is listed under North Ostrobothnia in some sources, using Keski-Pohjanmaa based on common divisions
+            // Keski-Suomi
+            'Hankasalmi': 'Keski-Suomi', 'Joutsa': 'Keski-Suomi', 'Jyväskylä': 'Keski-Suomi', 'Jämsä': 'Keski-Suomi',
+            'Kannonkoski': 'Keski-Suomi', 'Karstula': 'Keski-Suomi', 'Keuruu': 'Keski-Suomi', 'Kinnula': 'Keski-Suomi',
+            'Kivijärvi': 'Keski-Suomi', 'Konnevesi': 'Keski-Suomi', 'Kuhmoinen': 'Keski-Suomi', 'Kyyjärvi': 'Keski-Suomi',
+            'Laukaa': 'Keski-Suomi', 'Luhanka': 'Keski-Suomi', 'Multia': 'Keski-Suomi', 'Muurame': 'Keski-Suomi',
+            'Petäjävesi': 'Keski-Suomi', 'Pihtipudas': 'Keski-Suomi', 'Saarijärvi': 'Keski-Suomi', 'Toivakka': 'Keski-Suomi',
+            'Uurainen': 'Keski-Suomi', 'Viitasaari': 'Keski-Suomi', 'Äänekoski': 'Keski-Suomi',
+            // Kymenlaakso
+            'Hamina': 'Kymenlaakso', 'Iitti': 'Kymenlaakso', 'Kotka': 'Kymenlaakso', 'Kouvola': 'Kymenlaakso',
+            'Miehikkälä': 'Kymenlaakso', // Miehikkälä is listed under South Karelia in some sources, using Kymenlaakso based on common divisions
+            'Pyhtää': 'Kymenlaakso', 'Virolahti': 'Kymenlaakso', // Virolahti is listed under South Karelia in some sources, using Kymenlaakso based on common divisions
+            // Lappi
+            'Enontekiö': 'Lappi', 'Inari': 'Lappi', 'Kemi': 'Lappi', 'Kemijärvi': 'Lappi',
+            'Keminmaa': 'Lappi', 'Kittilä': 'Lappi', 'Kolari': 'Lappi', 'Muonio': 'Lappi',
+            'Pelkosenniemi': 'Lappi', 'Pello': 'Lappi', 'Posio': 'Lappi', 'Ranua': 'Lappi',
+            'Rovaniemi': 'Lappi', 'Salla': 'Lappi', 'Savukoski': 'Lappi', 'Simo': 'Lappi',
+            'Sodankylä': 'Lappi', 'Taivalkoski': 'Lappi', 'Tervola': 'Lappi', 'Tornio': 'Lappi',
+            'Utsjoki': 'Lappi', 'Ylitornio': 'Lappi',
+            // Pirkanmaa
+            'Akaa': 'Pirkanmaa', // Akaa is split between Pirkanmaa and Kanta-Häme, using Pirkanmaa based on common lists
+            'Hämeenkyrö': 'Pirkanmaa', 'Ikaalinen': 'Pirkanmaa', 'Juupajoki': 'Pirkanmaa', 'Kangasala': 'Pirkanmaa',
+            'Kihniö': 'Pirkanmaa', 'Kuhmoinen': 'Pirkanmaa', 'Lempäälä': 'Pirkanmaa', 'Mänttä-Vilppula': 'Pirkanmaa',
+            'Nokia': 'Pirkanmaa', 'Orivesi': 'Pirkanmaa', 'Parkano': 'Pirkanmaa', 'Pirkkala': 'Pirkanmaa',
+            'Punkalaidun': 'Pirkanmaa', 'Pälkäne': 'Pirkanmaa', 'Ruovesi': 'Pirkanmaa', 'Sastamala': 'Pirkanmaa',
+            'Tampere': 'Pirkanmaa', 'Urjala': 'Pirkanmaa', 'Valkeakoski': 'Pirkanmaa', 'Vesilahti': 'Pirkanmaa',
+            'Virrat': 'Pirkanmaa', 'Ylöjärvi': 'Pirkanmaa', 'Ähtäri': 'Pirkanmaa',
+            // Pohjanmaa
+            'Kaskinen': 'Pohjanmaa', 'Korsnäs': 'Pohjanmaa', 'Kristiinankaupunki': 'Pohjanmaa', 'Kruunupyy': 'Pohjanmaa',
+            'Laihia': 'Pohjanmaa', 'Luoto': 'Pohjanmaa', 'Maalahti': 'Pohjanmaa', 'Mustasaari': 'Pohjanmaa',
+            'Närpiö': 'Pohjanmaa', 'Pedersören kunta': 'Pohjanmaa', 'Pietarsaari': 'Pohjanmaa', 'Uusikaarlepyy': 'Pohjanmaa',
+            'Vaasa': 'Pohjanmaa', 'Vöyri': 'Pohjanmaa',
+            // Pohjois-Karjala
+            'Ilomantsi': 'Pohjois-Karjala', 'Joensuu': 'Pohjois-Karjala', 'Juuka': 'Pohjois-Karjala', 'Kitee': 'Pohjois-Karjala',
+            'Kontiolahti': 'Pohjois-Karjala', 'Lieksa': 'Pohjois-Karjala', 'Liperi': 'Pohjois-Karjala', 'Nurmes': 'Pohjois-Karjala',
+            'Outokumpu': 'Pohjois-Karjala', 'Polvijärvi': 'Pohjois-Karjala', 'Rääkkylä': 'Pohjois-Karjala', 'Tohmajärvi': 'Pohjois-Karjala',
+            // Pohjois-Pohjanmaa
+            'Alavieska': 'Pohjois-Pohjanmaa', 'Haapajärvi': 'Pohjois-Pohjanmaa', 'Haapavesi': 'Pohjois-Pohjanmaa', 'Hailuoto': 'Pohjois-Pohjanmaa',
+            'Ii': 'Pohjois-Pohjanmaa', 'Kempele': 'Pohjois-Pohjanmaa', 'Kuusamo': 'Pohjois-Pohjanmaa', 'Kärsämäki': 'Pohjois-Pohjanmaa',
+            'Liminka': 'Pohjois-Pohjanmaa', 'Lumijoki': 'Pohjois-Pohjanmaa', 'Merijärvi': 'Pohjois-Pohjanmaa', 'Muhos': 'Pohjois-Pohjanmaa',
+            'Oulainen': 'Pohjois-Pohjanmaa', 'Oulu': 'Pohjois-Pohjanmaa', 'Pudasjärvi': 'Pohjois-Pohjanmaa', 'Pyhäjoki': 'Pohjois-Pohjanmaa',
+            'Pyhäjärvi': 'Pohjois-Pohjanmaa', 'Pyhäntä': 'Pohjois-Pohjanmaa', 'Raahe': 'Pohjois-Pohjanmaa', 'Siikajoki': 'Pohjois-Pohjanmaa',
+            'Siikalatva': 'Pohjois-Pohjanmaa', 'Tyrnävä': 'Pohjois-Pohjanmaa', 'Utajärvi': 'Pohjois-Pohjanmaa',
+            // Pohjois-Savo
+            'Iisalmi': 'Pohjois-Savo', 'Joroinen': 'Pohjois-Savo', // Joroinen is listed under Etelä-Savo in some sources, using Pohjois-Savo based on common divisions
+            'Kaavi': 'Pohjois-Savo', 'Keitele': 'Pohjois-Savo', 'Kiuruvesi': 'Pohjois-Savo', 'Kuopio': 'Pohjois-Savo',
+            'Lapinlahti': 'Pohjois-Savo', 'Leppävirta': 'Pohjois-Savo', 'Pielavesi': 'Pohjois-Savo', 'Rautalampi': 'Pohjois-Savo',
+            'Rautavaara': 'Pohjois-Savo', 'Siilinjärvi': 'Pohjois-Savo', 'Sonkajärvi': 'Pohjois-Savo', 'Suonenjoki': 'Pohjois-Savo',
+            'Tervo': 'Pohjois-Savo', 'Tuusniemi': 'Pohjois-Savo', 'Varkaus': 'Pohjois-Savo', 'Vesanto': 'Pohjois-Savo',
+            'Vieremä': 'Pohjois-Savo',
+            // Päijät-Häme
+             'Asikkala': 'Päijät-Häme',
+             'Hartola': 'Päijät-Häme',
+             'Heinola': 'Päijät-Häme',
+             'Hollola': 'Päijät-Häme',
+             'Kärkölä': 'Päijät-Häme',
+             'Lahti': 'Päijät-Häme',
+             'Orimattila': 'Päijät-Häme',
+             'Padasjoki': 'Päijät-Häme',
+             'Sysmä': 'Päijät-Häme',
+            // Satakunta
+            'Eura': 'Satakunta', 'Eurajoki': 'Satakunta', 'Harjavalta': 'Satakunta', 'Huittinen': 'Satakunta',
+            'Jämijärvi': 'Satakunta', 'Kankaanpää': 'Satakunta', 'Karvia': 'Satakunta', 'Kokemäki': 'Satakunta',
+            'Merikarvia': 'Satakunta', 'Nakkila': 'Satakunta', 'Pomarkku': 'Satakunta', 'Pori': 'Satakunta',
+            'Pyhäranta': 'Satakunta', 'Rauma': 'Satakunta', 'Siikainen': 'Satakunta', 'Säkylä': 'Satakunta',
+            'Ulvila': 'Satakunta',
+            // Uusimaa
+            'Askola': 'Uusimaa', 'Espoo': 'Uusimaa', 'Hanko': 'Uusimaa', 'Helsinki': 'Uusimaa',
+            'Hyvinkää': 'Uusimaa', 'Inkoo': 'Uusimaa', 'Järvenpää': 'Uusimaa', 'Kauniainen': 'Uusimaa',
+            'Kerava': 'Uusimaa', 'Kirkkonummi': 'Uusimaa', 'Lapinjärvi': 'Uusimaa', 'Lohja': 'Uusimaa',
+            'Loviisa': 'Uusimaa', 'Myrskylä': 'Uusimaa', 'Mäntsälä': 'Uusimaa', 'Pornainen': 'Uusimaa',
+            'Porvoo': 'Uusimaa', 'Pukkila': 'Uusimaa', 'Raasepori': 'Uusimaa', 'Riihimäki': 'Uusimaa',
+             'Sipoo': 'Uusimaa', 'Siuntio': 'Uusimaa', 'Tuusula': 'Uusimaa', 'Vantaa': 'Uusimaa',
+            'Vihti': 'Uusimaa',
+            // Varsinais-Suomi
+            'Aura': 'Varsinais-Suomi', 'Kaarina': 'Varsinais-Suomi', 'Kemiönsaari': 'Varsinais-Suomi', 'Koski Tl': 'Varsinais-Suomi',
+            'Kustavi': 'Varsinais-Suomi', 'Laitila': 'Varsinais-Suomi', 'Lieto': 'Varsinais-Suomi', 'Loimaa': 'Varsinais-Suomi',
+            'Marttila': 'Varsinais-Suomi', 'Masku': 'Varsinais-Suomi', 'Mynämäki': 'Varsinais-Suomi', 'Naantali': 'Varsinais-Suomi',
+            'Nousiainen': 'Varsinais-Suomi', 'Oripää': 'Varsinais-Suomi', 'Paimio': 'Varsinais-Suomi', 'Parainen': 'Varsinais-Suomi',
+            'Pöytyä': 'Varsinais-Suomi', 'Raisio': 'Varsinais-Suomi', 'Rusko': 'Varsinais-Suomi', 'Salo': 'Varsinais-Suomi',
+            'Sauvo': 'Varsinais-Suomi', 'Somero': 'Varsinais-Suomi', 'Taivassalo': 'Varsinais-Suomi', 'Turku': 'Varsinais-Suomi',
+            'Uusikaupunki': 'Varsinais-Suomi', 'Vehmaa': 'Varsinais-Suomi',
+            // Kunnat ilman löytöjä, jotka eivät olleet edellisissä maakunnissa
+             'Brändö': 'Ahvenanmaa', 'Eckerö': 'Ahvenanmaa', 'Finström': 'Ahvenanmaa', 'Föglö': 'Ahvenanmaa',
+            'Geta': 'Ahvenanmaa', 'Hammarland': 'Ahvenanmaa', 'Jomala': 'Ahvenanmaa', 'Kumlinge': 'Ahvenanmaa',
+            'Lumparland': 'Ahvenanmaa', 'Maarianhamina': 'Ahvenanmaa', 'Saltvik': 'Ahvenanmaa', 'Vårdö': 'Ahvenanmaa',
+             'Halsua': 'Keski-Pohjanmaa', 'Kannus': 'Keski-Pohjanmaa', 'Kaustinen': 'Keski-Pohjanmaa', 'Kokkola': 'Keski-Pohjanmaa',
+            'Lestijärvi': 'Keski-Pohjanmaa', 'Toholampi': 'Keski-Pohjanmaa', 'Veteli': 'Keski-Pohjanmaa',
+             'Kaskinen': 'Pohjanmaa', 'Korsnäs': 'Pohjanmaa', 'Kristiinankaupunki': 'Pohjanmaa', 'Kruunupyy': 'Pohjanmaa',
+            'Laihia': 'Pohjanmaa', 'Luoto': 'Pohjanmaa', 'Maalahti': 'Pohjanmaa', 'Närpiö': 'Pohjanmaa',
+            'Pedersören kunta': 'Pohjanmaa', 'Pietarsaari': 'Pohjanmaa', 'Uusikaarlepyy': 'Pohjanmaa', 'Vöyri': 'Pohjanmaa',
+
+
+        };
+
+        async function fetchAndProcessData() {
+            try {
+                const response = await fetch(sourceUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const municipalities = {
+                    'ei_loytoja': [],
+                    'vain_tradi': [],
+                    'vain_multi': [],
+                    'vain_mysse': [],
+                    'tradi_multi': [],
+                    'multi_mysse': [],
+                    'tradi_mysse': [],
+                    'tradi_multi_mysse': []
+                };
+
+                // Extract timestamp
+                const timestampElement = doc.querySelector('.timestamp');
+                if(timestampElement) {
+                    document.getElementById('timestamp').innerText = `Perustuu tiedostoon, luotu viimeksi: ${timestampElement.innerText.replace('Luotu viimeksi: ', '')}`;
+                }
+
+
+                doc.querySelectorAll('.category').forEach(categoryDiv => {
+                    const categoryTitle = categoryDiv.querySelector('h2').innerText.trim();
+                    const kuntaList = categoryDiv.querySelectorAll('.kunta-list li');
+
+                    let categoryKey = '';
+                    if (categoryTitle.includes('EI OLE löytöjä')) {
+                        categoryKey = 'ei_loytoja';
+                    } else if (categoryTitle.includes('VAIN TRADI-löytöjä')) {
+                        categoryKey = 'vain_tradi';
+                    } else if (categoryTitle.includes('VAIN MULTI-löytöjä')) {
+                         categoryKey = 'vain_multi';
+                    } else if (categoryTitle.includes('VAIN MYSSE-löytöjä')) {
+                        categoryKey = 'vain_mysse';
+                    } else if (categoryTitle.includes('TRADI- ja MULTI-löytöjä')) {
+                        categoryKey = 'tradi_multi';
+                    } else if (categoryTitle.includes('MULTI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'multi_mysse';
+                    } else if (categoryTitle.includes('TRADI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'tradi_mysse';
+                    } else if (categoryTitle.includes('TRADI-, MULTI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'tradi_multi_mysse';
+                    }
+
+                    kuntaList.forEach(li => {
+                        const kuntaName = li.innerText.split(':')[0].trim();
+                        if (categoryKey) {
+                             municipalities[categoryKey].push(kuntaName);
+                        }
+                    });
+                });
+
+                const municipalitiesByRegionAndCategory = {};
+
+                for (const category in municipalities) {
+                    municipalities[category].forEach(kunta => {
+                        const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
+                        if (!municipalitiesByRegionAndCategory[region]) {
+                            municipalitiesByRegionAndCategory[region] = {
+                                'ei_loytoja': [],
+                                'vain_tradi': [],
+                                'vain_multi': [],
+                                'vain_mysse': [],
+                                'tradi_multi': [],
+                                'multi_mysse': [],
+                                'tradi_mysse': [],
+                                'tradi_multi_mysse': []
+                            };
+                        }
+                        municipalitiesByRegionAndCategory[region][category].push(kunta);
+                    });
+                }
+
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = ''; // Clear loading message
+
+                // Sort regions alphabetically
+                const sortedRegions = Object.keys(municipalitiesByRegionAndCategory).sort();
+
+                sortedRegions.forEach(region => {
+                    const regionDiv = document.createElement('div');
+                    regionDiv.classList.add('region');
+                    contentDiv.appendChild(regionDiv);
+
+                    const regionTitle = document.createElement('h2');
+                    regionTitle.innerText = region;
+                    regionDiv.appendChild(regionTitle);
+
+                    const categoriesOrder = ['ei_loytoja', 'vain_tradi', 'vain_multi', 'vain_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'tradi_multi_mysse'];
+                    const categoryTitles = {
+                         'ei_loytoja': 'Kunnat, joista EI OLE löytöjä',
+                        'vain_tradi': 'Kunnat, joista on VAIN TRADI-löytöjä',
+                        'vain_multi': 'Kunnat, joista on VAIN MULTI-löytöjä',
+                        'vain_mysse': 'Kunnat, joista on VAIN MYSSE-löytöjä',
+                        'tradi_multi': 'Kunnat, joista on TRADI- ja MULTI-löytöjä',
+                        'multi_mysse': 'Kunnat, joista on MULTI- ja MYSSE-löytöjä',
+                        'tradi_mysse': 'Kunnat, joista on TRADI- ja MYSSE-löytöjä',
+                        'tradi_multi_mysse': 'Kunnat, joista on TRADI-, MULTI- ja MYSSE-löytöjä'
+                    };
+
+                    categoriesOrder.forEach(categoryKey => {
+                         const kuntaList = municipalitiesByRegionAndCategory[region][categoryKey];
+                        if (kuntaList && kuntaList.length > 0) {
+                            const categoryDiv = document.createElement('div');
+                            categoryDiv.classList.add('category');
+                            regionDiv.appendChild(categoryDiv);
+
+                            const categoryTitle = document.createElement('h3');
+                            categoryTitle.innerText = categoryTitles[categoryKey];
+                            categoryDiv.appendChild(categoryTitle);
+
+                            const ul = document.createElement('ul');
+                            ul.classList.add('kunta-list');
+                            kuntaList.sort().forEach(kunta => {
+                                const li = document.createElement('li');
+                                li.innerText = kunta;
+                                ul.appendChild(li);
+                            });
+                            categoryDiv.appendChild(ul);
+                        }
+                    });
+                });
+
+                document.getElementById('loading').style.display = 'none';
+
+            } catch (error) {
+                console.error('Error fetching or processing data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                 document.getElementById('timestamp').innerText = `Tietojen lataus epäonnistui`;
+            }
+        }
+
+        fetchAndProcessData();
+    </script>
+</body>
+</html>
