@@ -7,6 +7,8 @@
     <style>
         body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
         h1, h2, h3 { color: #333; }
+         .controls { margin-bottom: 20px; }
+        .controls label { margin-right: 10px; }
         .timestamp { margin-top: 5px; margin-bottom: 20px; font-size: 0.9em; color: #666; }
         .region { margin-bottom: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f0f0f0; }
         .region h2 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 10px; }
@@ -27,11 +29,24 @@
         .kunta-list li { margin-bottom: 5px; }
         #loading { font-size: 1.2em; color: #007BFF; }
         #error { font-size: 1.2em; color: #DC3545; }
+         .hidden { display: none; } /* Style for hiding list items */
     </style>
 </head>
 <body>
     <h1>Kätkölöytöjen Yhteenveto Maakunnittain</h1>
     <p class="timestamp" id="timestamp">Latautaan tietoja...</p>
+
+    <div class="controls">
+        <label for="region-select">Valitse maakunta:</label>
+        <select id="region-select">
+            <option value="">Kaikki maakunnat</option>
+            </select>
+
+        <label for="kunta-search" style="margin-left: 20px;">Hae kuntaa:</label>
+        <input type="text" id="kunta-search" placeholder="Kirjoita kunnan nimi">
+    </div>
+
+
     <div id="loading">Ladataan kuntatietoja...</div>
     <div id="error" style="display:none;">Tietojen lataaminen epäonnistui. Tarkista lähdetiedoston osoite ja internetyhteys.</div>
     <div id="content">
@@ -41,7 +56,7 @@
         // KORJATTU OSOITE!
         const sourceUrl = 'https://mikkogeokalevi.github.io/tilastot/triplettikunnat.html';
 
-        // Kartoitus kunnista maakuntiin
+        // Kartoitus kunnista maakuntiin (Sinun päivittämäsi lista)
         const municipalityRegionMap = {
             'Akaa': 'Pirkanmaa',
             'Alajärvi': 'Etelä-Pohjanmaa',
@@ -63,14 +78,14 @@
             'Föglö': 'Ahvenanmaa',
             'Geta': 'Ahvenanmaa',
              'Hattula': 'Kanta-Häme',
-            'Hausjärvi': 'Kanta-Häme',
-            'Heinola': 'Päijät-Häme',
-            'Kemiönsaari': 'Varsinais-Suomi',
-            'Muonio': 'Lappi',
-            'Rääkkylä': 'Pohjois-Karjala',
-            'Mustasaari': 'Pohjanmaa',
-            'Mäntyharju': 'Etelä-Savo',
-            'Orimattila': 'Päijät-Häme',
+             'Hausjärvi': 'Kanta-Häme',
+             'Heinola': 'Päijät-Häme',
+             'Kemiönsaari': 'Varsinais-Suomi',
+             'Muonio': 'Lappi',
+             'Rääkkylä': 'Pohjois-Karjala',
+             'Mustasaari': 'Pohjanmaa',
+             'Mäntyharju': 'Etelä-Savo',
+             'Orimattila': 'Päijät-Häme',
             'Haapajärvi': 'Pohjois-Pohjanmaa',
             'Haapavesi': 'Pohjois-Pohjanmaa',
             'Hailuoto': 'Pohjois-Pohjanmaa',
@@ -434,12 +449,9 @@
 
 
                 const municipalitiesByRegionAndCategory = {};
-                 //const allMunicipalitiesInSource = new Set(); // Not strictly needed for grouping
-
 
                 for (const category in municipalities) {
                     municipalities[category].forEach(kunta => {
-                        // allMunicipalitiesInSource.add(kunta); // Not strictly needed
 
                         // DEBUG: Log municipality name with quotes AND character codes
                         console.log(`Processing municipality for region mapping: "${kunta}" (Codes: ${Array.from(kunta).map(c => c.charCodeAt(0)).join(',')})`);
@@ -479,10 +491,22 @@
 
 
                 const contentDiv = document.getElementById('content');
+                 const regionSelect = document.getElementById('region-select');
+                 const kuntaSearchInput = document.getElementById('kunta-search');
 
 
                 // Sort regions alphabetically
                 const sortedRegions = Object.keys(municipalitiesByRegionAndCategory).sort();
+
+                // Populate region dropdown
+                regionSelect.innerHTML = '<option value="">Kaikki maakunnat</option>'; // Clear previous options
+                sortedRegions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region.replace(/\s+/g, '-').toLowerCase(); // Create a URL-friendly ID
+                    option.text = region;
+                    regionSelect.appendChild(option);
+                });
+
 
                 sortedRegions.forEach(region => {
                     // Only create a region section if it has municipalities
@@ -498,6 +522,7 @@
                     if (hasMunicipalities) {
                         const regionDiv = document.createElement('div');
                         regionDiv.classList.add('region');
+                        regionDiv.id = region.replace(/\s+/g, '-').toLowerCase(); // Assign ID for scrolling
                         contentDiv.appendChild(regionDiv);
 
                         const regionTitle = document.createElement('h2');
@@ -531,7 +556,7 @@
                                 ul.classList.add('kunta-list');
                                 kuntaList.sort().forEach(kunta => {
                                     const li = document.createElement('li');
-                                    li.innerText = kunta;
+                                    li.innerText = kunta; // Store the raw municipality name
                                     ul.appendChild(li);
                                 });
                                 categoryDiv.appendChild(ul);
@@ -542,15 +567,96 @@
 
                 document.getElementById('loading').style.display = 'none';
 
-            } catch (error) {
-                    console.error('Error fetching or processing data:', error);
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('error').style.display = 'block';
-                     document.getElementById('timestamp').innerText = `Tietojen lataus epäonnistui`;
-                }
-            }
+                // Add event listener for region select
+                regionSelect.addEventListener('change', function() {
+                    const selectedRegionId = this.value;
+                     // Hide all regions first
+                     contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                         regionDiv.style.display = 'none';
+                     });
 
-            fetchAndProcessData();
-        </script>
-    </body>
-    </html>
+                    if (selectedRegionId) {
+                        const targetElement = document.getElementById(selectedRegionId);
+                        if (targetElement) {
+                             targetElement.style.display = 'block'; // Show selected region
+                             targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else {
+                         // Show all regions if "Kaikki maakunnat" is selected
+                         contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                             regionDiv.style.display = 'block';
+                         });
+                    }
+                     // Reset search when region is selected
+                     kuntaSearchInput.value = '';
+                     contentDiv.querySelectorAll('.kunta-list li').forEach(li => {
+                         li.classList.remove('hidden');
+                     });
+                      contentDiv.querySelectorAll('.category').forEach(categoryDiv => {
+                            categoryDiv.style.display = 'block';
+                      });
+
+
+                });
+
+                // Add event listener for search input
+                kuntaSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const allKuntaLis = contentDiv.querySelectorAll('.kunta-list li');
+                    let anyMatch = false;
+
+
+                    allKuntaLis.forEach(li => {
+                        const kuntaName = li.innerText.toLowerCase();
+                        if (kuntaName.includes(searchTerm)) {
+                            li.classList.remove('hidden');
+                             anyMatch = true;
+                        } else {
+                            li.classList.add('hidden');
+                        }
+                    });
+
+                    // Hide categories/regions if all municipalities are hidden within them
+                     contentDiv.querySelectorAll('.category').forEach(categoryDiv => {
+                         const visibleKuntasInCategory = categoryDiv.querySelectorAll('.kunta-list li:not(.hidden)');
+                         if (visibleKuntasInCategory.length === 0 && searchTerm !== '') {
+                            categoryDiv.style.display = 'none';
+                         } else {
+                            categoryDiv.style.display = 'block';
+                         }
+                     });
+
+                     contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                          const visibleKuntasInRegion = regionDiv.querySelectorAll('.kunta-list li:not(.hidden)');
+                           if (visibleKuntasInRegion.length === 0 && searchTerm !== '') {
+                              regionDiv.style.display = 'none';
+                           } else {
+                              regionDiv.style.display = 'block';
+                           }
+                     });
+
+                     // If a region is selected, maintain its visibility even if search hides content
+                     const selectedRegionId = regionSelect.value;
+                     if (selectedRegionId) {
+                          const selectedRegionDiv = document.getElementById(selectedRegionId);
+                          if (selectedRegionDiv) {
+                               selectedRegionDiv.style.display = 'block';
+                          }
+                     }
+
+
+                });
+
+
+            } catch (error) {
+                console.error('Error fetching or processing data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                 document.getElementById('timestamp').innerText = `Tietojen lataus epäonnistui`;
+            }
+        }
+
+        fetchAndProcessData();
+    </script>
+</body>
+</html>
