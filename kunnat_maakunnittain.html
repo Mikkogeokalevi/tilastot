@@ -72,9 +72,6 @@
             'Hanko': 'Uusimaa',
             'Harjavalta': 'Satakunta',
             'Hartola': 'Päijät-Häme',
-            'Hattula': 'Kanta-Häme',
-            'Hausjärvi': 'Kanta-Häme',
-            'Heinola': 'Päijät-Häme',
             'Heinävesi': 'Pohjois-Karjala', // Siirretty Pohjois-Karjalaan yleisen luokituksen mukaan
             'Helsinki': 'Uusimaa',
             'Hirvensalmi': 'Etelä-Savo',
@@ -391,22 +388,23 @@
                     const kuntaList = categoryDiv.querySelectorAll('.kunta-list li');
 
                     let categoryKey = '';
-                    if (categoryTitle.includes('EI OLE löytöjä')) {
-                        categoryKey = 'ei_loytoja';
-                    } else if (categoryTitle.includes('VAIN TRADI-löytöjä')) {
-                        categoryKey = 'vain_tradi';
-                    } else if (categoryTitle.includes('VAIN MULTI-löytöjä')) {
-                         categoryKey = 'vain_multi';
-                    } else if (categoryTitle.includes('VAIN MYSSE-löytöjä')) {
-                        categoryKey = 'vain_mysse';
+                    // Prioritize more specific categories
+                    if (categoryTitle.includes('TRADI-, MULTI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'tradi_multi_mysse';
                     } else if (categoryTitle.includes('TRADI- ja MULTI-löytöjä')) {
                         categoryKey = 'tradi_multi';
                     } else if (categoryTitle.includes('MULTI- ja MYSSE-löytöjä')) {
                         categoryKey = 'multi_mysse';
                     } else if (categoryTitle.includes('TRADI- ja MYSSE-löytöjä')) {
                         categoryKey = 'tradi_mysse';
-                    } else if (categoryTitle.includes('TRADI-, MULTI- ja MYSSE-löytöjä')) {
-                        categoryKey = 'tradi_multi_mysse';
+                    } else if (categoryTitle.includes('VAIN TRADI-löytöjä')) {
+                        categoryKey = 'vain_tradi';
+                    } else if (categoryTitle.includes('VAIN MULTI-löytöjä')) {
+                         categoryKey = 'vain_multi';
+                    } else if (categoryTitle.includes('VAIN MYSSE-löytöjä')) {
+                        categoryKey = 'vain_mysse';
+                    } else if (categoryTitle.includes('EI OLE löytöjä')) {
+                        categoryKey = 'ei_loytoja';
                     }
 
                     if (categoryKey) {
@@ -427,12 +425,15 @@
 
 
                 const municipalitiesByRegionAndCategory = {};
-                 const allMunicipalitiesInSource = new Set();
+                 //const allMunicipalitiesInSource = new Set(); // Not strictly needed for grouping
+
 
                 for (const category in municipalities) {
                     municipalities[category].forEach(kunta => {
-                         allMunicipalitiesInSource.add(kunta); // Track all municipalities found in the source
+                        // allMunicipalitiesInSource.add(kunta); // Not strictly needed
+                        console.log(`Processing municipality for region mapping: "${kunta}"`); // DEBUG: Log municipality name
                         const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
+
                         if (!municipalitiesByRegionAndCategory[region]) {
                             municipalitiesByRegionAndCategory[region] = {
                                 'ei_loytoja': [], 'vain_tradi': [], 'vain_multi': [], 'vain_mysse': [],
@@ -441,41 +442,28 @@
                         }
                          // Prevent adding municipality to multiple categories within the same region (based on source classification)
                          let alreadyAdded = false;
-                         for(const cat in municipalitiesByRegionAndCategory[region]) {
-                             if(municipalitiesByRegionAndCategory[region][cat].includes(kunta)) {
-                                 alreadyAdded = true;
-                                 break;
-                             }
+                         const categoriesInOrder = ['tradi_multi_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'vain_tradi', 'vain_multi', 'vain_mysse', 'ei_loytoja'];
+                          // Check if municipality is already in any *valid* category for this region
+                         for(const catKey of categoriesInOrder) {
+                              if(municipalitiesByRegionAndCategory[region][catKey] && municipalitiesByRegionAndCategory[region][catKey].includes(kunta)) {
+                                  alreadyAdded = true;
+                                  break;
+                              }
                          }
+
+                         // Add to the determined categoryKey *only if* it hasn't been added to *any* category for this region yet
                          if(!alreadyAdded) {
-                              municipalitiesByRegionAndCategory[region][category].push(kunta);
+                             if(municipalitiesByRegionAndCategory[region][category]) { // Ensure the category key is valid
+                                municipalitiesByRegionAndCategory[region][category].push(kunta);
+                             } else {
+                                 console.warn(`Municipality "${kunta}" assigned to unknown category "${category}" from source.`);
+                             }
+                         } else {
+                              // console.log(`Municipality "${kunta}" already added to a category in region "${region}". Skipping.`);
                          }
 
                     });
                 }
-
-                 // Add municipalities with no finds from the map that were in the source
-                 if(municipalities['ei_loytoja']) {
-                     municipalities['ei_loytoja'].forEach(kunta => {
-                          const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
-                            if (!municipalitiesByRegionAndCategory[region]) {
-                                municipalitiesByRegionAndCategory[region] = {
-                                    'ei_loytoja': [], 'vain_tradi': [], 'vain_multi': [], 'vain_mysse': [],
-                                    'tradi_multi': [], 'multi_mysse': [], 'tradi_mysse': [], 'tradi_multi_mysse': []
-                                };
-                            }
-                            let alreadyAdded = false;
-                            for(const cat in municipalitiesByRegionAndCategory[region]) {
-                                if(municipalitiesByRegionAndCategory[region][cat].includes(kunta)) {
-                                    alreadyAdded = true;
-                                    break;
-                                }
-                            }
-                            if(!alreadyAdded) {
-                                municipalitiesByRegionAndCategory[region]['ei_loytoja'].push(kunta);
-                            }
-                     });
-                 }
 
 
                 const contentDiv = document.getElementById('content');
@@ -485,47 +473,59 @@
                 const sortedRegions = Object.keys(municipalitiesByRegionAndCategory).sort();
 
                 sortedRegions.forEach(region => {
-                    const regionDiv = document.createElement('div');
-                    regionDiv.classList.add('region');
-                    contentDiv.appendChild(regionDiv);
+                    // Only create a region section if it has municipalities
+                    let hasMunicipalities = false;
+                    const regionCategories = municipalitiesByRegionAndCategory[region];
+                    for (const cat in regionCategories) {
+                         if (regionCategories[cat] && regionCategories[cat].length > 0) {
+                            hasMunicipalities = true;
+                            break;
+                         }
+                    }
 
-                    const regionTitle = document.createElement('h2');
-                    regionTitle.innerText = region;
-                    regionDiv.appendChild(regionTitle);
+                    if (hasMunicipalities) {
+                        const regionDiv = document.createElement('div');
+                        regionDiv.classList.add('region');
+                        contentDiv.appendChild(regionDiv);
 
-                    const categoriesOrder = ['ei_loytoja', 'vain_tradi', 'vain_multi', 'vain_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'tradi_multi_mysse'];
-                    const categoryTitles = {
-                         'ei_loytoja': 'Kunnat, joista EI OLE löytöjä',
-                        'vain_tradi': 'Kunnat, joista on VAIN TRADI-löytöjä',
-                        'vain_multi': 'Kunnat, joista on VAIN MULTI-löytöjä',
-                        'vain_mysse': 'Kunnat, joista on VAIN MYSSE-löytöjä',
-                        'tradi_multi': 'Kunnat, joista on TRADI- ja MULTI-löytöjä',
-                        'multi_mysse': 'Kunnat, joista on MULTI- ja MYSSE-löytöjä',
-                        'tradi_mysse': 'Kunnat, joista on TRADI- ja MYSSE-löytöjä',
-                        'tradi_multi_mysse': 'Kunnat, joista on TRADI-, MULTI- ja MYSSE-löytöjä'
-                    };
+                        const regionTitle = document.createElement('h2');
+                        regionTitle.innerText = region;
+                        regionDiv.appendChild(regionTitle);
 
-                    categoriesOrder.forEach(categoryKey => {
-                         const kuntaList = municipalitiesByRegionAndCategory[region][categoryKey];
-                        if (kuntaList && kuntaList.length > 0) {
-                            const categoryDiv = document.createElement('div');
-                            categoryDiv.classList.add('category');
-                            regionDiv.appendChild(categoryDiv);
+                        const categoriesOrder = ['ei_loytoja', 'vain_tradi', 'vain_multi', 'vain_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'tradi_multi_mysse'];
+                        const categoryTitles = {
+                             'ei_loytoja': 'Kunnat, joista EI OLE löytöjä',
+                            'vain_tradi': 'Kunnat, joista on VAIN TRADI-löytöjä',
+                            'vain_multi': 'Kunnat, joista on VAIN MULTI-löytöjä',
+                            'vain_mysse': 'Kunnat, joista on VAIN MYSSE-löytöjä',
+                            'tradi_multi': 'Kunnat, joista on TRADI- ja MULTI-löytöjä',
+                            'multi_mysse': 'Kunnat, joista on MULTI- ja MYSSE-löytöjä',
+                            'tradi_mysse': 'Kunnat, joista on TRADI- ja MYSSE-löytöjä',
+                            'tradi_multi_mysse': 'Kunnat, joista on TRADI-, MULTI- ja MYSSE-löytöjä'
+                        };
 
-                            const categoryTitle = document.createElement('h3');
-                            categoryTitle.innerText = categoryTitles[categoryKey];
-                            categoryDiv.appendChild(categoryTitle);
+                        categoriesOrder.forEach(categoryKey => {
+                             const kuntaList = municipalitiesByRegionAndCategory[region][categoryKey];
+                            if (kuntaList && kuntaList.length > 0) {
+                                const categoryDiv = document.createElement('div');
+                                categoryDiv.classList.add('category');
+                                regionDiv.appendChild(categoryDiv);
 
-                            const ul = document.createElement('ul');
-                            ul.classList.add('kunta-list');
-                            kuntaList.sort().forEach(kunta => {
-                                const li = document.createElement('li');
-                                li.innerText = kunta;
-                                ul.appendChild(li);
-                            });
-                            categoryDiv.appendChild(ul);
-                        }
-                    });
+                                const categoryTitle = document.createElement('h3');
+                                categoryTitle.innerText = categoryTitles[categoryKey];
+                                categoryDiv.appendChild(categoryTitle);
+
+                                const ul = document.createElement('ul');
+                                ul.classList.add('kunta-list');
+                                kuntaList.sort().forEach(kunta => {
+                                    const li = document.createElement('li');
+                                    li.innerText = kunta;
+                                    ul.appendChild(li);
+                                });
+                                categoryDiv.appendChild(ul);
+                            }
+                        });
+                    }
                 });
 
                 document.getElementById('loading').style.display = 'none';
