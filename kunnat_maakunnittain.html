@@ -38,7 +38,8 @@
         </div>
 
     <script>
-        const sourceUrl = 'https://mikkogeokalevi.github.io/triplettikunnat.html'; // TARKISTA TÄMÄ OSOITE!
+        // KORJATTU OSOITE!
+        const sourceUrl = 'https://mikkogeokalevi.github.io/tilastot/triplettikunnat.html';
 
         // Kartoitus kunnista maakuntiin
         const municipalityRegionMap = {
@@ -350,7 +351,7 @@
         async function fetchAndProcessData() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
-             document.getElementById('timestamp').innerText = 'Ladataan tietoja...';
+             document.getElementById('timestamp').innerText = 'Latautaan tietoja...';
              document.getElementById('content').innerHTML = '';
 
 
@@ -434,14 +435,8 @@
                         const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
                         if (!municipalitiesByRegionAndCategory[region]) {
                             municipalitiesByRegionAndCategory[region] = {
-                                'ei_loytoja': [],
-                                'vain_tradi': [],
-                                'vain_multi': [],
-                                'vain_mysse': [],
-                                'tradi_multi': [],
-                                'multi_mysse': [],
-                                'tradi_mysse': [],
-                                'tradi_multi_mysse': []
+                                'ei_loytoja': [], 'vain_tradi': [], 'vain_multi': [], 'vain_mysse': [],
+                                'tradi_multi': [], 'multi_mysse': [], 'tradi_mysse': [], 'tradi_multi_mysse': []
                             };
                         }
                          // Prevent adding municipality to multiple categories within the same region (based on source classification)
