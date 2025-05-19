@@ -6,20 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuntien Kätkölöydöt Tyypeittäin</title>
     <style>
-        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
-        h1, h3, h4 { color: #333; }
-        .timestamp { margin-top: 5px; margin-bottom: 20px; font-size: 0.9em; color: #666; }
+        body { 
+            font-family: sans-serif; 
+            line-height: 1.6; 
+            margin: 20px; 
+            background-color: #2e3b2e; /* Tumman maastovihreä päätausta */
+            color: #d4e8d4; /* Vaaleampi teksti päätaustalla */
+        }
+        h1, h3, h4 { color: #a2d2a2; /* Vaaleampi vihreä otsikoille */ }
+        .timestamp { margin-top: 5px; margin-bottom: 20px; font-size: 0.9em; color: #b0b0b0; /* Vaaleampi harmaa aikaleimalle */ }
         .municipality {
-            margin-bottom: 10px; /* Tiiviimpi ulkoasu */
+            margin-bottom: 10px; 
             padding: 15px;
-            border: 1px solid #eee;
+            border: 1px solid #5a7d5a; /* Keskivihreä, tummempi reunus */
+            background-color: #3b4d3b; /* Hieman vaaleampi tummanvihreä kuntalaatikon tausta */
             border-radius: 5px;
-            background-color: #f9f9f9;
-            /* UUSI: Varmista, että elementti ei mene sticky-palkin alle, kun siihen skrollataan */
-            scroll-margin-top: 100px; /* Tämän arvon tulisi olla suurempi kuin sticky-palkin korkeus */
+            scroll-margin-top: 100px; 
+            color: #e0f2e0; /* Vaaleampi teksti laatikossa */
         }
         .municipality h3 { margin-top: 0; margin-bottom: 10px; }
-        .municipality h4 { margin-top: 15px; margin-bottom: 5px; font-size: 1em; border-bottom: 1px dotted #ccc; padding-bottom: 3px; }
+        .municipality h4 { margin-top: 15px; margin-bottom: 5px; font-size: 1em; border-bottom: 1px dotted #7aa67a; /* Keskivihreä pisteillä */ padding-bottom: 3px; }
 
         .cache-list {
             list-style: none;
@@ -40,61 +46,69 @@
         }
         .cache-list span {
             white-space: nowrap;
+            color: #e0f2e0; /* Kätkötyyppitekstin väri samaksi kuin laatikon yleisteksti */
         }
 
         .search-container {
             margin-bottom: 20px;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #4a634a; /* Tummempi vihreä reunus hakupalkkiin */
             border-radius: 5px;
-            background-color: #e9e9e9;
+            background-color: #364436; /* Tummempi vihreä hakupalkin tausta */
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Tummempi varjo */
             padding-top: 15px;
             padding-bottom: 15px;
         }
         .search-container label {
             font-weight: bold;
             margin-right: 10px;
+            color: #c0d8c0; /* Vaaleampi vihreä tekstille */
         }
         .search-container input[type="text"] {
             padding: 8px;
-            border: 1px solid #ccc;
+            border: 1px solid #7aa67a; /* Vihreä reunus input-kenttään */
             border-radius: 4px;
             width: 200px;
             box-sizing: border-box;
+            background-color: #4f604f; /* Tummempi vihreä input-kentän tausta */
+            color: #f0fff0; /* Erittäin vaalea teksti input-kentässä */
+        }
+        .search-container input[type="text"]::placeholder {
+            color: #a0a0a0; /* Vaaleampi paikkamerkkitekstin väri */
         }
         
         /* Ehdotuslista */
         #autocomplete-suggestions {
-            border: 1px solid #ddd;
+            border: 1px solid #7aa67a; /* Keskivihreä reunus ehdotuksiin */
             max-height: 200px;
             overflow-y: auto;
-            position: absolute; /* Tärkeä, jotta ilmestyy input-kentän alle */
-            background-color: white;
-            width: 200px; /* Sama leveys kuin input-kentällä */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 101; /* Z-indeksi korkeampi kuin sticky-elementillä */
-            display: none; /* Oletuksena piilotettu */
+            position: absolute;
+            background-color: #4f604f; /* Tummempi vihreä ehdotuslistan tausta */
+            width: 200px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Tummempi varjo */
+            z-index: 101;
+            display: none;
         }
         #autocomplete-suggestions div {
             padding: 8px;
             cursor: pointer;
-            text-transform: capitalize; /* Tekee ehdotuksen alkukirjaimesta ison */
+            text-transform: capitalize;
+            color: #f0fff0; /* Ehdotustekstin väri */
         }
         #autocomplete-suggestions div:hover {
-            background-color: #f0f0f0;
+            background-color: #6a826a; /* Tummempi vihreä hover-väri */
         }
 
 
-        hr { border: 0; height: 1px; background: #ccc; margin: 15px 0; /* Tiiviimpi ulkoasu */ }
+        hr { border: 0; height: 1px; background: #7aa67a; /* Keskivihreä erotinviiva */ margin: 15px 0; }
     </style>
 </head>
 <body>
     <h1>Kuntien Kätkölöydöt Tyypeittäin</h1>
-    <p class="timestamp">Luotu: 19.05.2025 19:28:17</p>
+    <p class="timestamp">Luotu: 19.05.2025 20:12:15</p>
 
     <div class="search-container">
         <label for="municipalitySearch">Hae kunnan nimellä:</label>
