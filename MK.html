@@ -173,7 +173,7 @@
     }
 
     .link-list li {
-        margin-bottom: var(--spacing-medium); /* Hieman tiiviimpi */
+        margin-bottom: var(--spacing-medium);
         padding-bottom: var(--spacing-small);
         border-bottom: 1px dashed var(--border-color);
     }
@@ -181,34 +181,27 @@
         border-bottom: none;
     }
 
-    /* UUSI SÄÄNTÖ: Yhdistetään linkki ja kuvaus yhdeksi klikattavaksi lohkoksi */
-    .link-item-wrapper {
-        display: block; /* Tekee koko lohkosta klikattavan */
-        text-decoration: none; /* Poistaa alleviivauksen koko lohkosta */
-        color: var(--link-color); /* Asettaa linkin värin teeman mukaan */
-        transition: color 0.3s ease; /* Värisiirtymä hoverilla */
-    }
-
-    .link-item-wrapper:hover {
-        color: var(--link-hover-color); /* Hover-väri teeman mukaan */
-    }
-
+    /* Tämä on nyt se tärkein sääntö linkkien väritykseen */
     .link-list a {
-        /* A-tagi on nyt .link-item-wrapperin sisällä, sen omaa tyylittelyä ei tarvita suoraan */
-        /* Nämä tyylit siirtyvät nyt .link-item-wrapperille */
-        text-decoration: none; /* Varmistaa, ettei a-tagi alleviivaa itsestään */
-        color: inherit; /* Varmistaa, että perii värin .link-item-wrapperista */
+        display: block; /* Tekee koko listakohdan alueesta klikattavan */
+        text-decoration: none; /* Poistaa oletus alleviivauksen */
+        color: var(--link-color); /* **Asettaa linkin värin teeman mukaan** */
         font-size: 1.2em;
         font-weight: bold; 
-        display: block; /* Varmistaa, että otsikko on omalla rivillä */
         margin-bottom: 0.2em; 
+        transition: color 0.3s ease; /* Pehmeä siirtymä hover-tilaan */
     }
 
-    /* Linkin kuvaus perii värinsä automaattisesti .link-item-wrapperista */
+    .link-list a:hover {
+        color: var(--link-hover-color); /* Muuttaa väriä hiiren ollessa linkin päällä */
+        text-decoration: underline; /* Lisää alleviivauksen hoverilla */
+    }
+
+    /* Linkin kuvaus perii nyt värinsä linkiltä (a-tagilta) */
     .link-description {
         font-size: 0.9em;
         line-height: 1.4;
-        color: inherit; /* Peri väri vanhemmalta (eli link-item-wrapperilta) */
+        color: inherit; /* Peri väri vanhemmalta (eli a-tagilta) */
         opacity: 0.85; 
         margin-top: 0; 
         margin-bottom: 0; 
@@ -291,32 +284,32 @@
     <h3 class="link-category-title">Omat työkalut</h3>
     <ul class="link-list">
       <li>
-        <a href="MKkuvakeneraattori.html" class="link-item-wrapper">
-            <span>Kuvageneraattori (MK)</span>
+        <a href="MKkuvakeneraattori.html">
+            Kuvageneraattori (MK)
             <p class="link-description">Monipuolinen työkalu erilaisten geokätköilytilastokuvien luomiseen.</p>
         </a>
       </li>
       <li>
-        <a href="kunnat_maakunnittain.html" class="link-item-wrapper">
-            <span>Triplettikunnat</span>
+        <a href="kunnat_maakunnittain.html">
+            Triplettikunnat
             <p class="link-description">Näytä kunnat, joissa on "triplettikätköjä".</p>
         </a>
       </li>
       <li>
-        <a href="kaikki_katkot.html" class="link-item-wrapper">
-            <span>Kätkötyyppi löydöt kunnittain</span>
+        <a href="kaikki_katkot.html">
+            Kätkötyyppi löydöt kunnittain
             <p class="link-description">Yksityiskohtaiset tilastot kätkötyyppien löydöistä kunnittain.</p>
         </a>
       </li>
       <li>
-        <a href="triplettikunnat.html" class="link-item-wrapper">
-            <span>Triplettikunnat listana</span>
+        <a href="triplettikunnat.html">
+            Triplettikunnat listana
             <p class="link-description">Listaus kaikista kunnista, joissa on triplettikätköjä.</p>
         </a>
       </li>
       <li>
-        <a href="tilastot.html" class="link-item-wrapper">
-            <span>Tilastokuvat (Vanhempi)</span>
+        <a href="tilastot.html">
+            Tilastokuvat (Vanhempi)
             <p class="link-description">Aiempi versio tilastokuvien generointiin.</p>
         </a>
       </li>
@@ -325,14 +318,14 @@
     <h3 class="link-category-title">Yleiset Geokätköilysivustot</h3>
     <ul class="link-list">
       <li>
-        <a href="https://www.geocaching.com/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Geocaching.com</span>
+        <a href="https://www.geocaching.com/" target="_blank" rel="noopener noreferrer">
+            Geocaching.com
             <p class="link-description">Geokätköilyn virallinen pääsivusto. Kätköjen etsintä, omien kätköjen hallinta ja yhteisö.</p>
         </a>
       </li>
       <li>
-        <a href="https://www.geocache.fi/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Geocache.fi</span>
+        <a href="https://www.geocache.fi/" target="_blank" rel="noopener noreferrer">
+            Geocache.fi
             <p class="link-description">Suomalainen geokätköilysivusto: uutisia, foorumi, tilastoja ja muita resursseja.</p>
         </a>
       </li>
@@ -341,38 +334,38 @@
     <h3 class="link-category-title">Työkaluja Mysteereihin ja Kätköilyyn</h3>
     <ul class="link-list">
       <li>
-        <a href="https://www.geocachingtoolbox.com/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Geocaching Toolbox</span>
+        <a href="https://www.geocachingtoolbox.com/" target="_blank" rel="noopener noreferrer">
+            Geocaching Toolbox
             <p class="link-description">Laaja kokoelma työkaluja mm. koordinaattimuunnoksiin ja salakirjoitusten purkuun.</p>
         </a>
       </li>
       <li>
-        <a href="https://gcutils.de/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>GCUtils.de</span>
+        <a href="https://gcutils.de/" target="_blank" rel="noopener noreferrer">
+            GCUtils.de
             <p class="link-description">Kattava valikoima työkaluja geokätköilijöille, sisältäen mm. koodinpurkuja ja koordinaattilaskureita.</p>
         </a>
       </li>
       <li>
-        <a href="https://www.dcode.fr/en" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>dCode.fr</span>
+        <a href="https://www.dcode.fr/en" target="_blank" rel="noopener noreferrer">
+            dCode.fr
             <p class="link-description">Erittäin kattava sivusto erilaisten salakirjoitusten ja koodien purkamiseen. (englanniksi/ranskaksi)</p>
         </a>
   </li>
   <li>
-        <a href="https://xiit.dy.fi/gc/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Geocalcing2</span>
+        <a href="https://xiit.dy.fi/gc/" target="_blank" rel="noopener noreferrer">
+            Geocalcing2
             <p class="link-description">Työkalu geokätköilyyn liittyviin laskutoimituksiin ja koordinaattimuunnoksiin.</p>
         </a>
   </li>
   <li>
-        <a href="https://gc.de/gc/reversewherigo/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Reverse Wherigo Solver</span>
+        <a href="https://gc.de/gc/reversewherigo/" target="_blank" rel="noopener noreferrer">
+            Reverse Wherigo Solver
             <p class="link-description">Auttaa ratkaisemaan käänteisiä Wherigo-pulmia.</p>
         </a>
   </li>
         <li>
-            <a href="https://solvedjigidi.com/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-                <span>Solved Jigidi</span>
+            <a href="https://solvedjigidi.com/" target="_blank" rel="noopener noreferrer">
+                Solved Jigidi
                 <p class="link-description">Sivusto, joka auttaa Jigidi-palapelien ratkaisussa, usein tarpeen mysteerikätköissä.</p>
             </a>
         </li>
@@ -381,14 +374,14 @@
     <h3 class="link-category-title">Kartat ja Paikannus</h3>
     <ul class="link-list">
       <li>
-        <a href="https://www.retkikartta.fi/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Retkikartta.fi</span>
+        <a href="https://www.retkikartta.fi/" target="_blank" rel="noopener noreferrer">
+            Retkikartta.fi
             <p class="link-description">Metsähallituksen tarkat maastokartat koko Suomesta. Erinomainen apu suunnistukseen.</p>
         </a>
       </li>
       <li>
-        <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-            <span>Karttapaikka (MML)</span>
+        <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" target="_blank" rel="noopener noreferrer">
+            Karttapaikka (MML)
             <p class="link-description">Maanmittauslaitoksen karttapalvelu, josta löytyy tarkat kartat ja ilmakuvat.</p>
         </a>
       </li>
@@ -397,8 +390,8 @@
     <h3 class="link-category-title">Muita Hyödyllisiä Sivustoja</h3>
     <ul class="link-list">
         <li>
-            <a href="https://project-gc.com/" target="_blank" rel="noopener noreferrer" class="link-item-wrapper">
-                <span>Project-GC</span>
+            <a href="https://project-gc.com/" target="_blank" rel="noopener noreferrer">
+                Project-GC
                 <p class="link-description">Laaja tilastosivusto ja työkalu geokätköilijöille, tarjoaa paljon dataa ja tapoja analysoida kätköilyä.</p>
             </a>
         </li>
@@ -414,6 +407,8 @@
         }
         localStorage.setItem('selectedTheme', themeName);
 
+        // Tämä osio on edelleen tärkeä, jos halutaan muokata yksittäisten elementtien 
+        // tyylejä teeman mukaan JavaScriptillä (esim. select/input keltainen teema)
         if (themeName === 'theme-yellow') {
             document.querySelectorAll('.theme-yellow select, .theme-yellow input').forEach(el => {
                 if (el.id !== 'themeSelector') { 
