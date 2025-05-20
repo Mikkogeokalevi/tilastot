@@ -336,7 +336,7 @@
         display: flex;
         align-items: flex-end;
         gap: var(--spacing-small);
-         margin-bottom: var(--spacing-medium);
+         margin-bottom: var(--spacing-small); /* Muutettu pienemmäksi, jotta profiililinkille jää tilaa */
     }
 
     .user-input-container input[type="text"]#user {
@@ -476,6 +476,25 @@
         margin-top: 0; 
     }
 
+    #profileLinkContainer {
+        min-height: 1.5em; /* Varmistetaan tilaa, ettei layout hyppää */
+        margin-bottom: var(--spacing-medium);
+        font-size: 0.9em;
+    }
+    #profileLink {
+        display: inline-block; /* Antaa paddingin ja marginin toimia */
+        padding: 0.2em 0.5em;
+        border-radius: var(--border-radius);
+        background-color: rgba(var(--accent-color-rgb), 0.1); /* Hieman vaaleampi tausta linkille */
+        color: var(--accent-color);
+        transition: background-color 0.2s, color 0.2s;
+    }
+    #profileLink:hover {
+        background-color: rgba(var(--accent-color-rgb), 0.2);
+        color: var(--link-hover-color);
+    }
+
+
     @media (max-width: 700px) { 
         .header-area {
             flex-direction: column; 
@@ -587,15 +606,19 @@
          .output-actions > *:last-child {
             margin-bottom: 0;
         }
+        #profileLinkContainer {
+            margin-top: var(--spacing-mobile-small);
+            margin-bottom: var(--spacing-mobile-medium);
+        }
 
 
         button { margin-top: var(--spacing-mobile-medium); padding: var(--spacing-mobile-small) var(--spacing-mobile-medium); }
          /* Yleinen button leveys 100% mobiilissa, paitsi jos se on flex-item kuten #resetButton */
-        button:not(#resetButton):not(.modal-button):not(#copyLinkButton):not(#downloadImageButton) {
+        button:not(#resetButton):not(.modal-button):not(#copyLinkButton) {
             width: 100%;
         }
         /* Kopioi ja Lataa -napeille myös täysi leveys mobiilissa, jos eivät output-actions sisällä */
-        #copyLinkButton, #downloadImageButton {
+        #copyLinkButton {
             width: 100%; /* Tämä on jo .output-actions alla, mutta varmistus */
         }
     }
@@ -633,8 +656,8 @@
         </datalist>
          <button id="resetButton" type="button">Nollaa</button>
     </div>
-
-    <label for="kuvatyyppi">Kuvan tyyppi:</label>
+    
+    <div id="profileLinkContainer"></div> <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
       <option value="matrix">T/D-taulukko</option>
       <option value="kunta">Kuntakartta</option>
@@ -741,7 +764,6 @@
 
     <div class="output-actions"> <a id="linkki" href="#" target="_blank">Avaa kuva uudessa ikkunassa</a>
         <button id="copyLinkButton" type="button">Kopioi linkki</button>
-        <button id="downloadImageButton" type="button" style="display:none;">Lataa kuva</button>
     </div>
 
   </div>
@@ -816,12 +838,46 @@
       if (aikaKentatDiv) aikaKentatDiv.style.display = valinta === "kylla" ? "block" : "none";
     }
 
+    // Uusi funktio Geocaching-profiililinkin luomiseen ja näyttämiseen
+    function updateGeocachingProfileLink() {
+        const user = document.getElementById("user")?.value.trim();
+        const profileLinkContainer = document.getElementById("profileLinkContainer");
+
+        if (profileLinkContainer) {
+            profileLinkContainer.innerHTML = ''; // Tyhjennetään edellinen linkki
+            if (user) {
+                const link = document.createElement('a');
+                link.id = 'profileLink';
+                link.href = `https://www.geocaching.com/p/?u=${encodeURIComponent(user)}`;
+                link.target = '_blank';
+                link.textContent = `Avaa ${user} profiili Geocaching.comissa`;
+                profileLinkContainer.appendChild(link);
+            }
+        }
+    }
+
     function applyTheme(themeName) {
         document.body.className = ''; 
         if (themeName !== 'default') {
             document.body.classList.add(themeName);
         }
         localStorage.setItem('selectedTheme', themeName);
+        // Päivitä accent-color-rgb muuttuja dynaamisesti
+        const computedStyle = getComputedStyle(document.body);
+        const accentColor = computedStyle.getPropertyValue('--accent-color');
+        // Poista '#' merkki ja muunna RGB-muotoon
+        const hex = accentColor.startsWith('#') ? accentColor.slice(1) : accentColor;
+        let r = 0, g = 0, b = 0;
+        if (hex.length === 3) {
+            r = parseInt(hex[0] + hex[0], 16);
+            g = parseInt(hex[1] + hex[1], 16);
+            b = parseInt(hex[2] + hex[2], 16);
+        } else if (hex.length === 6) {
+            r = parseInt(hex.substring(0, 2), 16);
+            g = parseInt(hex.substring(2, 4), 16);
+            b = parseInt(hex.substring(4, 6), 16);
+        }
+        document.body.style.setProperty('--accent-color-rgb', `${r},${g},${b}`);
     }
 
     function toggleYearSpecificFilters() {
@@ -1038,13 +1094,10 @@
       const overlayElement = document.getElementById("map-overlay");
       const imageWrapper = document.querySelector('.image-wrapper');
       const copyLinkButton = document.getElementById("copyLinkButton");
-      const downloadImageBtn = document.getElementById("downloadImageButton");
-
 
       imageWrapper.style.display = 'none'; 
       linkElementBelow.style.display = 'none';
       copyLinkButton.style.display = 'none';
-      downloadImageBtn.style.display = 'none';
       if(overlayElement) overlayElement.style.display = 'none';
       if(imageElement) imageElement.src = '';
 
@@ -1090,7 +1143,7 @@
 
       const finalUrl = `${baseUrl}${kuvatyyppi}.php${params}`;
       let urlToCopy = finalUrl;
-      const selectedUserId = userIds[user];
+      const selectedUserId = userIds[user]; // Käytä suoraan käyttäjänimeä, jos userid on olemassa
 
       if (kuvatyyppi === "kunta" && selectedUserId) {
           let largeMapUrl = `${baseUrl}kunta/?userid=${selectedUserId}&names=1`;
@@ -1115,7 +1168,6 @@
           }
           if(linkElementBelow) {
             linkElementBelow.href = finalUrl;
-            // linkElementBelow.textContent = "Avaa kuva uudessa ikkunassa"; // Teksti asetetaan HTML:ssä
             linkElementBelow.style.display = 'inline-flex'; // inline-flex jotta padding toimii kuten napeissa
           }
           if(overlayElement) overlayElement.style.display = 'none';
@@ -1126,10 +1178,6 @@
             if(copyLinkButton) {
                 copyLinkButton.style.display = 'inline-block';
                 copyLinkButton.dataset.urlToCopy = urlToCopy; // Käytä mahdollisesti muokattua urlToCopy
-            }
-            if(downloadImageBtn) {
-                downloadImageBtn.style.display = 'inline-block';
-                downloadImageBtn.dataset.imageUrl = finalUrl; // Lataa aina näytettävä kuva
             }
             const settingsToSave = {
                 user, kuvatyyppi, aikavalinta, year: yearVal, month: monthVal, startdate: start, enddate: end, 
@@ -1150,7 +1198,7 @@
               locationValEl = id("locationFilterValue"), extraFilterEl = id("extraFilter"),
               imgEl = id("kuva"), copyBtn = id("copyLinkButton"), imgWrapper = D.querySelector('.image-wrapper'),
               resetBtn = id("resetButton"), regionInfoIcn = id("regionInfoIcon"),
-              themeSelector = id("themeSelector"), downloadImageBtn = id("downloadImageButton");
+              themeSelector = id("themeSelector");
 
         if(themeSelector) {
             themeSelector.addEventListener('change', (e) => {
@@ -1181,23 +1229,6 @@
                 .then(() => { this.textContent = "Kopioitu!"; setTimeout(() => { this.textContent = "Kopioi linkki"; }, 2000); })
                 .catch(() => { this.textContent = "Kopiointi epäonnistui!"; setTimeout(() => { this.textContent = "Kopioi linkki"; }, 3000); });
         });
-        if(downloadImageBtn) {
-            downloadImageBtn.addEventListener('click', function() {
-                const imageUrl = this.dataset.imageUrl;
-                if (imageUrl) {
-                    const userN = id("user")?.value.trim() || 'tuntematon';
-                    const kuvatyyppiN = id("kuvatyyppi")?.value || 'kuva';
-                    const filename = `tilasto_${userN}_${kuvatyyppiN}.png`;
-
-                    const link = D.createElement('a');
-                    link.href = imageUrl;
-                    link.download = filename; 
-                    D.body.appendChild(link); 
-                    link.click();
-                    D.body.removeChild(link);
-                }
-            });
-        }
         regionInfoIcn?.addEventListener('click', toggleRegionList);
         resetBtn?.addEventListener('click', () => {
             [userEl, startdateEl, enddateEl, locationValEl].forEach(el => el ? el.value = '' : null);
@@ -1215,12 +1246,15 @@
             if(imgWrapper) imgWrapper.style.display = 'none';
             const linkki = id("linkki");
             const copyNappi = id("copyLinkButton");
-            const downNappi = id("downloadImageButton");
             if(linkki) linkki.style.display = 'none';
             if(copyNappi) copyNappi.style.display = 'none';
-            if(downNappi) downNappi.style.display = 'none';
             closePaikkakuntaModal();
+            updateGeocachingProfileLink(); // Päivitä profiililinkki myös nollauksen yhteydessä
         });
+
+        // Kuuntele käyttäjätunnuskentän muutoksia ja datalistin valintoja
+        userEl?.addEventListener('input', updateGeocachingProfileLink);
+        userEl?.addEventListener('change', updateGeocachingProfileLink); // Valinta datalistista
 
         try {
             const saved = localStorage.getItem('statGeneratorSettings');
@@ -1243,8 +1277,16 @@
                     if (ct && !cachetypeEl.querySelector(`option[value="${ct}"]`)) ct = '';
                     cachetypeEl.value = ct;
                 }
-            } else { handleKuvatyyppiChange(); }
-        } catch (e) { console.error(e); handleKuvatyyppiChange(); }
+                updateGeocachingProfileLink(); // Kutsu linkin päivitystä tallennettujen asetusten lataamisen jälkeen
+            } else { 
+                handleKuvatyyppiChange();
+                updateGeocachingProfileLink(); // Kutsu linkin päivitystä, jos asetuksia ei löydy
+            }
+        } catch (e) { 
+            console.error(e); 
+            handleKuvatyyppiChange(); 
+            updateGeocachingProfileLink(); // Varmista linkin päivitys virhetilanteessakin
+        }
     });
   </script>
 </body>
