@@ -3,329 +3,656 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Löytötilasto paikkakunnittain /maakunnittain</title>
+    <title>Kätkölöytöjen Yhteenveto Maakunnittain (Automaattisesti Päivittyvä)</title>
     <style>
-        body {
-            font-family: sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            background-color: #2F3D2F; /* Tumma metsänvihreä tausta */
-            color: #C0D2C0; /* Vaaleampi vihreä teksti */
+        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+         .controls { margin-bottom: 20px; }
+        .controls label { margin-right: 10px; }
+        .timestamp { margin-top: 5px; margin-bottom: 20px; font-size: 0.9em; color: #666; }
+        .region { margin-bottom: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f0f0f0; }
+        .region h2 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .category { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; }
+        .category h3 { margin-top: 0; margin-bottom: 10px; color: #555; }
+        .kunta-list { list-style: inside; padding: 0; columns: 1; } /* Default to 1 column */
+        /* Adjust column count based on screen width */
+        @media (min-width: 600px) {
+            .kunta-list {
+                columns: 2;
+            }
         }
-        h1, h2, h3 {
-            color: #7D9F7D; /* Keskivihreä otsikoille */
+         @media (min-width: 900px) {
+            .kunta-list {
+                columns: 3;
+            }
         }
-        .controls {
-            margin-bottom: 20px;
-            color: #C0D2C0; /* Kontrollien tekstiväri */
-        }
-        .controls label {
-            margin-right: 10px;
-        }
-        .controls input[type="text"],
-        .controls select {
-            background-color: #3A473A; /* Kenttien tausta */
-            border: 1px solid #4D5C4D; /* Kenttien reunus */
-            color: #C0D2C0; /* Kenttien teksti */
-            padding: 5px;
-            border-radius: 3px;
-        }
-        .timestamp {
-            margin-top: 5px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            color: #A0B3A0; /* Hiukan vaaleampi vihreä aikaleimolle */
-        }
-        .region {
-            margin-bottom: 40px;
-            padding: 20px;
-            border: 1px solid #4D5C4D; /* Tummempi vihreä reunus */
-            border-radius: 8px;
-            background-color: #3A473A; /* Tummempi vihreä aluebokseille */
-        }
-        .region h2 {
-            margin-top: 0;
-            border-bottom: 2px solid #7D9F7D; /* Vihreämpi alaviiva otsikolle */
-            padding-bottom: 10px;
-        }
-        .category {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #4D5C4D; /* Tummempi vihreä reunus */
-            border-radius: 5px;
-            background-color: #2F3D2F; /* Hieman tummempi tausta kategorioille alueen sisällä */
-        }
-        .category h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #90A390; /* Hieman vaaleampi vihreä alotsikoille */
-        }
-        .kunta-list {
-            list-style: inside;
-            padding: 0;
-        }
-        .kunta-list li {
-            margin-bottom: 5px;
-            color: #C0D2C0; /* Vaaleampi vihreä listaelementeille */
-        }
-        #loading, #error {
-            text-align: center;
-            font-size: 1.2em;
-            color: #90A390; /* Loading/error -tekstin väri */
-        }
-        .hidden {
-            display: none;
-        }
+        .kunta-list li { margin-bottom: 5px; }
+        #loading { font-size: 1.2em; color: #007BFF; }
+        #error { font-size: 1.2em; color: #DC3545; }
+         .hidden { display: none; } /* Style for hiding list items */
     </style>
 </head>
 <body>
-    <h1>Löytötilasto paikkakunnittain /maakunnittain</h1>
-    <p id="timestamp" class="timestamp">Ladataan tietoja...</p>
+    <h1>Kätkölöytöjen Yhteenveto Maakunnittain</h1>
+    <p class="timestamp" id="timestamp">Latautaan tietoja...</p>
 
     <div class="controls">
-        <label for="regionSelect">Valitse Maakunta:</label>
-        <select id="regionSelect">
+        <label for="region-select">Valitse maakunta:</label>
+        <select id="region-select">
             <option value="">Kaikki maakunnat</option>
             </select>
-        <label for="searchBox">Hae kunnan nimellä:</label>
-        <input type="text" id="searchBox" placeholder="Etsi kuntaa...">
+
+        <label for="kunta-search" style="margin-left: 20px;">Hae kuntaa:</label>
+        <input type="text" id="kunta-search" placeholder="Kirjoita kunnan nimi">
     </div>
 
-    <div id="loading">Ladataan kätkötietoja...</div>
-    <div id="error" style="display: none;">Tietojen lataus epäonnistui. Varmista, että 'triplettikunnat.html' on saatavilla ja oikeassa muodossa.</div>
-    
+
+    <div id="loading">Ladataan kuntatietoja...</div>
+    <div id="error" style="display:none;">Tietojen lataaminen epäonnistui. Tarkista lähdetiedoston osoite ja internetyhteys.</div>
     <div id="content">
         </div>
 
     <script>
+        // KORJATTU OSOITE!
+        const sourceUrl = 'https://mikkogeokalevi.github.io/tilastot/triplettikunnat.html';
+
+        // Kartoitus kunnista maakuntiin (Sinun päivittämäsi lista)
+        const municipalityRegionMap = {
+            'Akaa': 'Pirkanmaa',
+            'Alajärvi': 'Etelä-Pohjanmaa',
+            'Alavieska': 'Pohjois-Pohjanmaa',
+            'Alavus': 'Etelä-Pohjanmaa',
+            'Asikkala': 'Päijät-Häme',
+            'Askola': 'Uusimaa',
+            'Aura': 'Varsinais-Suomi',
+            'Brändö': 'Ahvenanmaa',
+            'Eckerö': 'Ahvenanmaa',
+            'Enonkoski': 'Etelä-Savo',
+            'Enontekiö': 'Lappi',
+            'Espoo': 'Uusimaa',
+            'Eura': 'Satakunta',
+            'Eurajoki': 'Satakunta',
+            'Evijärvi': 'Etelä-Pohjanmaa',
+            'Finström': 'Ahvenanmaa',
+            'Forssa': 'Kanta-Häme',
+            'Föglö': 'Ahvenanmaa',
+            'Geta': 'Ahvenanmaa',
+             'Hattula': 'Kanta-Häme',
+             'Hausjärvi': 'Kanta-Häme',
+             'Heinola': 'Päijät-Häme',
+             'Kemiönsaari': 'Varsinais-Suomi',
+             'Muonio': 'Lappi',
+             'Rääkkylä': 'Pohjois-Karjala',
+             'Mustasaari': 'Pohjanmaa',
+             'Mäntyharju': 'Etelä-Savo',
+             'Orimattila': 'Päijät-Häme',
+            'Haapajärvi': 'Pohjois-Pohjanmaa',
+            'Haapavesi': 'Pohjois-Pohjanmaa',
+            'Hailuoto': 'Pohjois-Pohjanmaa',
+            'Halsua': 'Keski-Pohjanmaa',
+            'Hamina': 'Kymenlaakso',
+            'Hammarland': 'Ahvenanmaa',
+            'Hankasalmi': 'Keski-Suomi',
+            'Hanko': 'Uusimaa',
+            'Harjavalta': 'Satakunta',
+            'Hartola': 'Päijät-Häme',
+            'Heinävesi': 'Pohjois-Karjala', // Siirretty Pohjois-Karjalaan yleisen luokituksen mukaan
+            'Helsinki': 'Uusimaa',
+            'Hirvensalmi': 'Etelä-Savo',
+            'Hollola': 'Päijät-Häme',
+            'Huittinen': 'Pirkanmaa', // Siirretty Pirkanmaalle yleisen luokituksen mukaan
+            'Humppila': 'Kanta-Häme',
+            'Hyrynsalmi': 'Kainuu',
+            'Hyvinkää': 'Uusimaa',
+            'Hämeenkyrö': 'Pirkanmaa',
+            'Hämeenlinna': 'Kanta-Häme',
+            'Ii': 'Pohjois-Pohjanmaa',
+            'Iisalmi': 'Pohjois-Savo',
+            'Iitti': 'Kymenlaakso',
+            'Ikaalinen': 'Pirkanmaa',
+            'Ilmajoki': 'Etelä-Pohjanmaa',
+            'Ilomantsi': 'Pohjois-Karjala',
+            'Imatra': 'Etelä-Karjala',
+            'Inari': 'Lappi',
+            'Inkoo': 'Uusimaa',
+            'Isojoki': 'Etelä-Pohjanmaa',
+            'Isokyrö': 'Etelä-Pohjanmaa',
+            'Janakkala': 'Kanta-Häme',
+            'Joensuu': 'Pohjois-Karjala',
+            'Jokioinen': 'Kanta-Häme',
+            'Jomala': 'Ahvenanmaa',
+            'Joroinen': 'Pohjois-Savo', // Siirretty Pohjois-Savoon yleisen luokituksen mukaan
+            'Joutsa': 'Keski-Suomi',
+            'Juuka': 'Pohjois-Karjala',
+            'Juupajoki': 'Pirkanmaa',
+            'Juva': 'Etelä-Savo',
+            'Jyväskylä': 'Keski-Suomi',
+            'Jämijärvi': 'Satakunta',
+            'Jämsä': 'Keski-Suomi',
+            'Järvenpää': 'Uusimaa',
+            'Kaarina': 'Varsinais-Suomi',
+            'Kaavi': 'Pohjois-Savo',
+            'Kajaani': 'Kainuu',
+            'Kalajoki': 'Pohjois-Pohjanmaa',
+            'Kangasala': 'Pirkanmaa',
+            'Kangasniemi': 'Etelä-Savo',
+            'Kankaanpää': 'Satakunta',
+            'Kannonkoski': 'Keski-Suomi',
+            'Kannus': 'Keski-Pohjanmaa',
+            'Karijoki': 'Etelä-Pohjanmaa',
+            'Karkkila': 'Uusimaa',
+            'Karstula': 'Keski-Suomi',
+            'Karvia': 'Satakunta',
+            'Kaskinen': 'Pohjanmaa',
+            'Kauhajoki': 'Etelä-Pohjanmaa',
+            'Kauhava': 'Etelä-Pohjanmaa',
+            'Kauniainen': 'Uusimaa',
+            'Kaustinen': 'Keski-Pohjanmaa',
+            'Kemi': 'Lappi',
+            'Kemijärvi': 'Lappi',
+            'Keminmaa': 'Lappi',
+            'Kempele': 'Pohjois-Pohjanmaa',
+            'Kerava': 'Uusimaa',
+            'Keitele': 'Pohjois-Savo',
+            'Keuruu': 'Keski-Suomi',
+            'Kihniö': 'Pirkanmaa',
+            'Kinnula': 'Keski-Suomi',
+            'Kirkkonummi': 'Uusimaa',
+            'Kitee': 'Pohjois-Karjala',
+            'Kittilä': 'Lappi',
+            'Kiuruvesi': 'Pohjois-Savo',
+            'Kivijärvi': 'Keski-Suomi',
+            'Kokemäki': 'Satakunta',
+            'Kokkola': 'Keski-Pohjanmaa',
+            'Kolari': 'Lappi',
+            'Konnevesi': 'Keski-Suomi',
+            'Kontiolahti': 'Pohjois-Karjala',
+            'Korsnäs': 'Pohjanmaa',
+            'Koski Tl': 'Varsinais-Suomi',
+            'Kotka': 'Kymenlaakso',
+            'Kouvola': 'Kymenlaakso',
+            'Kristiinankaupunki': 'Pohjanmaa',
+            'Kruunupyy': 'Pohjanmaa',
+            'Kuhmo': 'Kainuu',
+            'Kuhmoinen': 'Keski-Suomi',
+            'Kumlinge': 'Ahvenanmaa',
+            'Kuopio': 'Pohjois-Savo',
+            'Kuortane': 'Etelä-Pohjanmaa',
+            'Kurikka': 'Etelä-Pohjanmaa',
+            'Kustavi': 'Varsinais-Suomi',
+            'Kuusamo': 'Pohjois-Pohjanmaa',
+            'Kyyjärvi': 'Keski-Suomi',
+            'Kärkölä': 'Päijät-Häme',
+            'Kärsämäki': 'Pohjois-Pohjanmaa',
+            'Kökar': 'Ahvenanmaa',
+            'Lahti': 'Päijät-Häme',
+            'Laihia': 'Pohjanmaa',
+            'Laitila': 'Varsinais-Suomi',
+            'Lapinjärvi': 'Uusimaa',
+            'Lapinlahti': 'Pohjois-Savo',
+            'Lappajärvi': 'Etelä-Pohjanmaa',
+            'Lappeenranta': 'Etelä-Karjala',
+            'Lapua': 'Etelä-Pohjanmaa',
+            'Laukaa': 'Keski-Suomi',
+            'Lemi': 'Etelä-Karjala',
+            'Lemland': 'Ahvenanmaa',
+            'Lempäälä': 'Pirkanmaa',
+            'Leppävirta': 'Pohjois-Savo',
+            'Lestijärvi': 'Keski-Pohjanmaa',
+            'Lieksa': 'Pohjois-Karjala',
+            'Lieto': 'Varsinais-Suomi',
+            'Liminka': 'Pohjois-Pohjanmaa',
+            'Liperi': 'Pohjois-Karjala',
+            'Lohja': 'Uusimaa',
+            'Loimaa': 'Varsinais-Suomi',
+            'Loppi': 'Kanta-Häme',
+            'Loviisa': 'Uusimaa',
+            'Luhanka': 'Keski-Suomi',
+            'Lumijoki': 'Pohjois-Pohjanmaa',
+            'Lumparland': 'Ahvenanmaa',
+            'Luoto': 'Pohjanmaa',
+            'Luumäki': 'Etelä-Karjala',
+            'Maalahti': 'Pohjanmaa',
+            'Maarianhamina': 'Ahvenanmaa',
+            'Marttila': 'Varsinais-Suomi',
+            'Masku': 'Varsinais-Suomi',
+            'Merijärvi': 'Pohjois-Pohjanmaa',
+            'Merikarvia': 'Satakunta',
+            'Miehikkälä': 'Kymenlaakso', // Siirretty Kymenlaaksoon yleisen luokituksen mukaan
+            'Mikkeli': 'Etelä-Savo',
+            'Muhos': 'Pohjois-Pohjanmaa',
+            'Multia': 'Keski-Suomi',
+            'Muurame': 'Keski-Suomi',
+            'Myrskylä': 'Uusimaa',
+            'Mynämäki': 'Varsinais-Suomi',
+            'Mäntsälä': 'Uusimaa',
+            'Mänttä-Vilppula': 'Pirkanmaa',
+            'Naantali': 'Varsinais-Suomi',
+            'Nakkila': 'Satakunta',
+            'Närpiö': 'Pohjanmaa',
+            'Nivala': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Nokia': 'Pirkanmaa',
+            'Nousiainen': 'Varsinais-Suomi',
+            'Nurmes': 'Pohjois-Karjala',
+            'Nurmijärvi': 'Uusimaa',
+            'Oripää': 'Varsinais-Suomi',
+            'Orivesi': 'Pirkanmaa',
+            'Oulainen': 'Pohjois-Pohjanmaa',
+            'Oulu': 'Pohjois-Pohjanmaa',
+            'Outokumpu': 'Pohjois-Karjala',
+            'Padasjoki': 'Päijät-Häme',
+            'Paimio': 'Varsinais-Suomi',
+            'Paltamo': 'Kainuu',
+            'Parainen': 'Varsinais-Suomi',
+            'Parikkala': 'Etelä-Karjala',
+            'Parkano': 'Pirkanmaa',
+            'Pedersören kunta': 'Pohjanmaa',
+            'Pelkosenniemi': 'Lappi',
+            'Pello': 'Lappi',
+            'Perho': 'Keski-Pohjanmaa',
+            'Petäjävesi': 'Keski-Suomi',
+            'Pieksämäki': 'Etelä-Savo',
+            'Pielavesi': 'Pohjois-Savo',
+            'Pietarsaari': 'Pohjanmaa',
+            'Pihtipudas': 'Keski-Suomi',
+            'Pirkkala': 'Pirkanmaa',
+            'Polvijärvi': 'Pohjois-Karjala',
+            'Pomarkku': 'Satakunta',
+            'Pori': 'Satakunta',
+            'Pornainen': 'Uusimaa',
+            'Porvoo': 'Uusimaa',
+            'Posio': 'Lappi',
+            'Pudasjärvi': 'Pohjois-Pohjanmaa',
+            'Pukkila': 'Uusimaa',
+            'Punkalaidun': 'Pirkanmaa',
+            'Puolanka': 'Kainuu',
+            'Puumala': 'Etelä-Savo',
+            'Pyhtää': 'Kymenlaakso',
+            'Pyhäjoki': 'Pohjois-Pohjanmaa',
+            'Pyhäjärvi': 'Pohjois-Pohjanmaa',
+            'Pyhäntä': 'Pohjois-Pohjanmaa',
+            'Pyhäranta': 'Satakunta', // Siirretty Satakuntaan yleisen luokituksen mukaan
+            'Pälkäne': 'Pirkanmaa',
+            'Pöytyä': 'Varsinais-Suomi',
+            'Raahe': 'Pohjois-Pohjanmaa',
+            'Raasepori': 'Uusimaa',
+            'Raisio': 'Varsinais-Suomi',
+            'Rantasalmi': 'Etelä-Savo',
+            'Ranua': 'Lappi',
+            'Rauma': 'Satakunta',
+            'Rautalampi': 'Pohjois-Savo',
+            'Rautavaara': 'Pohjois-Savo',
+            'Rautjärvi': 'Etelä-Karjala',
+            'Reisjärvi': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Riihimäki': 'Kanta-Häme',
+            'Ristijärvi': 'Kainuu',
+            'Rovaniemi': 'Lappi',
+            'Ruokolahti': 'Etelä-Karjala',
+            'Ruovesi': 'Pirkanmaa',
+            'Rusko': 'Varsinais-Suomi',
+            'Saarijärvi': 'Keski-Suomi',
+            'Salla': 'Lappi',
+            'Salo': 'Varsinais-Suomi',
+            'Saltvik': 'Ahvenanmaa',
+            'Sastamala': 'Pirkanmaa',
+            'Sauvo': 'Varsinais-Suomi',
+            'Savitaipale': 'Etelä-Karjala',
+            'Savonlinna': 'Etelä-Savo',
+            'Savukoski': 'Lappi',
+            'Seinäjoki': 'Etelä-Pohjanmaa',
+            'Sievi': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Siikainen': 'Satakunta',
+            'Siikajoki': 'Pohjois-Pohjanmaa',
+            'Siikalatva': 'Pohjois-Pohjanmaa',
+            'Siilinjärvi': 'Pohjois-Savo',
+            'Simo': 'Lappi',
+            'Sipoo': 'Uusimaa',
+            'Siuntio': 'Uusimaa',
+            'Sodankylä': 'Lappi',
+            'Soini': 'Etelä-Pohjanmaa',
+            'Somero': 'Varsinais-Suomi',
+            'Sonkajärvi': 'Pohjois-Savo',
+            'Sotkamo': 'Kainuu', // Siirretty Kainuuseen
+            'Sottunga': 'Ahvenanmaa',
+            'Sulkava': 'Etelä-Savo',
+            'Sund': 'Ahvenanmaa',
+            'Suomussalmi': 'Kainuu',
+            'Suonenjoki': 'Pohjois-Savo',
+            'Sysmä': 'Päijät-Häme',
+            'Säkylä': 'Satakunta',
+            'Taipalsaari': 'Etelä-Karjala',
+            'Taivalkoski': 'Lappi',
+            'Taivassalo': 'Varsinais-Suomi',
+            'Tammela': 'Kanta-Häme',
+            'Tampere': 'Pirkanmaa',
+            'Tervo': 'Pohjois-Savo',
+            'Tervola': 'Lappi',
+            'Teuva': 'Etelä-Pohjanmaa',
+            'Tohmajärvi': 'Pohjois-Karjala',
+            'Toholampi': 'Keski-Pohjanmaa',
+            'Toivakka': 'Keski-Suomi',
+            'Tornio': 'Lappi',
+            'Turku': 'Varsinais-Suomi',
+            'Tuusniemi': 'Pohjois-Savo',
+            'Tuusula': 'Uusimaa',
+            'Tyrnävä': 'Pohjois-Pohjanmaa',
+            'Ulvila': 'Satakunta',
+            'Urjala': 'Pirkanmaa', // Siirretty Pirkanmaalle
+            'Utajärvi': 'Pohjois-Pohjanmaa',
+            'Utsjoki': 'Lappi',
+            'Uurainen': 'Keski-Suomi',
+            'Uusikaarlepyy': 'Pohjanmaa',
+            'Uusikaupunki': 'Varsinais-Suomi',
+            'Vaala': 'Kainuu', // Siirretty Kainuuseen
+            'Vaasa': 'Pohjanmaa',
+            'Valkeakoski': 'Pirkanmaa',
+            'Vantaa': 'Uusimaa',
+            'Varkaus': 'Pohjois-Savo',
+            'Vehmaa': 'Varsinais-Suomi',
+            'Vesanto': 'Pohjois-Savo',
+            'Vesilahti': 'Pirkanmaa',
+            'Veteli': 'Keski-Pohjanmaa',
+            'Vieremä': 'Pohjois-Savo',
+            'Vihti': 'Uusimaa',
+            'Viitasaari': 'Keski-Suomi',
+            'Vimpeli': 'Etelä-Pohjanmaa',
+            'Virolahti': 'Kymenlaakso', // Siirretty Kymenlaaksoon
+            'Virrat': 'Pirkanmaa',
+            'Vårdö': 'Ahvenanmaa',
+            'Vöyri': 'Pohjanmaa',
+            'Ylitornio': 'Lappi',
+            'Ylivieska': 'Keski-Pohjanmaa', // Siirretty Keski-Pohjanmaalle
+            'Ylöjärvi': 'Pirkanmaa',
+            'Ypäjä': 'Kanta-Häme',
+            'Ähtäri': 'Pirkanmaa', // Siirretty Pirkanmaalle
+            'Äänekoski': 'Keski-Suomi'
+        };
+
+
         async function fetchAndProcessData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+             document.getElementById('timestamp').innerText = 'Latautaan tietoja...';
+             document.getElementById('content').innerHTML = '';
+
+
             try {
-                const response = await fetch('triplettikunnat.html');
+                const response = await fetch(sourceUrl);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Log the status and text for debugging
+                    console.error(`HTTP error! status: ${response.status}, text: ${await response.text()}`);
+                    throw new Error(`HTTP status ${response.status}`);
                 }
-                const text = await response.text();
-                
-                // Parse HTML to extract data
+                const html = await response.text();
                 const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const municipalities = {
+                    'ei_loytoja': [],
+                    'vain_tradi': [],
+                    'vain_multi': [],
+                    'vain_mysse': [],
+                    'tradi_multi': [],
+                    'multi_mysse': [],
+                    'tradi_mysse': [],
+                    'tradi_multi_mysse': []
+                };
+
+                // Extract timestamp
+                const timestampElement = doc.querySelector('.timestamp');
+                if(timestampElement) {
+                    document.getElementById('timestamp').innerText = `Perustuu tiedostoon, ${timestampElement.innerText.trim()}`;
+                } else {
+                     document.getElementById('timestamp').innerText = `Perustuu tiedostoon (aikaleimaa ei löytynyt)`;
+                }
+
+
+                doc.querySelectorAll('.category').forEach(categoryDiv => {
+                    const categoryTitle = categoryDiv.querySelector('h2').innerText.trim();
+                    const kuntaList = categoryDiv.querySelectorAll('.kunta-list li');
+
+                    let categoryKey = '';
+                    // Prioritize more specific categories
+                    if (categoryTitle.includes('TRADI-, MULTI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'tradi_multi_mysse';
+                    } else if (categoryTitle.includes('TRADI- ja MULTI-löytöjä')) {
+                        categoryKey = 'tradi_multi';
+                    } else if (categoryTitle.includes('MULTI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'multi_mysse';
+                    } else if (categoryTitle.includes('TRADI- ja MYSSE-löytöjä')) {
+                        categoryKey = 'tradi_mysse';
+                    } else if (categoryTitle.includes('VAIN TRADI-löytöjä')) {
+                        categoryKey = 'vain_tradi';
+                    } else if (categoryTitle.includes('VAIN MULTI-löytöjä')) {
+                         categoryKey = 'vain_multi';
+                    } else if (categoryTitle.includes('VAIN MYSSE-löytöjä')) {
+                        categoryKey = 'vain_mysse';
+                    } else if (categoryTitle.includes('EI OLE löytöjä')) {
+                        categoryKey = 'ei_loytoja';
+                    }
+
+                    if (categoryKey) {
+                         kuntaList.forEach(li => {
+                            const kuntaNameMatch = li.innerText.match(/^[^:]+/); // Extract municipality name before ':'
+                            if (kuntaNameMatch && kuntaNameMatch[0]) {
+                                const kuntaName = kuntaNameMatch[0].trim();
+                                municipalities[categoryKey].push(kuntaName);
+                            }
+                        });
+                    }
+                });
+
+                 // Remove duplicates within each category just in case
+                for (const category in municipalities) {
+                    municipalities[category] = [...new Set(municipalities[category])];
+                }
+
+
+                const municipalitiesByRegionAndCategory = {};
+
+                for (const category in municipalities) {
+                    municipalities[category].forEach(kunta => {
+
+                        // DEBUG: Log municipality name with quotes AND character codes
+                        console.log(`Processing municipality for region mapping: "${kunta}" (Codes: ${Array.from(kunta).map(c => c.charCodeAt(0)).join(',')})`);
+
+                        const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
+
+                        if (!municipalitiesByRegionAndCategory[region]) {
+                            municipalitiesByRegionAndCategory[region] = {
+                                'ei_loytoja': [], 'vain_tradi': [], 'vain_multi': [], 'vain_mysse': [],
+                                'tradi_multi': [], 'multi_mysse': [], 'tradi_mysse': [], 'tradi_multi_mysse': []
+                            };
+                        }
+                         // Prevent adding municipality to multiple categories within the same region (based on source classification)
+                         let alreadyAdded = false;
+                         const categoriesInOrder = ['tradi_multi_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'vain_tradi', 'vain_multi', 'vain_mysse', 'ei_loytoja'];
+                          // Check if municipality is already in any *valid* category for this region
+                         for(const catKey of categoriesInOrder) {
+                              if(municipalitiesByRegionAndCategory[region][catKey] && municipalitiesByRegionAndCategory[region][catKey].includes(kunta)) {
+                                  alreadyAdded = true;
+                                  break;
+                              }
+                         }
+
+                         // Add to the determined categoryKey *only if* it hasn't been added to *any* category for this region yet
+                         if(!alreadyAdded) {
+                             if(municipalitiesByRegionAndCategory[region][category]) { // Ensure the category key is valid
+                                municipalitiesByRegionAndCategory[region][category].push(kunta);
+                             } else {
+                                 console.warn(`Municipality "${kunta}" assigned to unknown category "${category}" from source.`);
+                             }
+                         } else {
+                              // console.log(`Municipality "${kunta}" already added to a category in region "${region}". Skipping.`);
+                         }
+
+                    });
+                }
+
 
                 const contentDiv = document.getElementById('content');
-                const timestampP = document.getElementById('timestamp');
-                const loadingDiv = document.getElementById('loading');
-                const errorDiv = document.getElementById('error');
-                const regionSelect = document.getElementById('regionSelect');
-                const searchBox = document.getElementById('searchBox');
+                 const regionSelect = document.getElementById('region-select');
+                 const kuntaSearchInput = document.getElementById('kunta-search');
 
-                loadingDiv.style.display = 'none'; // Hide loading message
-
-                // Get timestamp from the triplettikunnat.html
-                const fetchedTimestamp = doc.querySelector('.timestamp');
-                if (fetchedTimestamp) {
-                    timestampP.innerText = fetchedTimestamp.innerText.replace('Luotu viimeksi:', 'Tiedot haettu viimeksi:');
-                } else {
-                    timestampP.innerText = `Tiedot haettu viimeksi: (ei aikaleimaa lähdetiedostossa)`;
-                }
-
-                // Process data and group by region
-                const regionsData = {};
-                const categories = doc.querySelectorAll('.category');
-
-                categories.forEach(category => {
-                    const categoryTitle = category.querySelector('h2').innerText; // e.g., "1 Kätkön kunnat"
-                    const kuntaItems = category.querySelectorAll('.kunta-list li');
-
-                    kuntaItems.forEach(item => {
-                        const kuntaText = item.innerText; // e.g., "Lahti: Tradi=3, Multi=3, Mysse=3"
-                        const kuntaName = kuntaText.split(':')[0].trim();
-
-                        // Simple mapping for demonstration purposes. In a real app,
-                        // you'd likely have a more robust way to map kunta to maakunta.
-                        // This is a very basic example and needs to be expanded.
-                        let regionName = "Tuntematon Maakunta"; // Default
-
-                        // Example mappings (expand this list significantly)
-                        if (['Asikkala', 'Hartola', 'Heinola', 'Hollola', 'Kuhmoinen', 'Lahti', 'Orimattila', 'Padasjoki', 'Sysmä', 'Kärkölä'].includes(kuntaName)) {
-                            regionName = "Päijät-Häme";
-                        } else if (['Lieto', 'Masku', 'Mynämäki', 'Paimio', 'Pöytyä', 'Uusikaupunki', 'Kemiönsaari', 'Laitila', 'Loimaa', 'Marttila', 'Naantali', 'Nousiainen', 'Oripää', 'Parainen', 'Pyhäranta', 'Salo', 'Sauvo', 'Turku', 'Aura', 'Kustavi', 'Raisio', 'Somero', 'Taivassalo', 'Vehmaa'].includes(kuntaName)) {
-                            regionName = "Varsinais-Suomi";
-                        } else if (['Askola', 'Karkkila', 'Pornainen', 'Porvoo', 'Vihti', 'Hyvinkää', 'Inkoo', 'Järvenpää', 'Kirkkonummi', 'Lapinjärvi', 'Loviisa', 'Nurmijärvi', 'Raasepori', 'Riihimäki', 'Sipoo', 'Siuntio', 'Tuusula', 'Vantaa', 'Espoo', 'Hanko', 'Hausjärvi', 'Mäntsälä', 'Pukkila', 'Pohja', 'Lohja'].includes(kuntaName)) {
-                             regionName = "Uusimaa";
-                        } else if (['Jyväskylä', 'Äänekoski', 'Jämsä', 'Keuruu', 'Konnevesi', 'Laukaa', 'Muurame', 'Petäjävesi', 'Saarijärvi', 'Toivakka', 'Uurainen', 'Viitasaari', 'Hankasalmi', 'Joutsa', 'Kangasniemi', 'Karstula', 'Kinnula', 'Kivijärvi', 'Kyyjärvi', 'Mänttä-Vilppula', 'Pihtipudas', 'Vesanto'].includes(kuntaName)) {
-                            regionName = "Keski-Suomi";
-                        } else if (['Akaa', 'Kangasala', 'Mänttä-Vilppula', 'Nokia', 'Ikaalinen', 'Kihniö', 'Orivesi', 'Parkano', 'Pirkkala', 'Punkalaidun', 'Sastamala', 'Tampere', 'Urjala', 'Valkeakoski', 'Hämeenkyrö', 'Juupajoki', 'Lempäälä', 'Vesilahti', 'Virrat', 'Pälkäne'].includes(kuntaName)) {
-                            regionName = "Pirkanmaa";
-                        } else if (['Joroinen', 'Mikkeli', 'Savonlinna', 'Heinävesi', 'Pieksämäki', 'Puumala', 'Rantasalmi', 'Sulkava', 'Hirvensalmi', 'Mäntyharju', 'Pertunmaa'].includes(kuntaName)) {
-                            regionName = "Etelä-Savo";
-                        } else if (['Alajärvi', 'Ilmajoki', 'Evijärvi', 'Kauhajoki', 'Kurikka', 'Lappajärvi', 'Lapua', 'Seinäjoki', 'Teuva', 'Vöyri', 'Karijoki', 'Kuortane', 'Laihiala', 'Soini', 'Vimpeli'].includes(kuntaName)) {
-                            regionName = "Etelä-Pohjanmaa";
-                        } else if (['Forssa', 'Hattula', 'Humppila', 'Janakkala', 'Loppi', 'Somero', 'Hausjärvi', 'Hämeenlinna', 'Jokioinen', 'Riihimäki', 'Urjala'].includes(kuntaName)) {
-                            regionName = "Kanta-Häme";
-                        } else if (['Hailuoto', 'Liminka', 'Muhos', 'Haapavesi', 'Kalajoki', 'Kuusamo', 'Lumijoki', 'Oulainen', 'Oulu', 'Pudasjärvi', 'Raahe', 'Sievi', 'Siikajoki', 'Taivalkoski', 'Ylivieska', 'Haapajärvi', 'Ii', 'Kempele', 'Kärsämäki', 'Merijärvi', 'Nivala', 'Pyhäjoki', 'Pyhäjärvi', 'Reisjärvi', 'Ristijärvi', 'Siikalatva', 'Suomussalmi', 'Tyrnävä', 'Utajärvi', 'Vaala'].includes(kuntaName)) {
-                            regionName = "Pohjois-Pohjanmaa";
-                        } else if (['Kuopio', 'Siilinjärvi', 'Iisalmi', 'Keitele', 'Leppävirta', 'Pielavesi', 'Sonkajärvi', 'Suonenjoki', 'Tervo', 'Varkaus', 'Vieremä', 'Kaavi', 'Lapinlahti', 'Maaninka', 'Rautalampi', 'Rautavaara', 'Tuusniemi'].includes(kuntaName)) {
-                            regionName = "Pohjois-Savo";
-                        } else if (['Kemi', 'Sodankylä', 'Kemijärvi', 'Kittilä', 'Kolari', 'Pello', 'Ranua', 'Rovaniemi', 'Salla', 'Simo', 'Tornio', 'Enontekiö', 'Inari', 'Keminmaa', 'Muonio', 'Posio', 'Savukoski', 'Tervola', 'Utsjoki', 'Ylitornio', 'Övertorneå'].includes(kuntaName)) {
-                            regionName = "Lappi";
-                        } else if (['Kajaani', 'Hyrynsalmi', 'Kuhmo', 'Puolanka', 'Paltamo', 'Ristijärvi', 'Sotkamo', 'Suomussalmi'].includes(kuntaName)) {
-                            regionName = "Kainuu";
-                        } else if (['Eurajoki', 'Harjavalta', 'Rauma', 'Eura', 'Kankaanpää', 'Kokemäki', 'Nakkila', 'Pomarkku', 'Pori', 'Säkylä', 'Huittinen', 'Jämijärvi', 'Karvia', 'Merikarvia', 'Siikainen', 'Ulvila', 'Äänekoski'].includes(kuntaName)) {
-                            regionName = "Satakunta";
-                        } else if (['Kristiinankaupunki', 'Pietarsaari', 'Korsnäs', 'Laihia', 'Luoto', 'Maalahti', 'Mustasaari', 'Närpiö', 'Vaasa', 'Kaskinen', 'Kruunupyy', 'Pedersöre', 'Uusikaarlepyy', 'Vähäkyrö', 'Vöyri'].includes(kuntaName)) {
-                            regionName = "Pohjanmaa";
-                        } else if (['Joensuu', 'Kontiolahti', 'Ilomantsi', 'Juuka', 'Kitee', 'Lieksa', 'Tohmajärvi', 'Valtimo', 'Heinävesi', 'Kesälahti', 'Liperi', 'Nurmes', 'Outokumpu', 'Rääkkylä'].includes(kuntaName)) {
-                            regionName = "Pohjois-Karjala";
-                        } else if (['Hamina', 'Kouvola', 'Iitti', 'Kotka', 'Miehikkälä', 'Pyhtää', 'Virolahti'].includes(kuntaName)) {
-                            regionName = "Kymenlaakso";
-                        } else if (['Kaustinen', 'Kannus', 'Kokkola', 'Perho', 'Toholampi', 'Halsua', 'Veteli'].includes(kuntaName)) {
-                            regionName = "Keski-Pohjanmaa";
-                        } else if (['Lappeenranta', 'Imatra', 'Lemi', 'Luumäki', 'Ruokolahti', 'Parikkala', 'Rautjärvi', 'Savitaipale', 'Taipalsaari'].includes(kuntaName)) {
-                            regionName = "Etelä-Karjala";
-                        }
-                        
-                        if (!regionsData[regionName]) {
-                            regionsData[regionName] = {};
-                            regionsData[regionName].totalKuntas = 0;
-                            regionsData[regionName].totalCatches = 0;
-                            regionsData[regionName].categories = {};
-                        }
-                        regionsData[regionName].totalKuntas++;
-
-                        // Extract catch counts (Tradi, Multi, Mysse)
-                        const matches = kuntaText.match(/Tradi=(\d+), Multi=(\d+), Mysse=(\d+)/);
-                        if (matches) {
-                            const totalCatchesForKunta = parseInt(matches[1]) + parseInt(matches[2]) + parseInt(matches[3]);
-                            regionsData[regionName].totalCatches += totalCatchesForKunta;
-                        }
-
-                        if (!regionsData[regionName].categories[categoryTitle]) {
-                            regionsData[regionName].categories[categoryTitle] = [];
-                        }
-                        regionsData[regionName].categories[categoryTitle].push(kuntaText);
-                    });
-                });
 
                 // Sort regions alphabetically
-                const sortedRegionNames = Object.keys(regionsData).sort((a, b) => {
-                    if (a === "Tuntematon Maakunta") return 1; // "Tuntematon Maakunta" always last
-                    if (b === "Tuntematon Maakunta") return -1;
-                    return a.localeCompare(b);
-                });
+                const sortedRegions = Object.keys(municipalitiesByRegionAndCategory).sort();
 
-                // Populate region select
-                regionSelect.innerHTML = '<option value="">Kaikki maakunnat</option>'; // Reset
-                sortedRegionNames.forEach(regionName => {
+                // Populate region dropdown
+                regionSelect.innerHTML = '<option value="">Kaikki maakunnat</option>'; // Clear previous options
+                sortedRegions.forEach(region => {
                     const option = document.createElement('option');
-                    option.value = regionName.replace(/\s/g, ''); // Remove spaces for ID
-                    option.innerText = regionName;
+                    option.value = region.replace(/\s+/g, '-').toLowerCase(); // Create a URL-friendly ID
+                    option.text = region;
                     regionSelect.appendChild(option);
                 });
 
-                // Render content
-                function renderContent() {
-                    contentDiv.innerHTML = ''; // Clear previous content
-                    const selectedRegion = regionSelect.value;
-                    const searchTerm = searchBox.value.toLowerCase();
 
-                    sortedRegionNames.forEach(regionName => {
-                        const regionId = regionName.replace(/\s/g, '');
-                        const region = regionsData[regionName];
-                        
-                        // Filter by selected region
-                        if (selectedRegion && regionId !== selectedRegion) {
-                            return; // Skip if not the selected region
-                        }
-
-                        const regionDiv = document.createElement('div');
-                        regionDiv.className = 'region';
-                        regionDiv.id = regionId;
-
-                        const regionHeader = document.createElement('h2');
-                        regionHeader.innerText = `${regionName} (${region.totalKuntas} kuntaa, ${region.totalCatches} kätköä)`;
-                        regionDiv.appendChild(regionHeader);
-
-                        const sortedCategoryTitles = Object.keys(region.categories).sort((a, b) => {
-                            // Sort categories numerically based on the number in "X Kätkön kunnat"
-                            const numA = parseInt(a.split(' ')[0]);
-                            const numB = parseInt(b.split(' ')[0]);
-                            return numA - numB;
-                        });
-
-                        sortedCategoryTitles.forEach(categoryTitle => {
-                            const categoryDiv = document.createElement('div');
-                            categoryDiv.className = 'category';
-
-                            const categoryHeader = document.createElement('h3');
-                            categoryHeader.innerText = categoryTitle;
-                            categoryDiv.appendChild(categoryHeader);
-
-                            const kuntaList = document.createElement('ul');
-                            kuntaList.className = 'kunta-list';
-
-                            let anyKuntaVisible = false;
-
-                            region.categories[categoryTitle].forEach(kuntaText => {
-                                const kuntaName = kuntaText.split(':')[0].trim();
-                                if (kuntaName.toLowerCase().includes(searchTerm)) {
-                                    const listItem = document.createElement('li');
-                                    listItem.innerText = kuntaText;
-                                    kuntaList.appendChild(listItem);
-                                    anyKuntaVisible = true;
-                                }
-                            });
-
-                            if (anyKuntaVisible) {
-                                categoryDiv.appendChild(kuntaList);
-                                regionDiv.appendChild(categoryDiv);
-                            } else if (searchTerm !== '') {
-                                // If no kunta matches search in this category, hide the category
-                                categoryDiv.classList.add('hidden');
-                            }
-                        });
-
-                        // If a region was selected, or if search term is empty, always show the region div
-                        if (selectedRegion || searchTerm === '') {
-                             contentDiv.appendChild(regionDiv);
-                        } else {
-                            // If searching, only show region if it contains visible content
-                            const visibleCategoriesInRegion = regionDiv.querySelectorAll('.category:not(.hidden)');
-                            if (visibleCategoriesInRegion.length > 0) {
-                                contentDiv.appendChild(regionDiv);
-                            } else {
-                                regionDiv.style.display = 'none'; // Hide region if no visible categories
-                            }
-                        }
-                    });
-
-                    // Update visibility of regions based on search/filter
-                    contentDiv.querySelectorAll('.region').forEach(regionDiv => {
-                         const visibleKuntasInRegion = regionDiv.querySelectorAll('.kunta-list li'); // No need for :not(.hidden) here as hidden classes are on categories
-                         if (visibleKuntasInRegion.length === 0 && searchTerm !== '') {
-                            regionDiv.style.display = 'none';
-                         } else {
-                            regionDiv.style.display = 'block';
-                         }
-                    });
-
-                    // If a region is selected, maintain its visibility even if search hides content
-                    if (selectedRegion) {
-                         const selectedRegionDiv = document.getElementById(selectedRegion);
-                         if (selectedRegionDiv) {
-                              selectedRegionDiv.style.display = 'block';
+                sortedRegions.forEach(region => {
+                    // Only create a region section if it has municipalities
+                    let hasMunicipalities = false;
+                    const regionCategories = municipalitiesByRegionAndCategory[region];
+                    for (const cat in regionCategories) {
+                         if (regionCategories[cat] && regionCategories[cat].length > 0) {
+                            hasMunicipalities = true;
+                            break;
                          }
                     }
-                }
 
-                regionSelect.addEventListener('change', renderContent);
-                searchBox.addEventListener('input', renderContent);
+                    if (hasMunicipalities) {
+                        const regionDiv = document.createElement('div');
+                        regionDiv.classList.add('region');
+                        regionDiv.id = region.replace(/\s+/g, '-').toLowerCase(); // Assign ID for scrolling
+                        contentDiv.appendChild(regionDiv);
 
-                renderContent(); // Initial render
+                        const regionTitle = document.createElement('h2');
+                        regionTitle.innerText = region;
+                        regionDiv.appendChild(regionTitle);
+
+                        const categoriesOrder = ['ei_loytoja', 'vain_tradi', 'vain_multi', 'vain_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'tradi_multi_mysse'];
+                        const categoryTitles = {
+                             'ei_loytoja': 'Kunnat, joista EI OLE löytöjä',
+                            'vain_tradi': 'Kunnat, joista on VAIN TRADI-löytöjä',
+                            'vain_multi': 'Kunnat, joista on VAIN MULTI-löytöjä',
+                            'vain_mysse': 'Kunnat, joista on VAIN MYSSE-löytöjä',
+                            'tradi_multi': 'Kunnat, joista on TRADI- ja MULTI-löytöjä',
+                            'multi_mysse': 'Kunnat, joista on MULTI- ja MYSSE-löytöjä',
+                            'tradi_mysse': 'Kunnat, joista on TRADI- ja MYSSE-löytöjä',
+                            'tradi_multi_mysse': 'Kunnat, joista on TRADI-, MULTI- ja MYSSE-löytöjä'
+                        };
+
+                        categoriesOrder.forEach(categoryKey => {
+                             const kuntaList = municipalitiesByRegionAndCategory[region][categoryKey];
+                            if (kuntaList && kuntaList.length > 0) {
+                                const categoryDiv = document.createElement('div');
+                                categoryDiv.classList.add('category');
+                                regionDiv.appendChild(categoryDiv);
+
+                                const categoryTitle = document.createElement('h3');
+                                categoryTitle.innerText = categoryTitles[categoryKey];
+                                categoryDiv.appendChild(categoryTitle);
+
+                                const ul = document.createElement('ul');
+                                ul.classList.add('kunta-list');
+                                kuntaList.sort().forEach(kunta => {
+                                    const li = document.createElement('li');
+                                    li.innerText = kunta; // Store the raw municipality name
+                                    ul.appendChild(li);
+                                });
+                                categoryDiv.appendChild(ul);
+                            }
+                        });
+                    }
+                });
+
+                document.getElementById('loading').style.display = 'none';
+
+                // Add event listener for region select
+                regionSelect.addEventListener('change', function() {
+                    const selectedRegionId = this.value;
+                     // Hide all regions first
+                     contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                         regionDiv.style.display = 'none';
+                     });
+
+                    if (selectedRegionId) {
+                        const targetElement = document.getElementById(selectedRegionId);
+                        if (targetElement) {
+                             targetElement.style.display = 'block'; // Show selected region
+                             targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else {
+                         // Show all regions if "Kaikki maakunnat" is selected
+                         contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                             regionDiv.style.display = 'block';
+                         });
+                    }
+                     // Reset search when region is selected
+                     kuntaSearchInput.value = '';
+                     contentDiv.querySelectorAll('.kunta-list li').forEach(li => {
+                         li.classList.remove('hidden');
+                     });
+                      contentDiv.querySelectorAll('.category').forEach(categoryDiv => {
+                            categoryDiv.style.display = 'block';
+                      });
+
+
+                });
+
+                // Add event listener for search input
+                kuntaSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const allKuntaLis = contentDiv.querySelectorAll('.kunta-list li');
+                    let anyMatch = false;
+
+
+                    allKuntaLis.forEach(li => {
+                        const kuntaName = li.innerText.toLowerCase();
+                        if (kuntaName.includes(searchTerm)) {
+                            li.classList.remove('hidden');
+                             anyMatch = true;
+                        } else {
+                            li.classList.add('hidden');
+                        }
+                    });
+
+                    // Hide categories/regions if all municipalities are hidden within them
+                     contentDiv.querySelectorAll('.category').forEach(categoryDiv => {
+                         const visibleKuntasInCategory = categoryDiv.querySelectorAll('.kunta-list li:not(.hidden)');
+                         if (visibleKuntasInCategory.length === 0 && searchTerm !== '') {
+                            categoryDiv.style.display = 'none';
+                         } else {
+                            categoryDiv.style.display = 'block';
+                         }
+                     });
+
+                     contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                          const visibleKuntasInRegion = regionDiv.querySelectorAll('.kunta-list li:not(.hidden)');
+                           if (visibleKuntasInRegion.length === 0 && searchTerm !== '') {
+                              regionDiv.style.display = 'none';
+                           } else {
+                              regionDiv.style.display = 'block';
+                           }
+                     });
+
+                     // If a region is selected, maintain its visibility even if search hides content
+                     const selectedRegionId = regionSelect.value;
+                     if (selectedRegionId) {
+                          const selectedRegionDiv = document.getElementById(selectedRegionId);
+                          if (selectedRegionDiv) {
+                               selectedRegionDiv.style.display = 'block';
+                          }
+                     }
+
+
+                });
+
 
             } catch (error) {
                 console.error('Error fetching or processing data:', error);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error').style.display = 'block';
-                document.getElementById('timestamp').innerText = `Tietojen lataus epäonnistui`;
+                 document.getElementById('timestamp').innerText = `Tietojen lataus epäonnistui`;
             }
         }
 
