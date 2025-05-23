@@ -438,13 +438,9 @@
             'Äänekoski': 'Keski-Suomi'
         };
 
-        // Funktio erikoismerkkien korvaamiseen ennen URL-koodausta
-        function cleanFinnishChars(text) {
-            return text
-                .replace(/ä/g, 'a').replace(/Ä/g, 'A')
-                .replace(/ö/g, 'o').replace(/Ö/g, 'O')
-                .replace(/å/g, 'a').replace(/Å/g, 'A');
-        }
+        // Otin cleanFinnishChars-funktion pois, koska encodeURIComponent
+        // pitäisi jo tehdä oikeanlaisen koodauksen (%C3%A4 jne.).
+        // Jos tämä ei toimi, ongelma on Project-GC:n puolella.
 
         async function fetchAndProcessData() {
             document.getElementById('loading').style.display = 'block';
@@ -603,12 +599,9 @@
                                     a1.target = "_blank";
                                     li.appendChild(a1);
 
-                                    // Toinen linkki (Project-GC) - Muutettu käsittelemään erikoismerkit
-                                    const cleanedRegionName = cleanFinnishChars(region);
-                                    const cleanedKuntaName = cleanFinnishChars(kunta);
-                                    
-                                    const encodedRegionNameForPgc = encodeURIComponent(cleanedRegionName);
-                                    const encodedKuntaNameForPgc = encodeURIComponent(cleanedKuntaName);
+                                    // Toinen linkki (Project-GC) - Käyttää normaalia encodeURIComponentia
+                                    const encodedRegionNameForPgc = encodeURIComponent(region);
+                                    const encodedKuntaNameForPgc = encodeURIComponent(kunta);
                                     
                                     const a2 = document.createElement('a');
                                     a2.href = `https://project-gc.com/Tools/MapCompare?profile_name=mikkokalevi&country[]=Finland&region[]=${encodedRegionNameForPgc}&county[]=${encodedKuntaNameForPgc}&nonefound=on&submit=Filter`;
