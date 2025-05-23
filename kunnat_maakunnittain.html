@@ -80,7 +80,15 @@
         }
         .kunta-list li {
             margin-bottom: 5px;
+            /* Color is now applied to the link inside li */
+        }
+        .kunta-list li a { /* Tyyli linkeille kuntalistoissa */
             color: #D0E0D0; /* Light green/gray for list items */
+            text-decoration: none; /* Poistaa alleviivauksen oletuksena */
+        }
+        .kunta-list li a:hover { /* Tyyli linkeille hover-tilassa */
+            text-decoration: underline; /* Lisää alleviivaus kun hiiri on päällä */
+            color: #A6CBA6; /* Hieman kirkkaampi vihreä hover-tilassa */
         }
         #loading {
             font-size: 1.2em;
@@ -510,8 +518,6 @@
 
                 for (const category in municipalities) {
                     municipalities[category].forEach(kunta => {
-                        // DEBUG: Log municipality name with quotes AND character codes
-                        // console.log(`Processing municipality for region mapping: "${kunta}" (Codes: ${Array.from(kunta).map(c => c.charCodeAt(0)).join(',')})`);
                         const region = municipalityRegionMap[kunta] || 'Tuntematon maakunta';
 
                         if (!municipalitiesByRegionAndCategory[region]) {
@@ -520,10 +526,8 @@
                                 'tradi_multi': [], 'multi_mysse': [], 'tradi_mysse': [], 'tradi_multi_mysse': []
                             };
                         }
-                        // Prevent adding municipality to multiple categories within the same region (based on source classification)
                         let alreadyAdded = false;
                         const categoriesInOrder = ['tradi_multi_mysse', 'tradi_multi', 'multi_mysse', 'tradi_mysse', 'vain_tradi', 'vain_multi', 'vain_mysse', 'ei_loytoja'];
-                        // Check if municipality is already in any *valid* category for this region
                         for(const catKey of categoriesInOrder) {
                             if(municipalitiesByRegionAndCategory[region][catKey] && municipalitiesByRegionAndCategory[region][catKey].includes(kunta)) {
                                 alreadyAdded = true;
@@ -531,15 +535,12 @@
                             }
                         }
 
-                        // Add to the determined categoryKey *only if* it hasn't been added to *any* category for this region yet
                         if(!alreadyAdded) {
-                            if(municipalitiesByRegionAndCategory[region][category]) { // Ensure the category key is valid
+                            if(municipalitiesByRegionAndCategory[region][category]) {
                                 municipalitiesByRegionAndCategory[region][category].push(kunta);
                             } else {
                                 console.warn(`Municipality "${kunta}" assigned to unknown category "${category}" from source.`);
                             }
-                        } else {
-                            // console.log(`Municipality "${kunta}" already added to a category in region "${region}". Skipping.`);
                         }
                     });
                 }
@@ -548,20 +549,17 @@
                 const regionSelect = document.getElementById('region-select');
                 const kuntaSearchInput = document.getElementById('kunta-search');
 
-                // Sort regions alphabetically
                 const sortedRegions = Object.keys(municipalitiesByRegionAndCategory).sort();
 
-                // Populate region dropdown
-                regionSelect.innerHTML = '<option value="">Kaikki maakunnat</option>'; // Clear previous options
+                regionSelect.innerHTML = '<option value="">Kaikki maakunnat</option>';
                 sortedRegions.forEach(region => {
                     const option = document.createElement('option');
-                    option.value = region.replace(/\s+/g, '-').toLowerCase(); // Create a URL-friendly ID
+                    option.value = region.replace(/\s+/g, '-').toLowerCase();
                     option.text = region;
                     regionSelect.appendChild(option);
                 });
 
                 sortedRegions.forEach(region => {
-                    // Only create a region section if it has municipalities
                     let hasMunicipalities = false;
                     const regionCategories = municipalitiesByRegionAndCategory[region];
                     for (const cat in regionCategories) {
@@ -574,7 +572,7 @@
                     if (hasMunicipalities) {
                         const regionDiv = document.createElement('div');
                         regionDiv.classList.add('region');
-                        regionDiv.id = region.replace(/\s+/g, '-').toLowerCase(); // Assign ID for scrolling
+                        regionDiv.id = region.replace(/\s+/g, '-').toLowerCase();
                         contentDiv.appendChild(regionDiv);
 
                         const regionTitle = document.createElement('h2');
@@ -600,15 +598,19 @@
                                 categoryDiv.classList.add('category');
                                 regionDiv.appendChild(categoryDiv);
 
-                                const categoryTitle = document.createElement('h3');
-                                categoryTitle.innerText = categoryTitles[categoryKey];
-                                categoryDiv.appendChild(categoryTitle);
+                                const categoryTitleH3 = document.createElement('h3'); // Renamed to avoid conflict
+                                categoryTitleH3.innerText = categoryTitles[categoryKey];
+                                categoryDiv.appendChild(categoryTitleH3);
 
                                 const ul = document.createElement('ul');
                                 ul.classList.add('kunta-list');
                                 kuntaList.sort().forEach(kunta => {
                                     const li = document.createElement('li');
-                                    li.innerText = kunta; // Store the raw municipality name
+                                    const a = document.createElement('a');
+                                    a.href = `https://www.geocache.fi/stat/other/jakauma.php?kuntalista=${encodeURIComponent(kunta)}`;
+                                    a.textContent = kunta;
+                                    a.target = "_blank"; // Avaa linkki uuteen välilehteen
+                                    li.appendChild(a);
                                     ul.appendChild(li);
                                 });
                                 categoryDiv.appendChild(ul);
@@ -619,10 +621,8 @@
 
                 document.getElementById('loading').style.display = 'none';
 
-                // Add event listener for region select
                 regionSelect.addEventListener('change', function() {
                     const selectedRegionId = this.value;
-                    // Hide all regions first
                     contentDiv.querySelectorAll('.region').forEach(regionDiv => {
                         regionDiv.style.display = 'none';
                     });
@@ -630,16 +630,14 @@
                     if (selectedRegionId) {
                         const targetElement = document.getElementById(selectedRegionId);
                         if (targetElement) {
-                            targetElement.style.display = 'block'; // Show selected region
+                            targetElement.style.display = 'block';
                             targetElement.scrollIntoView({ behavior: 'smooth' });
                         }
                     } else {
-                        // Show all regions if "Kaikki maakunnat" is selected
                         contentDiv.querySelectorAll('.region').forEach(regionDiv => {
                             regionDiv.style.display = 'block';
                         });
                     }
-                    // Reset search when region is selected
                     kuntaSearchInput.value = '';
                     contentDiv.querySelectorAll('.kunta-list li').forEach(li => {
                         li.classList.remove('hidden');
@@ -649,23 +647,21 @@
                     });
                 });
 
-                // Add event listener for search input
                 kuntaSearchInput.addEventListener('input', function() {
                     const searchTerm = this.value.toLowerCase();
                     const allKuntaLis = contentDiv.querySelectorAll('.kunta-list li');
-                    let anyMatch = false;
 
                     allKuntaLis.forEach(li => {
-                        const kuntaName = li.innerText.toLowerCase();
+                        // Haetaan tekstisisältö linkin sisältä, jos linkki on olemassa
+                        const kuntaNameElement = li.querySelector('a') || li;
+                        const kuntaName = kuntaNameElement.innerText.toLowerCase();
                         if (kuntaName.includes(searchTerm)) {
                             li.classList.remove('hidden');
-                            anyMatch = true;
                         } else {
                             li.classList.add('hidden');
                         }
                     });
 
-                    // Hide categories/regions if all municipalities are hidden within them
                     contentDiv.querySelectorAll('.category').forEach(categoryDiv => {
                         const visibleKuntasInCategory = categoryDiv.querySelectorAll('.kunta-list li:not(.hidden)');
                         if (visibleKuntasInCategory.length === 0 && searchTerm !== '') {
@@ -684,7 +680,6 @@
                         }
                     });
 
-                    // If a region is selected, maintain its visibility even if search hides content
                     const selectedRegionId = regionSelect.value;
                     if (selectedRegionId) {
                         const selectedRegionDiv = document.getElementById(selectedRegionId);
