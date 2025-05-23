@@ -438,10 +438,6 @@
             'Äänekoski': 'Keski-Suomi'
         };
 
-        // Otin cleanFinnishChars-funktion pois, koska encodeURIComponent
-        // pitäisi jo tehdä oikeanlaisen koodauksen (%C3%A4 jne.).
-        // Jos tämä ei toimi, ongelma on Project-GC:n puolella.
-
         async function fetchAndProcessData() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
@@ -599,12 +595,22 @@
                                     a1.target = "_blank";
                                     li.appendChild(a1);
 
-                                    // Toinen linkki (Project-GC) - Käyttää normaalia encodeURIComponentia
-                                    const encodedRegionNameForPgc = encodeURIComponent(region);
+                                    // Toinen linkki (Project-GC) - Käsittelee Ahvenanmaan erikseen
+                                    let pgcCountryParam;
+                                    let pgcRegionParam = ''; // Oletuksena tyhjä
                                     const encodedKuntaNameForPgc = encodeURIComponent(kunta);
                                     
+                                    if (region === 'Ahvenanmaa') {
+                                        pgcCountryParam = `&country[]=${encodeURIComponent('Åland Islands')}`;
+                                        // Ei region-parametrin Ahvenanmaalle
+                                    } else {
+                                        pgcCountryParam = `&country[]=${encodeURIComponent('Finland')}`;
+                                        pgcRegionParam = `&region[]=${encodeURIComponent(region)}`;
+                                    }
+
                                     const a2 = document.createElement('a');
-                                    a2.href = `https://project-gc.com/Tools/MapCompare?profile_name=mikkokalevi&country[]=Finland&region[]=${encodedRegionNameForPgc}&county[]=${encodedKuntaNameForPgc}&nonefound=on&submit=Filter`;
+                                    // Huomaa, miten pgcRegionParam on lisätty ehdollisesti
+                                    a2.href = `https://project-gc.com/Tools/MapCompare?profile_name=mikkokalevi${pgcCountryParam}${pgcRegionParam}&county[]=${encodedKuntaNameForPgc}&nonefound=on&submit=Filter`;
                                     a2.textContent = " (Pgc)";
                                     a2.target = "_blank";
                                     a2.style.marginLeft = "8px";
