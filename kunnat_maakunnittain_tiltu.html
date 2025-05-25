@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Löytötilasto paikkakunnittain /maakunnittain Tiltu</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #2F3D2F; /* Tumma metsänvihreä tausta */
+            color: #C0D2C0; /* Vaaleampi vihreä teksti */
+        }
+        h1, h2, h3 {
+            color: #7D9F7D; /* Keskivihreä otsikoille */
+        }
+        .controls {
+            margin-bottom: 20px;
+            color: #C0D2C0; /* Kontrollien tekstiväri */
+        }
+        .controls label {
+            margin-right: 10px;
+        }
+        .controls input[type="text"],
+        .controls select {
+            background-color: #3A473A; /* Kenttien tausta */
+            border: 1px solid #4D5C4D; /* Kenttien reunus */
+            color: #C0D2C0; /* Kenttien teksti */
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .timestamp {
+            margin-top: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #A0B3A0; /* Hiukan vaaleampi vihreä aikaleimolle */
+        }
+        .region {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #4D5C4D; /* Tummempi vihreä reunus */
+            border-radius: 8px;
+            background-color: #3A473A; /* Tummempi vihreä aluebokseille */
+        }
+        .region h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #7D9F7D; /* Vihreämpi alaviiva otsikolle */
+            padding-bottom: 10px;
+        }
+        .category {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #4D5C4D; /* Tummempi vihreä reunus */
+            border-radius: 5px;
+            background-color: #2F3D2F; /* Hieman tummempi tausta kategorioille alueen sisällä */
+        }
+        .category h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #90A390; /* Hieman vaaleampi vihreä alotsikoille */
+        }
+        .kunta-list {
+            list-style: inside;
+            padding: 0;
+        }
+        .kunta-list li {
+            margin-bottom: 5px;
+            color: #C0D2C0; /* Vaaleampi vihreä listaelementeille */
+        }
+        #loading, #error {
+            text-align: center;
+            font-size: 1.2em;
+            color: #90A390; /* Loading/error -tekstin väri */
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Löytötilasto paikkakunnittain /maakunnittain Tiltu</h1>
+    <p id="timestamp" class="timestamp">Ladataan tietoja...</p>
+
+    <div class="controls">
+        <label for="regionSelect">Valitse Maakunta:</label>
+        <select id="regionSelect">
+            <option value="">Kaikki maakunnat</option>
+            </select>
+        <label for="searchBox">Hae kunnan nimellä:</label>
+        <input type="text" id="searchBox" placeholder="Etsi kuntaa...">
+    </div>
+
+    <div id="loading">Ladataan kätkötietoja...</div>
+    <div id="error" style="display: none;">Tietojen lataus epäonnistui. Varmista, että 'triplettikunnat_tiltu.html' on saatavilla ja oikeassa muodossa.</div>
+    
+    <div id="content">
+        </div>
+
+    <script>
+        async function fetchAndProcessData() {
+            try {
+                const response = await fetch('triplettikunnat_tiltu.html');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const text = await response.text();
+                
+                // Parse HTML to extract data
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                const contentDiv = document.getElementById('content');
+                const timestampP = document.getElementById('timestamp');
+                const loadingDiv = document.getElementById('loading');
+                const errorDiv = document.getElementById('error');
+                const regionSelect = document.getElementById('regionSelect');
+                const searchBox = document.getElementById('searchBox');
+
+                loadingDiv.style.display = 'none'; // Hide loading message
+
+                // Get timestamp from the triplettikunnat_tiltu.html
+                const fetchedTimestamp = doc.querySelector('.timestamp');
+                if (fetchedTimestamp) {
+                    timestampP.innerText = fetchedTimestamp.innerText.replace('Luotu viimeksi:', 'Tiedot haettu viimeksi:');
+                } else {
+                    timestampP.innerText = `Tiedot haettu viimeksi: (ei aikaleimaa lähdetiedostossa)`;
+                }
+
+                // Process data and group by region
+                const regionsData = {};
+                const categories = doc.querySelectorAll('.category');
+
+                categories.forEach(category => {
+                    const categoryTitle = category.querySelector('h2').innerText; // e.g., "1 Kätkön kunnat"
+                    const kuntaItems = category.querySelectorAll('.kunta-list li');
+
+                    kuntaItems.forEach(item => {
+                        const kuntaText = item.innerText; // e.g., "Lahti: Tradi=3, Multi=3, Mysse=3"
+                        const kuntaName = kuntaText.split(':')[0].trim();
+
+                        // Simple mapping for demonstration purposes. In a real app,
+                        // you'd likely have a more robust way to map kunta to maakunta.
+                        // This is a very basic example and needs to be expanded.
+                        let regionName = "Tuntematon Maakunta"; // Default
+
+                        // Example mappings (expand this list significantly)
+                        if (['Asikkala', 'Hartola', 'Heinola', 'Hollola', 'Kuhmoinen', 'Lahti', 'Orimattila', 'Padasjoki', 'Sysmä', 'Kärkölä'].includes(kuntaName)) {
+                            regionName = "Päijät-Häme";
+                        } else if (['Lieto', 'Masku', 'Mynämäki', 'Paimio', 'Pöytyä', 'Uusikaupunki', 'Kemiönsaari', 'Laitila', 'Loimaa', 'Marttila', 'Naantali', 'Nousiainen', 'Oripää', 'Parainen', 'Pyhäranta', 'Salo', 'Sauvo', 'Turku', 'Aura', 'Kustavi', 'Raisio', 'Somero', 'Taivassalo', 'Vehmaa'].includes(kuntaName)) {
+                            regionName = "Varsinais-Suomi";
+                        } else if (['Askola', 'Karkkila', 'Pornainen', 'Porvoo', 'Vihti', 'Hyvinkää', 'Inkoo', 'Järvenpää', 'Kirkkonummi', 'Lapinjärvi', 'Loviisa', 'Nurmijärvi', 'Raasepori', 'Riihimäki', 'Sipoo', 'Siuntio', 'Tuusula', 'Vantaa', 'Espoo', 'Hanko', 'Hausjärvi', 'Mäntsälä', 'Pukkila', 'Pohja', 'Lohja'].includes(kuntaName)) {
+                             regionName = "Uusimaa";
+                        } else if (['Jyväskylä', 'Äänekoski', 'Jämsä', 'Keuruu', 'Konnevesi', 'Laukaa', 'Muurame', 'Petäjävesi', 'Saarijärvi', 'Toivakka', 'Uurainen', 'Viitasaari', 'Hankasalmi', 'Joutsa', 'Kangasniemi', 'Karstula', 'Kinnula', 'Kivijärvi', 'Kyyjärvi', 'Mänttä-Vilppula', 'Pihtipudas', 'Vesanto'].includes(kuntaName)) {
+                            regionName = "Keski-Suomi";
+                        } else if (['Akaa', 'Kangasala', 'Mänttä-Vilppula', 'Nokia', 'Ikaalinen', 'Kihniö', 'Orivesi', 'Parkano', 'Pirkkala', 'Punkalaidun', 'Sastamala', 'Tampere', 'Urjala', 'Valkeakoski', 'Hämeenkyrö', 'Juupajoki', 'Lempäälä', 'Vesilahti', 'Virrat', 'Pälkäne'].includes(kuntaName)) {
+                            regionName = "Pirkanmaa";
+                        } else if (['Joroinen', 'Mikkeli', 'Savonlinna', 'Heinävesi', 'Pieksämäki', 'Puumala', 'Rantasalmi', 'Sulkava', 'Hirvensalmi', 'Mäntyharju', 'Pertunmaa'].includes(kuntaName)) {
+                            regionName = "Etelä-Savo";
+                        } else if (['Alajärvi', 'Ilmajoki', 'Evijärvi', 'Kauhajoki', 'Kurikka', 'Lappajärvi', 'Lapua', 'Seinäjoki', 'Teuva', 'Vöyri', 'Karijoki', 'Kuortane', 'Laihiala', 'Soini', 'Vimpeli'].includes(kuntaName)) {
+                            regionName = "Etelä-Pohjanmaa";
+                        } else if (['Forssa', 'Hattula', 'Humppila', 'Janakkala', 'Loppi', 'Somero', 'Hausjärvi', 'Hämeenlinna', 'Jokioinen', 'Riihimäki', 'Urjala'].includes(kuntaName)) {
+                            regionName = "Kanta-Häme";
+                        } else if (['Hailuoto', 'Liminka', 'Muhos', 'Haapavesi', 'Kalajoki', 'Kuusamo', 'Lumijoki', 'Oulainen', 'Oulu', 'Pudasjärvi', 'Raahe', 'Sievi', 'Siikajoki', 'Taivalkoski', 'Ylivieska', 'Haapajärvi', 'Ii', 'Kempele', 'Kärsämäki', 'Merijärvi', 'Nivala', 'Pyhäjoki', 'Pyhäjärvi', 'Reisjärvi', 'Ristijärvi', 'Siikalatva', 'Suomussalmi', 'Tyrnävä', 'Utajärvi', 'Vaala'].includes(kuntaName)) {
+                            regionName = "Pohjois-Pohjanmaa";
+                        } else if (['Kuopio', 'Siilinjärvi', 'Iisalmi', 'Keitele', 'Leppävirta', 'Pielavesi', 'Sonkajärvi', 'Suonenjoki', 'Tervo', 'Varkaus', 'Vieremä', 'Kaavi', 'Lapinlahti', 'Maaninka', 'Rautalampi', 'Rautavaara', 'Tuusniemi'].includes(kuntaName)) {
+                            regionName = "Pohjois-Savo";
+                        } else if (['Kemi', 'Sodankylä', 'Kemijärvi', 'Kittilä', 'Kolari', 'Pello', 'Ranua', 'Rovaniemi', 'Salla', 'Simo', 'Tornio', 'Enontekiö', 'Inari', 'Keminmaa', 'Muonio', 'Posio', 'Savukoski', 'Tervola', 'Utsjoki', 'Ylitornio', 'Övertorneå'].includes(kuntaName)) {
+                            regionName = "Lappi";
+                        } else if (['Kajaani', 'Hyrynsalmi', 'Kuhmo', 'Puolanka', 'Paltamo', 'Ristijärvi', 'Sotkamo', 'Suomussalmi'].includes(kuntaName)) {
+                            regionName = "Kainuu";
+                        } else if (['Eurajoki', 'Harjavalta', 'Rauma', 'Eura', 'Kankaanpää', 'Kokemäki', 'Nakkila', 'Pomarkku', 'Pori', 'Säkylä', 'Huittinen', 'Jämijärvi', 'Karvia', 'Merikarvia', 'Siikainen', 'Ulvila', 'Äänekoski'].includes(kuntaName)) {
+                            regionName = "Satakunta";
+                        } else if (['Kristiinankaupunki', 'Pietarsaari', 'Korsnäs', 'Laihia', 'Luoto', 'Maalahti', 'Mustasaari', 'Närpiö', 'Vaasa', 'Kaskinen', 'Kruunupyy', 'Pedersöre', 'Uusikaarlepyy', 'Vähäkyrö', 'Vöyri'].includes(kuntaName)) {
+                            regionName = "Pohjanmaa";
+                        } else if (['Joensuu', 'Kontiolahti', 'Ilomantsi', 'Juuka', 'Kitee', 'Lieksa', 'Tohmajärvi', 'Valtimo', 'Heinävesi', 'Kesälahti', 'Liperi', 'Nurmes', 'Outokumpu', 'Rääkkylä'].includes(kuntaName)) {
+                            regionName = "Pohjois-Karjala";
+                        } else if (['Hamina', 'Kouvola', 'Iitti', 'Kotka', 'Miehikkälä', 'Pyhtää', 'Virolahti'].includes(kuntaName)) {
+                            regionName = "Kymenlaakso";
+                        } else if (['Kaustinen', 'Kannus', 'Kokkola', 'Perho', 'Toholampi', 'Halsua', 'Veteli'].includes(kuntaName)) {
+                            regionName = "Keski-Pohjanmaa";
+                        } else if (['Lappeenranta', 'Imatra', 'Lemi', 'Luumäki', 'Ruokolahti', 'Parikkala', 'Rautjärvi', 'Savitaipale', 'Taipalsaari'].includes(kuntaName)) {
+                            regionName = "Etelä-Karjala";
+                        }
+                        
+                        if (!regionsData[regionName]) {
+                            regionsData[regionName] = {};
+                            regionsData[regionName].totalKuntas = 0;
+                            regionsData[regionName].totalCatches = 0;
+                            regionsData[regionName].categories = {};
+                        }
+                        regionsData[regionName].totalKuntas++;
+
+                        // Extract catch counts (Tradi, Multi, Mysse)
+                        const matches = kuntaText.match(/Tradi=(\d+), Multi=(\d+), Mysse=(\d+)/);
+                        if (matches) {
+                            const totalCatchesForKunta = parseInt(matches[1]) + parseInt(matches[2]) + parseInt(matches[3]);
+                            regionsData[regionName].totalCatches += totalCatchesForKunta;
+                        }
+
+                        if (!regionsData[regionName].categories[categoryTitle]) {
+                            regionsData[regionName].categories[categoryTitle] = [];
+                        }
+                        regionsData[regionName].categories[categoryTitle].push(kuntaText);
+                    });
+                });
+
+                // Sort regions alphabetically
+                const sortedRegionNames = Object.keys(regionsData).sort((a, b) => {
+                    if (a === "Tuntematon Maakunta") return 1; // "Tuntematon Maakunta" always last
+                    if (b === "Tuntematon Maakunta") return -1;
+                    return a.localeCompare(b);
+                });
+
+                // Populate region select
+                regionSelect.innerHTML = '<option value="">Kaikki maakunnat</option>'; // Reset
+                sortedRegionNames.forEach(regionName => {
+                    const option = document.createElement('option');
+                    option.value = regionName.replace(/\s/g, ''); // Remove spaces for ID
+                    option.innerText = regionName;
+                    regionSelect.appendChild(option);
+                });
+
+                // Render content
+                function renderContent() {
+                    contentDiv.innerHTML = ''; // Clear previous content
+                    const selectedRegion = regionSelect.value;
+                    const searchTerm = searchBox.value.toLowerCase();
+
+                    sortedRegionNames.forEach(regionName => {
+                        const regionId = regionName.replace(/\s/g, '');
+                        const region = regionsData[regionName];
+                        
+                        // Filter by selected region
+                        if (selectedRegion && regionId !== selectedRegion) {
+                            return; // Skip if not the selected region
+                        }
+
+                        const regionDiv = document.createElement('div');
+                        regionDiv.className = 'region';
+                        regionDiv.id = regionId;
+
+                        const regionHeader = document.createElement('h2');
+                        regionHeader.innerText = `${regionName} (${region.totalKuntas} kuntaa, ${region.totalCatches} kätköä)`;
+                        regionDiv.appendChild(regionHeader);
+
+                        const sortedCategoryTitles = Object.keys(region.categories).sort((a, b) => {
+                            // Sort categories numerically based on the number in "X Kätkön kunnat"
+                            const numA = parseInt(a.split(' ')[0]);
+                            const numB = parseInt(b.split(' ')[0]);
+                            return numA - numB;
+                        });
+
+                        sortedCategoryTitles.forEach(categoryTitle => {
+                            const categoryDiv = document.createElement('div');
+                            categoryDiv.className = 'category';
+
+                            const categoryHeader = document.createElement('h3');
+                            categoryHeader.innerText = categoryTitle;
+                            categoryDiv.appendChild(categoryHeader);
+
+                            const kuntaList = document.createElement('ul');
+                            kuntaList.className = 'kunta-list';
+
+                            let anyKuntaVisible = false;
+
+                            region.categories[categoryTitle].forEach(kuntaText => {
+                                const kuntaName = kuntaText.split(':')[0].trim();
+                                if (kuntaName.toLowerCase().includes(searchTerm)) {
+                                    const listItem = document.createElement('li');
+                                    listItem.innerText = kuntaText;
+                                    kuntaList.appendChild(listItem);
+                                    anyKuntaVisible = true;
+                                }
+                            });
+
+                            if (anyKuntaVisible) {
+                                categoryDiv.appendChild(kuntaList);
+                                regionDiv.appendChild(categoryDiv);
+                            } else if (searchTerm !== '') {
+                                // If no kunta matches search in this category, hide the category
+                                categoryDiv.classList.add('hidden');
+                            }
+                        });
+
+                        // If a region was selected, or if search term is empty, always show the region div
+                        if (selectedRegion || searchTerm === '') {
+                             contentDiv.appendChild(regionDiv);
+                        } else {
+                            // If searching, only show region if it contains visible content
+                            const visibleCategoriesInRegion = regionDiv.querySelectorAll('.category:not(.hidden)');
+                            if (visibleCategoriesInRegion.length > 0) {
+                                contentDiv.appendChild(regionDiv);
+                            } else {
+                                regionDiv.style.display = 'none'; // Hide region if no visible categories
+                            }
+                        }
+                    });
+
+                    // Update visibility of regions based on search/filter
+                    contentDiv.querySelectorAll('.region').forEach(regionDiv => {
+                         const visibleKuntasInRegion = regionDiv.querySelectorAll('.kunta-list li'); // No need for :not(.hidden) here as hidden classes are on categories
+                         if (visibleKuntasInRegion.length === 0 && searchTerm !== '') {
+                            regionDiv.style.display = 'none';
+                         } else {
+                            regionDiv.style.display = 'block';
+                         }
+                    });
+
+                    // If a region is selected, maintain its visibility even if search hides content
+                    if (selectedRegion) {
+                         const selectedRegionDiv = document.getElementById(selectedRegion);
+                         if (selectedRegionDiv) {
+                              selectedRegionDiv.style.display = 'block';
+                         }
+                    }
+                }
+
+                regionSelect.addEventListener('change', renderContent);
+                searchBox.addEventListener('input', renderContent);
+
+                renderContent(); // Initial render
+
+            } catch (error) {
+                console.error('Error fetching or processing data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('timestamp').innerText = `Tietojen lataus epäonnistui`;
+            }
+        }
+
+        fetchAndProcessData();
+    </script>
+</body>
+</html>
