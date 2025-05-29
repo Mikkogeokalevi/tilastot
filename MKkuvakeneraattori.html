@@ -54,13 +54,13 @@
 
     /* Keltainen (Kevät) teema */
     .theme-yellow {
-      --bg-color: #fffbe6; 
-      --text-color: #576000; 
-      --card-bg: #fef9c3;   
-      --border-color: #fde047; 
-      --accent-color: #a3bf58; 
-      --button-bg: #fde047;   
-      --button-hover-bg: #facc15; 
+      --bg-color: #fffbe6;
+      --text-color: #576000;
+      --card-bg: #fef9c3;
+      --border-color: #fde047;
+      --accent-color: #a3bf58;
+      --button-bg: #fde047;
+      --button-hover-bg: #facc15;
       --link-color: #a3bf58;
       --link-hover-color: #84cc16;
       --placeholder-color: #a1a1aa;
@@ -69,12 +69,12 @@
     }
     .theme-yellow select, .theme-yellow input[type="date"], .theme-yellow input[type="text"],
     .theme-yellow #regionListContainer, .theme-yellow #paikkakuntaSelectorModal {
-        background-color: #fffce8; 
-        color: var(--text-color); 
+        background-color: #fffce8;
+        color: var(--text-color);
         border: 1px solid var(--border-color);
     }
     .theme-yellow .modal-content li:hover {
-        background-color: #fef08a; 
+        background-color: #fef08a;
     }
      .theme-yellow #locationFilterValue:disabled {
         background-color: #fef9e7;
@@ -135,22 +135,22 @@
 
     .header-area {
         display: flex;
-        align-items: center; 
-        justify-content: space-between; 
-        margin-bottom: var(--spacing-large); 
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--spacing-large);
         padding-bottom: var(--spacing-medium);
         border-bottom: 1px solid var(--border-color);
         transition: border-color 0.3s;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
     }
-    
-    .header-title-area { 
+
+    .header-title-area {
         display: flex;
         align-items: center;
     }
 
     .header-area .logo {
-        width: 60px; 
+        width: 60px;
         height: 60px;
         margin-right: var(--spacing-medium);
         border: none;
@@ -160,32 +160,32 @@
 
     .header-area h2 {
         margin: 0;
-        font-size: 1.6em; 
+        font-size: 1.6em;
         color: var(--text-color);
     }
-    
+
     #themeSelectorContainer {
-        display: flex; 
-        align-items: center; 
-        margin-top: var(--spacing-small); 
+        display: flex;
+        align-items: center;
+        margin-top: var(--spacing-small);
     }
     #themeSelectorContainer label {
         margin-right: var(--spacing-small);
         margin-top:0;
         margin-bottom: 0;
-        font-size: 0.8em; 
-        font-weight: normal; 
+        font-size: 0.8em;
+        font-weight: normal;
     }
 
     #themeSelector {
-        padding: 0.3em 0.5em; 
+        padding: 0.3em 0.5em;
         border-radius: var(--border-radius);
         border: 1px solid var(--border-color);
-        background-color: var(--button-bg); 
+        background-color: var(--button-bg);
         color: var(--text-color);
-        font-size: 0.8em; 
-        width: auto; 
-        margin-bottom: 0; 
+        font-size: 0.8em;
+        width: auto;
+        margin-bottom: 0;
         transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
@@ -200,10 +200,10 @@
       width: calc(100% - 1em);
       padding: var(--spacing-small);
       margin-bottom: var(--spacing-medium);
-      border: 1px solid var(--border-color); 
+      border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
-      background-color: var(--bg-color); 
-      color: var(--text-color); 
+      background-color: var(--bg-color);
+      color: var(--text-color);
       font-size: 1em;
       box-sizing: border-box;
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -215,8 +215,8 @@
 
      select:focus, input[type="date"]:focus, input[type="text"]:focus {
         outline: none;
-        border-color: var(--accent-color); 
-        box-shadow: 0 0 5px var(--accent-color); 
+        border-color: var(--accent-color);
+        box-shadow: 0 0 5px var(--accent-color);
      }
 
     .row {
@@ -235,8 +235,8 @@
     button, .modal-button { /* Yleiset nappityylit */
       margin-top: var(--spacing-medium);
       padding: var(--spacing-small) var(--spacing-medium);
-      background-color: var(--button-bg); 
-      color: var(--text-color); 
+      background-color: var(--button-bg);
+      color: var(--text-color);
       border: none;
       border-radius: var(--border-radius);
       cursor: pointer;
@@ -244,7 +244,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
     button:hover, .modal-button:hover {
-      background-color: var(--button-hover-bg); 
+      background-color: var(--button-hover-bg);
     }
 
     /* Nappien ryhmittely kuvatuloksen alla */
@@ -277,18 +277,18 @@
 
 
     a { /* Yleinen linkkityyli, joka ei ole nappi */
-      color: var(--link-color); 
+      color: var(--link-color);
       text-decoration: none;
       transition: color 0.3s ease;
     }
     a:not(.output-actions a):hover { /* Vain ei-nappimaisille linkeille */
-        color: var(--link-hover-color); 
+        color: var(--link-hover-color);
         text-decoration: underline;
     }
 
     .image-wrapper {
         position: relative;
-        display: none; 
+        display: none;
         margin-top: var(--spacing-medium);
         max-width: 100%;
         text-align: center;
@@ -298,7 +298,7 @@
         display: block;
         max-width: 100%;
         height: auto;
-        border: 1px solid var(--border-color); 
+        border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
         cursor: default;
         margin: 0 auto;
@@ -306,9 +306,9 @@
     }
 
     #map-overlay {
-        display: none; 
+        display: none;
         text-align: center;
-        color: var(--text-color); 
+        color: var(--text-color);
         font-size: 0.9em;
         margin-bottom: var(--spacing-small);
     }
@@ -317,18 +317,18 @@
         display: none;
         margin-top: var(--spacing-medium);
         padding-top: var(--spacing-medium);
-        border-top: 1px solid var(--border-color); 
+        border-top: 1px solid var(--border-color);
         transition: border-color 0.3s;
     }
 
     #locationFilterValue:disabled {
-        background-color: var(--disabled-bg-color); 
+        background-color: var(--disabled-bg-color);
         cursor: not-allowed;
-        color: var(--disabled-text-color); 
+        color: var(--disabled-text-color);
     }
 
     input::placeholder {
-      color: var(--placeholder-color); 
+      color: var(--placeholder-color);
       opacity: 1;
     }
 
@@ -340,18 +340,18 @@
     }
 
     .user-input-container input[type="text"]#user {
-         flex-grow: 1; 
-         width: auto; 
-         margin-bottom: 0; 
+         flex-grow: 1;
+         width: auto;
+         margin-bottom: 0;
     }
 
     #resetButton {
         padding: var(--spacing-small) 0.8em; /* Säädetty padding */
-        font-size: 1em; 
+        font-size: 1em;
         /* height: calc(1em + 2 * var(--spacing-small) + 2 * 1px); Poistettu kiinteä korkeus, anna paddingin määrittää */
         line-height: 1.4; /* Varmistaa tekstin pystysuuntaisen keskityksen paremmin */
-        margin-top: 0; 
-        flex-shrink: 0; 
+        margin-top: 0;
+        flex-shrink: 0;
     }
 
     .location-input-icon-container {
@@ -366,26 +366,26 @@
          margin-bottom: 0;
     }
 
-    .info-icon, #paikkakuntaSelectIcon { 
+    .info-icon, #paikkakuntaSelectIcon {
         cursor: pointer;
-        color: var(--accent-color); 
+        color: var(--accent-color);
         font-weight: bold;
-        font-size: 1.1em; 
+        font-size: 1.1em;
         padding: 0 0.3em;
         flex-shrink: 0;
-        display: none; 
+        display: none;
         user-select: none;
     }
 
     #regionListContainer {
-        border: 1px solid var(--border-color); 
+        border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
         padding: var(--spacing-small);
         margin-top: var(--spacing-small);
         max-height: 150px;
         overflow-y: auto;
-        background-color: var(--card-bg); 
-        z-index: 10; 
+        background-color: var(--card-bg);
+        z-index: 10;
         position: relative;
         font-size: 0.9em;
         transition: background-color 0.3s, border-color 0.3s;
@@ -396,7 +396,7 @@
         cursor: pointer;
     }
     .region-list-item:hover {
-        background-color: var(--button-hover-bg); 
+        background-color: var(--button-hover-bg);
     }
 
     .modal-overlay {
@@ -405,14 +405,14 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.6); 
-        display: none; 
+        background-color: rgba(0,0,0,0.6);
+        display: none;
         justify-content: center;
         align-items: center;
         z-index: 1000;
     }
     #paikkakuntaSelectorModal {
-        background-color: var(--card-bg); 
+        background-color: var(--card-bg);
         padding: var(--spacing-large);
         border-radius: var(--border-radius);
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -426,14 +426,14 @@
     .modal-header {
         font-size: 1.2em;
         margin-bottom: var(--spacing-medium);
-        border-bottom: 1px solid var(--border-color); 
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: var(--spacing-small);
         transition: border-color 0.3s;
     }
     .modal-content {
         overflow-y: auto;
         margin-bottom: var(--spacing-medium);
-        flex-grow: 1; 
+        flex-grow: 1;
     }
     .modal-content ul {
         list-style-type: none;
@@ -443,37 +443,37 @@
     .modal-content li {
         padding: var(--spacing-small) 0;
         cursor: pointer;
-        border-bottom: 1px solid var(--border-color); 
+        border-bottom: 1px solid var(--border-color);
         transition: border-color 0.3s;
     }
     .modal-content li:last-child {
         border-bottom: none;
     }
     .modal-content li:hover {
-        background-color: var(--button-hover-bg); 
+        background-color: var(--button-hover-bg);
     }
     .modal-content .municipality-item label {
-        display: flex; 
-        align-items: center; 
+        display: flex;
+        align-items: center;
         cursor: pointer;
-        font-weight: normal; 
+        font-weight: normal;
         margin-top: 0;
         margin-bottom: var(--spacing-small);
     }
      .modal-content .municipality-item input[type="checkbox"] {
-        width: auto; 
-        margin-right: var(--spacing-small); 
+        width: auto;
+        margin-right: var(--spacing-small);
         margin-bottom: 0;
     }
     .modal-footer {
         display: flex;
-        justify-content: space-between; 
+        justify-content: space-between;
         gap: var(--spacing-small);
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
     }
-    .modal-button { 
-        font-size: 0.9em; 
-        margin-top: 0; 
+    .modal-button {
+        font-size: 0.9em;
+        margin-top: 0;
     }
 
     #profileLinkContainer {
@@ -495,18 +495,18 @@
     }
 
 
-    @media (max-width: 700px) { 
+    @media (max-width: 700px) {
         .header-area {
-            flex-direction: column; 
-            align-items: flex-start; 
+            flex-direction: column;
+            align-items: flex-start;
         }
         .header-title-area {
-            margin-bottom: var(--spacing-small); 
+            margin-bottom: var(--spacing-small);
         }
         #themeSelectorContainer {
-            margin-left: 0; 
-            width: 100%; 
-            justify-content: flex-start; 
+            margin-left: 0;
+            width: 100%;
+            justify-content: flex-start;
         }
     }
 
@@ -518,7 +518,7 @@
         }
         .header-area .logo {
             width: 50px; height: 50px;
-            margin-bottom: var(--spacing-mobile-small); 
+            margin-bottom: var(--spacing-mobile-small);
         }
         .header-area h2 { font-size: 1.4em; }
         #themeSelectorContainer label { font-size: 0.75em; }
@@ -550,21 +550,21 @@
         .user-input-container {
             /* display: flex; on oletuksena jo yllä */
             /* align-items: flex-end; on oletuksena jo yllä */
-            gap: var(--spacing-mobile-small); 
+            gap: var(--spacing-mobile-small);
         }
         .user-input-container input[type="text"]#user {
              /* flex-grow: 1; periytyy */
         }
         #resetButton {
-             padding: var(--spacing-mobile-small) 0.6em; 
+             padding: var(--spacing-mobile-small) 0.6em;
              font-size: 0.85em; /* Pienennetty fonttikokoa mobiilissa */
-             height: auto; 
+             height: auto;
              line-height: 1.3; /* Säädetty riviväliä */
              white-space: nowrap; /* Estä tekstin rivittyminen napissa */
         }
 
          .location-input-icon-container {
-             flex-direction: row; 
+             flex-direction: row;
              align-items: center;
              gap: var(--spacing-mobile-small);
              margin-bottom: var(--spacing-mobile-medium);
@@ -587,11 +587,11 @@
             padding: var(--spacing-medium);
         }
         .modal-footer {
-            justify-content: center; 
+            justify-content: center;
         }
         .modal-footer .modal-button {
-            flex-basis: 100%; 
-            margin-bottom: var(--spacing-small); 
+            flex-basis: 100%;
+            margin-bottom: var(--spacing-small);
         }
          .modal-footer .modal-button:last-child {
             margin-bottom: 0;
@@ -624,7 +624,7 @@
     }
   </style>
 </head>
-<body> 
+<body>
   <div class="container">
     <div class="header-area">
         <div class="header-title-area">
@@ -656,7 +656,7 @@
         </datalist>
          <button id="resetButton" type="button">Nollaa</button>
     </div>
-    
+
     <div id="profileLinkContainer"></div> <label for="kuvatyyppi">Kuvan tyyppi:</label>
     <select id="kuvatyyppi">
       <option value="matrix">T/D-taulukko</option>
@@ -798,9 +798,9 @@
     const tripletOptionData = { value: '90', text: 'Triplet-extra: tradi, multi, mysse löydöt' };
 
     const suomenMaakunnat = [
-        "Ahvenanmaa", "Etelä-Karjala", "Etelä-Pohjanmaa", "Etelä-Savo", "Kainuu", "Kanta-Häme", 
-        "Keski-Pohjanmaa", "Keski-Suomi", "Kymenlaakso", "Lappi", "Pirkanmaa", "Pohjanmaa", 
-        "Pohjois-Karjala", "Pohjois-Pohjanmaa", "Pohjois-Savo", "Päijät-Häme", "Satakunta", 
+        "Ahvenanmaa", "Etelä-Karjala", "Etelä-Pohjanmaa", "Etelä-Savo", "Kainuu", "Kanta-Häme",
+        "Keski-Pohjanmaa", "Keski-Suomi", "Kymenlaakso", "Lappi", "Pirkanmaa", "Pohjanmaa",
+        "Pohjois-Karjala", "Pohjois-Pohjanmaa", "Pohjois-Savo", "Päijät-Häme", "Satakunta",
         "Uusimaa", "Varsinais-Suomi"
     ].sort();
 
@@ -857,7 +857,7 @@
     }
 
     function applyTheme(themeName) {
-        document.body.className = ''; 
+        document.body.className = '';
         if (themeName !== 'default') {
             document.body.classList.add(themeName);
         }
@@ -953,7 +953,7 @@
                           let currentVal = locInput.value.trim();
                           if (currentVal && !currentVal.endsWith(',')) {
                               currentVal += ',';
-                          } 
+                          }
                           locInput.value = currentVal + this.textContent;
                           locInput.focus();
                           toggleRegionList();
@@ -988,7 +988,7 @@
         modalHeader.textContent = 'Valitse maakunta';
         modalRegionUL.innerHTML = '';
         modalMunListContainer.style.display = 'none';
-        modalMunUL.innerHTML = ''; 
+        modalMunUL.innerHTML = '';
         modalBackBtn.style.display = 'none';
         modalAddBtn.style.display = 'none';
         if(selectAllMunCheckbox) selectAllMunCheckbox.checked = false;
@@ -1029,7 +1029,7 @@
         modalBackBtn.style.display = 'inline-block';
         modalAddBtn.style.display = 'inline-block';
     }
-    
+
     if(selectAllMunCheckbox) {
         selectAllMunCheckbox.addEventListener('change', function() {
             const checkboxes = modalMunUL.querySelectorAll('input[type="checkbox"]');
@@ -1048,14 +1048,14 @@
             if (selectedMunicipalities.length > 0) {
                 let existingPaikkakunnatArray = locationInput.value.split(',')
                                                     .map(s => s.trim())
-                                                    .filter(s => s); 
-                
+                                                    .filter(s => s);
+
                 const newUniqueMunicipalities = selectedMunicipalities.filter(item => !existingPaikkakunnatArray.includes(item));
                 const combinedArray = existingPaikkakunnatArray.concat(newUniqueMunicipalities);
-                
+
                 locationInput.value = combinedArray.join(',');
             }
-            showModalRegionSelection(); 
+            showModalRegionSelection();
         });
     }
 
@@ -1070,7 +1070,7 @@
         if (!kuvatyyppiSelect || !cachetypeSelect) return;
         const selectedType = kuvatyyppiSelect.value;
         toggleAikaKentat();
-        toggleYearSpecificFilters(); 
+        toggleYearSpecificFilters();
 
         const existingTripletOption = cachetypeSelect.querySelector(`option[value="${tripletOptionData.value}"]`);
         if (selectedType === 'kunta') {
@@ -1095,7 +1095,7 @@
       const imageWrapper = document.querySelector('.image-wrapper');
       const copyLinkButton = document.getElementById("copyLinkButton");
 
-      imageWrapper.style.display = 'none'; 
+      imageWrapper.style.display = 'none';
       linkElementBelow.style.display = 'none';
       copyLinkButton.style.display = 'none';
       if(overlayElement) overlayElement.style.display = 'none';
@@ -1180,7 +1180,7 @@
                 copyLinkButton.dataset.urlToCopy = urlToCopy; // Käytä mahdollisesti muokattua urlToCopy
             }
             const settingsToSave = {
-                user, kuvatyyppi, aikavalinta, year: yearVal, month: monthVal, startdate: start, enddate: end, 
+                user, kuvatyyppi, aikavalinta, year: yearVal, month: monthVal, startdate: start, enddate: end,
                 cachetype, pkuntaMkuntaChoice, locationFilterValue, extraFilter
             };
             try { localStorage.setItem('statGeneratorSettings', JSON.stringify(settingsToSave)); } catch (e) { console.error(e); }
@@ -1210,9 +1210,13 @@
         }
 
         if (yearSel) {
-            const currentY = new Date().getFullYear();
+            const currentY = new Date().getFullYear(); // Nykyinen vuosi haetaan dynaamisesti
+            const firstYear = 2000; // <-- PIILOVIESTI: Muuta tämä arvo, jos haluat vanhimman vuoden olevan jokin muu kuin 2000.
             yearSel.innerHTML = '<option value="current">—</option>';
-            for (let y = 2000; y <= currentY; y++) yearSel.innerHTML += `<option value="${y}">${y}</option>`;
+            // Täytetään vuosivalikko laskevassa järjestyksessä nykyisestä vuodesta määriteltyyn ensimmäiseen vuoteen
+            for (let y = currentY; y >= firstYear; y--) {
+                yearSel.innerHTML += `<option value="${y}">${y}</option>`;
+            }
         }
         if (monthSel) {
             monthSel.innerHTML = '<option value="current">—</option>';
@@ -1270,7 +1274,7 @@
                 if(pkuntaMkuntaEl && S.pkuntaMkuntaChoice !== undefined) pkuntaMkuntaEl.value = S.pkuntaMkuntaChoice;
                 if(locationValEl && S.locationFilterValue !== undefined) locationValEl.value = S.locationFilterValue;
                 if(extraFilterEl && S.extraFilter !== undefined) extraFilterEl.value = S.extraFilter;
-                
+
                 handleKuvatyyppiChange();
                 if (cachetypeEl && S.cachetype !== undefined) {
                     let ct = S.cachetype;
@@ -1278,13 +1282,13 @@
                     cachetypeEl.value = ct;
                 }
                 updateGeocachingProfileLink(); // Kutsu linkin päivitystä tallennettujen asetusten lataamisen jälkeen
-            } else { 
+            } else {
                 handleKuvatyyppiChange();
                 updateGeocachingProfileLink(); // Kutsu linkin päivitystä, jos asetuksia ei löydy
             }
-        } catch (e) { 
-            console.error(e); 
-            handleKuvatyyppiChange(); 
+        } catch (e) {
+            console.error(e);
+            handleKuvatyyppiChange();
             updateGeocachingProfileLink(); // Varmista linkin päivitys virhetilanteessakin
         }
     });
