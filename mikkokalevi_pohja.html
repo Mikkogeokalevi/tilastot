@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aikarajoitettu kyselypeli</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #8FBC8F;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #556B2F;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.6);
+            color: #F8F8F8;
+            text-align: center;
+        }
+        .timer {
+            font-size: 1.5em;
+            color: #FFD700;
+            margin: 10px 0;
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #90EE90;
+            border: none;
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>
+            <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Mikkokalevin logo" style="width:120px;height:120px;border:2px solid #90EE90;border-radius:50%;display:inline-block;vertical-align:middle;box-shadow:1px 1px 3px rgba(0,0,0,0.4);background-color:#556B2F;padding:3px;" />
+        </p>
+        <h3 style="color:#90EE90;">Aikarajoitettu kyselypeli</h3>
+        <button id="startButton">Aloita peli</button>
+        <div id="gameContent" style="display: none;">
+            <div class="timer">
+                Aikaa jäljellä: <span id="time">10</span> sekuntia
+            </div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <input type="text" id="textAnswer" placeholder="Kirjoita vastauksesi tähän" style="display: none;" />
+            <button id="submitAnswer" style="display: none;">Lähetä vastaus</button>
+        </div>
+    </div>
+
+<script>
+const allQuestions = [
+    { question: "Mikä on pääkaupunki Ranskassa?", options: ["A. Lyon", "B. Pariisi", "C. Marseille"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on kemiallinen merkki kulta?", options: [], answer: "Au", type: "text", time: 30 },
+    { question: "Kuka kirjoitti kirjan 'Sota ja rauha'?", options: ["A. Fjodor Dostojevski", "B. Leo Tolstoi", "C. Vladimir Nabokov"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman nopein eläin?", options: [], answer: "Haukka", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kanadassa?", options: ["A. Toronto", "B. Vancouver", "C. Ottawa"], answer: "C", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin nisäkäs?", options: [], answer: "Sinivalas", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Australiassa?", options: ["A. Sydney", "B. Melbourne", "C. Canberra"], answer: "C", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman korkein rakennus?", options: [], answer: "Burj Khalifa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Brasiliassa?", options: ["A. Rio de Janeiro", "B. São Paulo", "C. Brasília"], answer: "C", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin saari?", options: [], answer: "Grönlanti", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kiinassa?", options: ["A. Shanghai", "B. Peking", "C. Guangzhou"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin aavikko?", options: [], answer: "Sahara", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Intiassa?", options: ["A. Mumbai", "B. Uusi Delhi", "C. Bangalore"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin järvi?", options: [], answer: "Kaspianmeri", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Japanissa?", options: ["A. Osaka", "B. Tokio", "C. Kyoto"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin koralliriutta?", options: [], answer: "Suuri Valliriutta", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Saksassa?", options: ["A. München", "B. Hamburg", "C. Berliini"], answer: "C", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin makean veden järvi?", options: [], answer: "Yläjärvi", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Italiassa?", options: ["A. Milano", "B. Rooma", "C. Napoli"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin saaristo?", options: [], answer: "Indonesian saaristo", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Etelä-Afrikassa?", options: ["A. Kapkaupunki", "B. Johannesburg", "C. Pretoria"], answer: "C", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin autiomaa?", options: [], answer: "Antarktinen autiomaa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Venäjällä?", options: ["A. Pietari", "B. Moskova", "C. Kazan"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin makean veden järvi tilavuudeltaan?", options: [], answer: "Baikaljärvi", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Espanjassa?", options: ["A. Barcelona", "B. Madrid", "C. Valencia"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin saari pinta-alaltaan?", options: [], answer: "Grönlanti", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Meksikossa?", options: ["A. Guadalajara", "B. Méxicon kaupunki", "C. Monterrey"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kaivos?", options: [], answer: "Bingham Canyon", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Argentiinassa?", options: ["A. Córdoba", "B. Buenos Aires", "C. Rosario"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin vesiputous?", options: [], answer: "Angel Falls", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Egyptissä?", options: ["A. Aleksandria", "B. Kairo", "C. Giza"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin luola?", options: [], answer: "Son Doong", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kanadassa?", options: ["A. Toronto", "B. Vancouver", "C. Ottawa"], answer: "C", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kanjoni?", options: [], answer: "Grand Canyon", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Norjassa?", options: ["A. Bergen", "B. Oslo", "C. Trondheim"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin tulivuori?", options: [], answer: "Mauna Loa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Ruotsissa?", options: ["A. Göteborg", "B. Tukholma", "C. Malmö"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin luonnonkaasusäiliö?", options: [], answer: "South Pars", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Tanskassa?", options: ["A. Aarhus", "B. Kööpenhamina", "C. Odense"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin öljykenttä?", options: [], answer: "Ghawar", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Puolassa?", options: ["A. Krakova", "B. Varsova", "C. Łódź"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kultaesiintymä?", options: [], answer: "Witwatersrand", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Unkarissa?", options: ["A. Debrecen", "B. Budapest", "C. Szeged"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin rautamalmiesiintymä?", options: [], answer: "Carajás", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kreikassa?", options: ["A. Thessaloniki", "B. Ateena", "C. Patras"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kupariesiintymä?", options: [], answer: "Escondida", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Turkissa?", options: ["A. Istanbul", "B. Ankara", "C. Izmir"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin nikkeliesiintymä?", options: [], answer: "Sudbury", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Itävallassa?", options: ["A. Salzburg", "B. Wien", "C. Graz"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin alumiiniesiintymä?", options: [], answer: "Weipa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Sveitsissä?", options: ["A. Zürich", "B. Bern", "C. Geneve"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin sinkkiesiintymä?", options: [], answer: "Red Dog", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Belgiassa?", options: ["A. Antwerpen", "B. Bryssel", "C. Gent"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin lyijyesiintymä?", options: [], answer: "Broken Hill", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Alankomaissa?", options: ["A. Rotterdam", "B. Amsterdam", "C. Haag"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin hopeaesiintymä?", options: [], answer: "Cannington", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Portugalissa?", options: ["A. Porto", "B. Lissabon", "C. Braga"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin platinaesiintymä?", options: [], answer: "Bushveld", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Tšekissä?", options: ["A. Brno", "B. Praha", "C. Ostrava"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin uraaniesiintymä?", options: [], answer: "Olympic Dam", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Unkarissa?", options: ["A. Debrecen", "B. Budapest", "C. Szeged"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin fosfaattiesiintymä?", options: [], answer: "Bou Craa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Irlannissa?", options: ["A. Cork", "B. Dublin", "C. Galway"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kaliumesiintymä?", options: [], answer: "Saskatchewan", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Skotlannissa?", options: ["A. Glasgow", "B. Edinburgh", "C. Aberdeen"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin suolaesiintymä?", options: [], answer: "Khewra", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Uudessa-Seelannissa?", options: ["A. Auckland", "B. Wellington", "C. Christchurch"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin hiiliesiintymä?", options: [], answer: "El Cerrejón", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Virossa?", options: ["A. Tartu", "B. Tallinn", "C. Narva"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin öljyhiekkaesiintymä?", options: [], answer: "Athabasca", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Liettuassa?", options: ["A. Kaunas", "B. Vilnius", "C. Klaipėda"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin öljysäiliö?", options: [], answer: "Ghawar", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Latviassa?", options: ["A. Daugavpils", "B. Riika", "C. Liepāja"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kaasusäiliö?", options: [], answer: "South Pars", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Slovakiassa?", options: ["A. Košice", "B. Bratislava", "C. Prešov"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin öljyvarasto?", options: [], answer: "Strategic Petroleum Reserve", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Sloveniassa?", options: ["A. Maribor", "B. Ljubljana", "C. Koper"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin kaasuvarasto?", options: [], answer: "Underground Storage", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kroatiassa?", options: ["A. Split", "B. Zagreb", "C. Rijeka"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin sähkövoimalaitos?", options: [], answer: "Three Gorges", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Serbiassa?", options: ["A. Novi Sad", "B. Belgrad", "C. Niš"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin tuulivoimapuisto?", options: [], answer: "Gansu", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Romaniassa?", options: ["A. Cluj-Napoca", "B. Bukarest", "C. Timișoara"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin aurinkovoimala?", options: [], answer: "Bhadla", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Bulgariassa?", options: ["A. Plovdiv", "B. Sofia", "C. Varna"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin vesivoimala?", options: [], answer: "Three Gorges", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Albaniassa?", options: ["A. Tirana", "B. Durrës", "C. Vlorë"], answer: "A", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin ydinvoimala?", options: [], answer: "Kashiwazaki-Kariwa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Maltalla?", options: ["A. Birkirkara", "B. Valletta", "C. Qormi"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin geoterminen voimala?", options: [], answer: "The Geysers", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kyproksessa?", options: ["A. Limassol", "B. Nikosia", "C. Larnaca"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin vuorovesivoimala?", options: [], answer: "Sihwa Lake", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Luxemburgissa?", options: ["A. Esch-sur-Alzette", "B. Luxemburg", "C. Differdange"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Aguçadoura", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Islannissa?", options: ["A. Kópavogur", "B. Reykjavík", "C. Akureyri"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin biomassavoimala?", options: [], answer: "Ironbridge", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Andorrassa?", options: ["A. Andorra la Vella", "B. Escaldes-Engordany", "C. Encamp"], answer: "A", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin jätevesivoimala?", options: [], answer: "Deer Island", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Monacossa?", options: ["A. Monte Carlo", "B. Monaco", "C. Fontvieille"], answer: "B", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin biokaasuvoimala?", options: [], answer: "Didcot", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki San Marinossa?", options: ["A. San Marino", "B. Serravalle", "C. Borgo Maggiore"], answer: "A", type: "multiple-choice", time: 10 },
+    { question: "Mikä on maailman suurin vetyvoimala?", options: [], answer: "Fukushima Hydrogen Energy Research Field", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Vatikaanissa?", options: [], answer: "Vatikaanivaltio", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "PowerBuoy", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Maltalla?", options: [], answer: "Valletta", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin vuorovesivoimala?", options: [], answer: "La Rance", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Liettuassa?", options: [], answer: "Vilnius", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "WaveRoller", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Virossa?", options: [], answer: "Tallinna", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin vuorovesivoimala?", options: [], answer: "Sihwa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Latviassa?", options: [], answer: "Riika", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Wave Star", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Slovakiassa?", options: [], answer: "Bratislava", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin vuorovesivoimala?", options: [], answer: "La Rance", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kroatiassa?", options: [], answer: "Zagreb", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "AquaBuOY", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Serbiassa?", options: [], answer: "Belgrad", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin vuorovesivoimala?", options: [], answer: "Sihwa", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Romaniassa?", options: [], answer: "Bukarest", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Wave Hub", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Bulgariassa?", options: [], answer: "Sofia", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Oceanlinx", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Albaniassa?", options: [], answer: "Tirana", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Wave Dragon", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Maltalla?", options: [], answer: "Valletta", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "CETO", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Kyproksessa?", options: [], answer: "Nikosia", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Pelamis", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Luxemburgissa?", options: [], answer: "Luxemburg", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "WaveRoller", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Islannissa?", options: [], answer: "Reykjavík", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "Wave Star", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Andorrassa?", options: [], answer: "Andorra la Vella", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "PowerBuoy", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Monacossa?", options: [], answer: "Monaco", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "WaveRoller", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki San Marinossa?", options: [], answer: "San Marino", type: "text", time: 30 },
+    { question: "Mikä on maailman suurin aaltovoimala?", options: [], answer: "WaveRoller", type: "text", time: 30 },
+    { question: "Mikä on pääkaupunki Vatikaanissa?", options: [], answer: "Vatikaanivaltio", type: "text", time: 30 }
+];
+
+let questions = [];
+let currentQuestionIndex = 0;
+let timeLeft = 0;
+let timer;
+let mistakes = 0;
+
+document.getElementById("startButton").addEventListener("click", function() {
+    document.getElementById("startButton").style.display = "none";
+    document.getElementById("gameContent").style.display = "block";
+    selectRandomQuestions();
+    loadQuestion();
+});
+
+function selectRandomQuestions() {
+    questions = [];
+    const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+    questions = shuffled.slice(0, 30);
+}
+
+function loadQuestion() {
+    const question = questions[currentQuestionIndex];
+    document.getElementById("question").textContent = question.question;
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = "";
+    const textAnswer = document.getElementById("textAnswer");
+    const submitAnswer = document.getElementById("submitAnswer");
+
+    if (question.type === "multiple-choice") {
+        textAnswer.style.display = "none";
+        submitAnswer.style.display = "none";
+        question.options.forEach(option => {
+            const button = document.createElement("button");
+            button.textContent = option;
+            button.onclick = () => checkAnswer(option[0]);
+            optionsContainer.appendChild(button);
+        });
+    } else {
+        textAnswer.style.display = "block";
+        submitAnswer.style.display = "block";
+        submitAnswer.onclick = () => checkAnswer(textAnswer.value);
+    }
+
+    timeLeft = question.time;
+    document.getElementById("time").textContent = timeLeft;
+
+    clearInterval(timer);
+    timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("time").textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            resetGame();
+        }
+    }, 1000);
+}
+
+function checkAnswer(answer) {
+    const question = questions[currentQuestionIndex];
+    if (answer === question.answer) {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            clearInterval(timer);
+            alert("Onneksi olkoon! Olet suorittanut kaikki kysymykset oikein. Salainen viesti: MaailmaOnKaunisPaikka");
+            resetGame();
+        }
+    } else {
+        mistakes++;
+        if (mistakes >= 2) {
+            alert("Olet vastannut väärin liian monta kertaa. Peli aloitetaan alusta.");
+            resetGame();
+        } else {
+            alert("Väärin! Yritä uudelleen.");
+        }
+    }
+}
+
+function resetGame() {
+    clearInterval(timer);
+    currentQuestionIndex = 0;
+    mistakes = 0;
+    document.getElementById("gameContent").style.display = "none";
+    document.getElementById("startButton").style.display = "block";
+}
+</script>
+</body>
+</html>
