@@ -9,7 +9,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <style>
-        /* Kaikki aiemmat CSS-tyylit pysyvät samoina... */
         body { background-color: #1a2015; font-family: 'Georgia', serif; margin: 0; padding: 20px; }
         .sisalto-laatikko { max-width: 800px; margin: 30px auto; padding: 10px; background-color: #3D4F2B; border: 3px solid #11150C; border-radius: 12px; box-shadow: 5px 5px 15px rgba(0,0,0,0.6); }
         .teksti-alue { color: #F8F8F8; padding: 10px; font-size: 1.1em; }
@@ -24,46 +23,23 @@
         #tulos-alue strong { color: #90EE90; }
         .kunta-iso { font-size: 1.2em; font-weight: bold; color: #FFD700; text-align: center; margin-bottom: 15px !important; }
         #kartta-container { width: 100%; height: 300px; border-radius: 8px; margin-top: 20px; border: 2px solid #90EE90; background-color: #1a2015; }
-        
-        /* --- LISÄTTY CSS MANUAALISELLE HAULLE --- */
-        .manual-input {
-            width: calc(100% - 24px);
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #1a2015;
-            border: 1px solid #90EE90;
-            color: #FFFFFF;
-            border-radius: 4px;
-            font-family: monospace;
-        }
-        #naytaKatko {
-            width: 100%;
-            background-color: #FFD700;
-            color: #1a2015;
-            border: none;
-            padding: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 6px;
-        }
+        .manual-input { width: calc(100% - 24px); padding: 10px; margin-bottom: 10px; background-color: #1a2015; border: 1px solid #90EE90; color: #FFFFFF; border-radius: 4px; font-family: monospace; }
+        #naytaKatko { width: 100%; background-color: #FFD700; color: #1a2015; border: none; padding: 10px; font-weight: bold; cursor: pointer; border-radius: 6px; }
     </style>
 </head>
 <body>
-
     <div class="sisalto-laatikko">
         <div class="teksti-alue">
             <div class="logo-container">
                 <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
             </div>
             <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
-            
             <div class="huomio-laatikko">
                 <p class="huomio-otsikko">HAE KÄTKÖN TIEDOT</p>
                 <input type="text" id="gc-koodi-input" class="manual-input" placeholder="GC-koodi (esim. GCACTIVE)">
                 <input type="text" id="koordinaatit-input" class="manual-input" placeholder="Koordinaatit (esim. 60.98, 25.66)">
                 <button id="naytaKatko">Näytä kätkö kartalla</button>
             </div>
-
             <div class="huomio-laatikko">
                 <p class="huomio-otsikko">OMA SIJAINTI</p>
                 <button id="haeSijainti">Hae nykyinen sijainti</button>
@@ -76,110 +52,91 @@
     </div>
     
     <script>
-    // --- ELEMENTTIEN HAKU ---
     const haeSijaintiNappi = document.getElementById('haeSijainti');
     const tulosAlue = document.getElementById('tulos-alue');
     const karttaContainer = document.getElementById('kartta-container');
-    // Uudet elementit manuaaliselle haulle
     const gcKoodiInput = document.getElementById('gc-koodi-input');
     const koordinaatitInput = document.getElementById('koordinaatit-input');
     const naytaKatkoNappi = document.getElementById('naytaKatko');
-
     let map;
     let marker;
-
-    // --- TAPAHTUMANKUUNTELIJAT ---
     document.addEventListener('DOMContentLoaded', initMap);
     haeSijaintiNappi.addEventListener('click', haeGPSsijainti);
-    naytaKatkoNappi.addEventListener('click', haeManuaalisesti); // Uusi kuuntelija
-
-    // --- FUNKTIOT ---
-    function initMap() { /* ... sama kuin ennen ... */
+    naytaKatkoNappi.addEventListener('click', haeManuaalisesti);
+    function initMap() {
         map = L.map('kartta-container').setView([60.98, 25.66], 10);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         map.on('click', onMapClick);
     }
-
-    function haeGPSsijainti() { /* ... sama kuin ennen ... */
+    function haeGPSsijainti() {
         if (!("geolocation" in navigator)) { return; }
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan GPS-sijaintia...</p>';
         navigator.geolocation.getCurrentPosition(onGPSSuccess, onGPSError);
     }
-    
-    // UUSI FUNKTIO MANUAALISELLE HAULLE
     function haeManuaalisesti() {
         const koordinaatit = koordinaatitInput.value;
         const gcKoodi = gcKoodiInput.value.trim().toUpperCase();
-
         if (!koordinaatit) {
             alert("Syötä koordinaatit!");
             return;
         }
-
-        // Yritetään parsia koordinaatit
         try {
             const [lat, lon] = koordinaatit.split(',').map(parseFloat);
             if (isNaN(lat) || isNaN(lon)) {
                 throw new Error("Virheellinen koordinaattimuoto.");
             }
-            map.setView([lat, lon], 14); // Keskistetään kartta
-            paivitaSijaintitiedot(lat, lon, gcKoodi); // Välitetään gc-koodi mukaan
+            map.setView([lat, lon], 14);
+            paivitaSijaintitiedot(lat, lon, gcKoodi);
         } catch (error) {
             alert("Koordinaattien muoto on virheellinen. Käytä muotoa: 60.123, 24.123");
         }
     }
-    
-    function onGPSSuccess(position) { /* ... sama kuin ennen ... */
+    function onGPSSuccess(position) {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         map.setView([lat, lon], 13);
         paivitaSijaintitiedot(lat, lon, "Oma sijainti");
     }
-
-    function onMapClick(e) { /* ... sama kuin ennen ... */
+    function onMapClick(e) {
         const lat = e.latlng.lat;
         const lon = e.latlng.lng;
         paivitaSijaintitiedot(lat, lon, "Klikattu sijainti");
     }
-    
-    async function paivitaSijaintitiedot(lat, lon, paikanNimi) { // Lisätty paikanNimi-parametri
+    async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan osoitetietoja...</p>';
-        
         if (marker) {
             marker.setLatLng([lat, lon]);
         } else {
             marker = L.marker([lat, lon]).addTo(map);
         }
-
-        // Lisätään pop-up, joka näyttää GC-koodin tai muun nimen
         if (paikanNimi) {
             marker.bindPopup(`<b>${paikanNimi}</b>`).openPopup();
         }
-
         const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
-
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('Verkkovastaus ei ollut kunnossa.');
             const data = await response.json();
             const address = data.address;
-
             tulosAlue.innerHTML = '';
-            const kunta = address.municipality || address.town || address.city || address.village;
+
+            // --- TÄMÄ ON KORJATTU KOHTA ---
+            // Etsitään kunta oikeassa järjestyksessä: ensin tarkemmat (city, town)
+            // ja vasta sitten laajempi (municipality).
+            const kunta = address.city || address.town || address.village || address.municipality;
+            // -----------------------------
+
             tulosAlue.innerHTML += kunta ? `<p class="kunta-iso">${kunta}</p>` : `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
             tulosAlue.innerHTML += `<p><strong>Sijainti:</strong> ${paikanNimi ?? ''}</p>`;
             tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${lat.toFixed(5)}, ${lon.toFixed(5)}</p>`;
             tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
-
         } catch (error) {
             tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
         }
     }
-
-    function onGPSError(error) { /* ... sama kuin ennen ... */ }
-
+    function onGPSError(error) { /* ... */ }
     </script>
 </body>
 </html>
