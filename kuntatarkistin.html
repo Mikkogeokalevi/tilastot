@@ -24,7 +24,7 @@
         .kunta-iso { font-size: 1.2em; font-weight: bold; color: #FFD700; text-align: center; margin-bottom: 15px !important; }
         #kartta-container { width: 100%; height: 300px; border-radius: 8px; margin-top: 20px; border: 2px solid #90EE90; background-color: #1a2015; }
         .manual-input { width: calc(100% - 24px); padding: 10px; margin-bottom: 10px; background-color: #1a2015; border: 1px solid #90EE90; color: #FFFFFF; border-radius: 4px; font-family: monospace; }
-        #naytaKatko { width: 100%; background-color: #FFD700; color: #1a2015; border: none; padding: 10px; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        #naytaKoordinaatit { width: 100%; background-color: #FFD700; color: #1a2015; border: none; padding: 10px; font-weight: bold; cursor: pointer; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -34,35 +34,41 @@
                 <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
             </div>
             <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
-            <div class="huomio-laatikko">
-                <p class="huomio-otsikko">HAE KÄTKÖN TIEDOT</p>
-                <input type="text" id="gc-koodi-input" class="manual-input" placeholder="GC-koodi (esim. GCACTIVE)">
-                <input type="text" id="koordinaatit-input" class="manual-input" placeholder="Koordinaatit (esim. 60.98, 25.66)">
-                <button id="naytaKatko">Näytä kätkö kartalla</button>
-            </div>
+            
             <div class="huomio-laatikko">
                 <p class="huomio-otsikko">OMA SIJAINTI</p>
                 <button id="haeSijainti">Hae nykyinen sijainti</button>
                 <div id="tulos-alue">
-                    <p style="text-align: center;">Hae sijaintisi tai syötä kätkön tiedot.</p>
+                    <p style="text-align: center;">Hae sijaintisi, klikkaa karttaa tai syötä koordinaatit.</p>
                 </div>
                 <div id="kartta-container"></div>
+            </div>
+
+            <div class="huomio-laatikko">
+                <p class="huomio-otsikko">HAE KOORDINAATEILLA</p>
+                <input type="text" id="koordinaatit-input" class="manual-input" placeholder="Syötä koordinaatit...">
+                <button id="naytaKoordinaatit">Näytä kartalla</button>
             </div>
         </div>
     </div>
     
     <script>
+    // --- ELEMENTTIEN HAKU ---
     const haeSijaintiNappi = document.getElementById('haeSijainti');
     const tulosAlue = document.getElementById('tulos-alue');
     const karttaContainer = document.getElementById('kartta-container');
-    const gcKoodiInput = document.getElementById('gc-koodi-input');
     const koordinaatitInput = document.getElementById('koordinaatit-input');
-    const naytaKatkoNappi = document.getElementById('naytaKatko');
+    const naytaKoordinaatitNappi = document.getElementById('naytaKoordinaatit');
+
     let map;
     let marker;
+
+    // --- TAPAHTUMANKUUNTELIJAT ---
     document.addEventListener('DOMContentLoaded', initMap);
     haeSijaintiNappi.addEventListener('click', haeGPSsijainti);
-    naytaKatkoNappi.addEventListener('click', haeManuaalisesti);
+    naytaKoordinaatitNappi.addEventListener('click', haeManuaalisesti);
+
+    // --- FUNKTIOT ---
     function initMap() {
         map = L.map('kartta-container').setView([60.98, 25.66], 10);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -70,40 +76,71 @@
         }).addTo(map);
         map.on('click', onMapClick);
     }
+
     function haeGPSsijainti() {
         if (!("geolocation" in navigator)) { return; }
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan GPS-sijaintia...</p>';
         navigator.geolocation.getCurrentPosition(onGPSSuccess, onGPSError);
     }
-    function haeManuaalisesti() {
-        const koordinaatit = koordinaatitInput.value;
-        const gcKoodi = gcKoodiInput.value.trim().toUpperCase();
-        if (!koordinaatit) {
-            alert("Syötä koordinaatit!");
-            return;
-        }
-        try {
-            const [lat, lon] = koordinaatit.split(',').map(parseFloat);
-            if (isNaN(lat) || isNaN(lon)) {
-                throw new Error("Virheellinen koordinaattimuoto.");
+    
+    // UUSI, ÄLYKKÄÄMPI KOORDINAATTIEN MUUNNINFUNKTIO
+    function parseCoordinates(input) {
+        input = input.trim();
+        // Regex, joka tunnistaa N 60° 55.690' E 025° 59.412' -muodon
+        const ddmRegex = /([ns])\s*(\d{1,3})[°\s]+([\d.]+)'?[\s,]*([ew])\s*(\d{1,3})[°\s]+([\d.]+)'?/i;
+        const ddmMatch = input.match(ddmRegex);
+
+        if (ddmMatch) {
+            // Muunnetaan Asteet Desimaaliminuutit (DDM) -> Desimaaliasteiksi (DD)
+            let lat_deg = parseFloat(ddmMatch[2]);
+            let lat_min = parseFloat(ddmMatch[3]);
+            let lat = lat_deg + lat_min / 60;
+            if (ddmMatch[1].toUpperCase() === 'S') lat = -lat;
+
+            let lon_deg = parseFloat(ddmMatch[5]);
+            let lon_min = parseFloat(ddmMatch[6]);
+            let lon = lon_deg + lon_min / 60;
+            if (ddmMatch[4].toUpperCase() === 'W') lon = -lon;
+            
+            return { lat, lon };
+        } else {
+            // Oletetaan, että muoto on Desimaaliasteet (DD), esim. 60.123, 24.123
+            const parts = input.split(/[,;\s]/).filter(Boolean); // Jakaa pilkusta, puolipisteestä tai välilyönnistä
+            if (parts.length === 2) {
+                const lat = parseFloat(parts[0]);
+                const lon = parseFloat(parts[1]);
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    return { lat, lon };
+                }
             }
-            map.setView([lat, lon], 14);
-            paivitaSijaintitiedot(lat, lon, gcKoodi);
-        } catch (error) {
-            alert("Koordinaattien muoto on virheellinen. Käytä muotoa: 60.123, 24.123");
+        }
+        return null; // Palautetaan null, jos kumpikaan muoto ei täsmää
+    }
+
+    function haeManuaalisesti() {
+        const coords = parseCoordinates(koordinaatitInput.value);
+
+        if (coords) {
+            map.setView([coords.lat, coords.lon], 14);
+            paivitaSijaintitiedot(coords.lat, coords.lon, "Manuaalinen haku");
+        } else {
+            alert("Koordinaattien muoto on virheellinen.\nSallitut muodot:\n- 60.98, 25.66\n- N 60° 55.690' E 025° 59.412'");
         }
     }
+    
     function onGPSSuccess(position) {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         map.setView([lat, lon], 13);
         paivitaSijaintitiedot(lat, lon, "Oma sijainti");
     }
+
     function onMapClick(e) {
         const lat = e.latlng.lat;
         const lon = e.latlng.lng;
         paivitaSijaintitiedot(lat, lon, "Klikattu sijainti");
     }
+    
     async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan osoitetietoja...</p>';
         if (marker) {
@@ -111,32 +148,34 @@
         } else {
             marker = L.marker([lat, lon]).addTo(map);
         }
-        if (paikanNimi) {
-            marker.bindPopup(`<b>${paikanNimi}</b>`).openPopup();
-        }
+        marker.bindPopup(`<b>${paikanNimi}</b><br>${lat.toFixed(5)}, ${lon.toFixed(5)}`).openPopup();
+        
         const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('Verkkovastaus ei ollut kunnossa.');
             const data = await response.json();
             const address = data.address;
+
             tulosAlue.innerHTML = '';
-
-            // --- TÄMÄ ON KORJATTU KOHTA ---
-            // Etsitään kunta oikeassa järjestyksessä: ensin tarkemmat (city, town)
-            // ja vasta sitten laajempi (municipality).
             const kunta = address.city || address.town || address.village || address.municipality;
-            // -----------------------------
-
             tulosAlue.innerHTML += kunta ? `<p class="kunta-iso">${kunta}</p>` : `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
-            tulosAlue.innerHTML += `<p><strong>Sijainti:</strong> ${paikanNimi ?? ''}</p>`;
             tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${lat.toFixed(5)}, ${lon.toFixed(5)}</p>`;
             tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
         } catch (error) {
             tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
         }
     }
-    function onGPSError(error) { /* ... */ }
+
+    function onGPSError(error) {
+        let virheViesti = 'Tapahtui tuntematon virhe.';
+        switch (error.code) {
+            case error.PERMISSION_DENIED: virheViesti = 'Et antanut lupaa sijainnin käyttöön.'; break;
+            case error.POSITION_UNAVAILABLE: virheViesti = 'Sijaintitieto ei ole saatavilla.'; break;
+            case error.TIMEOUT: virheViesti = 'Sijainnin haku kesti liian kauan.'; break;
+        }
+        tulosAlue.innerHTML = `<p>${virheViesti}</p>`;
+    }
     </script>
 </body>
 </html>
