@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sivun Otsikko</title>
+    <title>MK kuntatarkistin</title>
     
     <style>
         body {
@@ -76,7 +76,6 @@
             margin: 0 0 5px 0;
         }
         
-        /* --- LISÄTTY JA MUOKATTU CSS --- */
         #haeSijainti {
             background-color: #1a2015;
             color: #90EE90;
@@ -93,24 +92,23 @@
             background-color: #90EE90;
             color: #1a2015;
         }
-        /* Uusi alue tuloksille */
         #tulos-alue {
-            text-align: left; /* Asetetaan tulokset alkamaan vasemmalta */
+            text-align: left;
             margin-top: 15px;
             color: #FFFFFF;
             font-size: 1em;
         }
         #tulos-alue p {
-            margin: 8px 0; /* Pieni väli tietorivien välille */
+            margin: 8px 0;
         }
         #tulos-alue strong {
-            color: #90EE90; /* Korostusväri avainsanoille */
+            color: #90EE90;
         }
         .kunta-iso {
             font-size: 1.2em;
             font-weight: bold;
             color: #FFD700;
-            text-align: center; /* Keskitetään päänimike */
+            text-align: center;
             margin-bottom: 15px !important;
         }
         
@@ -130,28 +128,22 @@
             <div class="logo-container">
                 <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
             </div>
-            <h3 class="paaotsikko">— Geokätköilijän Apuri —</h3>
-            <p class="leipateksti">
-                Tervetuloa käyttämään kätköilijän apuria! Täältä löydät hyödyllisiä työkaluja.
-            </p>
-            <p class="leipateksti">
-                Alla olevan työkalun avulla voit selvittää nykyisen kuntasi ja muita sijaintitietoja.
-            </p>
+            
+            <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
+            
             <div class="huomio-laatikko">
                 <p class="huomio-otsikko">SIJAINTITARKISTIN</p>
                 <button id="haeSijainti">Hae nykyinen sijainti</button>
                 
                 <div id="tulos-alue">
                     </div>
-                </div>
+            </div>
         </div>
     </div>
     
     <script>
-    // === JAVASCRIPT-TOIMINNALLISUUS ===
-
     const haeSijaintiNappi = document.getElementById('haeSijainti');
-    const tulosAlue = document.getElementById('tulos-alue'); // Otetaan käyttöön uusi pääelementti
+    const tulosAlue = document.getElementById('tulos-alue');
 
     haeSijaintiNappi.addEventListener('click', () => {
         haeKunta();
@@ -162,16 +154,15 @@
             tulosAlue.innerHTML = '<p>Selaimesi ei tue sijainnin hakua.</p>';
             return;
         }
-        tulosAlue.innerHTML = '<p>Haetaan sijaintiasi...</p>';
+        tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan sijaintiasi...</p>';
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
     }
 
-    // --- MUOKATTU JAVASCRIPT-FUNKTIO LISÄTIETOJEN KÄSITTELYYN ALKAA ---
     async function onSuccess(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        tulosAlue.innerHTML = '<p>Sijainti löydetty. Haetaan osoitetietoja...</p>';
+        tulosAlue.innerHTML = '<p style="text-align: center;">Sijainti löydetty. Haetaan osoitetietoja...</p>';
 
         const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
 
@@ -183,10 +174,8 @@
             const data = await response.json();
             const address = data.address;
 
-            // Puhdistetaan tulosalue ennen uusien tietojen lisäämistä
             tulosAlue.innerHTML = '';
 
-            // 1. Haetaan ja näytetään kunta
             const kunta = address.municipality || address.town || address.city || address.village;
             if (kunta) {
                 tulosAlue.innerHTML += `<p class="kunta-iso">${kunta}</p>`;
@@ -194,20 +183,11 @@
                 tulosAlue.innerHTML += `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
             }
 
-            // 2. Haetaan ja näytetään tarkempi osoite (katu, kaupunginosa)
-            // Käytetään `??` -operaattoria: jos tietoa ei löydy, näytetään 'Ei saatavilla'.
             tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Kaupunginosa:</strong> ${address.suburb ?? 'Ei saatavilla'}</p>`;
-            
-            // 3. Postinumero ja maa
             tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${address.postcode ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${address.country ?? 'Ei saatavilla'}</p>`;
-            
-            // 4. Koordinaatit
-            // toFixed(5) rajoittaa desimaalien määrän 5:een, mikä on riittävä tarkkuus.
             tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${latitude.toFixed(5)}, ${longitude.toFixed(5)}</p>`;
-            
-            // 5. Koko osoite (display_name)
             tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Koko osoite:</strong> ${data.display_name ?? 'Ei saatavilla'}</p>`;
 
         } catch (error) {
@@ -215,7 +195,6 @@
             tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
         }
     }
-    // --- MUOKATTU JAVASCRIPT-FUNKTIO PÄÄTTYY ---
 
     function onError(error) {
         let virheViesti;
