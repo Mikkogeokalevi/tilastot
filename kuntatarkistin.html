@@ -106,13 +106,12 @@
             margin-bottom: 15px !important;
         }
         
-        /* --- LISÄTTY OSUUS KARTALLE ALKAA --- */
         #kartta-container {
             width: 100%;
-            height: 300px; /* Voit säätää kartan korkeutta tästä */
+            height: 250px; /* Pienennetty korkeutta mobiilikäyttöön */
             border-radius: 8px;
-            overflow: hidden; /* Varmistaa, että iframe pysyy pyöristysten sisällä */
-            margin-top: 20px;
+            overflow: hidden;
+            margin-top: 20px; /* Lisätty pieni väli tekstin ja kartan väliin */
             border: 2px solid #90EE90;
         }
         #kartta-container iframe {
@@ -120,7 +119,6 @@
             height: 100%;
             border: none;
         }
-        /* --- LISÄTTY OSUUS KARTALLE PÄÄTTYY --- */
 
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -144,8 +142,10 @@
                 <p class="huomio-otsikko">SIJAINTITARKISTIN</p>
                 <button id="haeSijainti">Hae nykyinen sijainti</button>
                 
-                <div id="kartta-container"></div>
                 <div id="tulos-alue">
+                    </div>
+                
+                <div id="kartta-container">
                     </div>
             </div>
         </div>
@@ -154,7 +154,7 @@
     <script>
     const haeSijaintiNappi = document.getElementById('haeSijainti');
     const tulosAlue = document.getElementById('tulos-alue');
-    const karttaContainer = document.getElementById('kartta-container'); // Otetaan kartta-alue talteen
+    const karttaContainer = document.getElementById('kartta-container');
 
     haeSijaintiNappi.addEventListener('click', () => {
         haeKunta();
@@ -165,8 +165,9 @@
             tulosAlue.innerHTML = '<p>Selaimesi ei tue sijainnin hakua.</p>';
             return;
         }
+        // Tyhjennetään vanhat tulokset ja näytetään latausviesti
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan sijaintiasi...</p>';
-        karttaContainer.innerHTML = ''; // Tyhjennetään vanha kartta
+        karttaContainer.innerHTML = '';
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
     }
 
@@ -174,19 +175,9 @@
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        // --- LISÄTTY KARTAN LUONTI ALKAA ---
-        // Rakennetaan upotus-URL OpenStreetMapille
-        //bbox = sivusuunnassa näkyvä alue
-        //layer = karttatyyppi
-        //marker = merkin koordinaatit
-        const karttaUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude-0.01},${latitude-0.01},${longitude+0.01},${latitude+0.01}&layer=mapnik&marker=${latitude},${longitude}`;
+        // Tyhjennetään latausviesti ennen tulosten näyttämistä
+        tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan osoitetietoja...</p>';
         
-        // Luodaan iframe ja asetetaan sille lähteeksi luotu URL
-        karttaContainer.innerHTML = `<iframe src="${karttaUrl}"></iframe>`;
-        // --- LISÄTTY KARTAN LUONTI PÄÄTTYY ---
-
-        tulosAlue.innerHTML = '<p style="text-align: center;">Sijainti löydetty. Haetaan osoitetietoja...</p>';
-
         const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
 
         try {
@@ -197,6 +188,8 @@
             const data = await response.json();
             const address = data.address;
 
+            // 1. NÄYTETÄÄN TEKSTITIEDOT
+            // Tyhjennetään tulosalue ennen uusien tietojen lisäämistä
             tulosAlue.innerHTML = '';
 
             const kunta = address.municipality || address.town || address.city || address.village;
@@ -205,13 +198,16 @@
             } else {
                 tulosAlue.innerHTML += `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
             }
-
             tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Kaupunginosa:</strong> ${address.suburb ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${address.postcode ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${address.country ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${latitude.toFixed(5)}, ${longitude.toFixed(5)}</p>`;
             tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Koko osoite:</strong> ${data.display_name ?? 'Ei saatavilla'}</p>`;
+
+            // 2. NÄYTETÄÄN KARTTA TEKSTITIETOJEN JÄLKEEN
+            const karttaUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude-0.01},${latitude-0.01},${longitude+0.01},${latitude+0.01}&layer=mapnik&marker=${latitude},${longitude}`;
+            karttaContainer.innerHTML = `<iframe src="${karttaUrl}"></iframe>`;
 
         } catch (error) {
             console.error('Virhe osoitetietojen haussa:', error);
