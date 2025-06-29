@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sivun Otsikko</title>
+    
+    <style>
+        body {
+            background-color: #1a2015;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            transition: padding 0.3s ease;
+        }
+        .sisalto-laatikko {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 10px;
+            background-color: #3D4F2B;
+            border: 3px solid #11150C;
+            border-radius: 12px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.6);
+            transition: margin 0.3s ease;
+        }
+        .teksti-alue {
+            color: #F8F8F8;
+            line-height: 1.8;
+            text-align: justify;
+            padding: 10px;
+            font-size: 1.1em;
+            transition: font-size 0.3s ease;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .logo {
+            width: 120px;
+            height: 120px;
+            border: 2px solid #90EE90;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            background-color: #3D4F2B;
+            padding: 3px;
+        }
+        .paaotsikko {
+            color: #90EE90;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            font-size: 1.6em;
+            letter-spacing: 0.5px;
+        }
+        .leipateksti {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #FFFFFF;
+            font-size: 1.2em;
+        }
+        .huomio-laatikko {
+            background-color: #2A381C;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px dashed #90EE90;
+        }
+        .huomio-otsikko {
+            color: #FFD700;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+        }
+        
+        /* --- LISÄTTY JA MUOKATTU CSS --- */
+        #haeSijainti {
+            background-color: #1a2015;
+            color: #90EE90;
+            border: 1px solid #90EE90;
+            padding: 12px 20px;
+            font-size: 1em;
+            font-family: 'Georgia', serif;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            margin-bottom: 15px;
+        }
+        #haeSijainti:hover {
+            background-color: #90EE90;
+            color: #1a2015;
+        }
+        /* Uusi alue tuloksille */
+        #tulos-alue {
+            text-align: left; /* Asetetaan tulokset alkamaan vasemmalta */
+            margin-top: 15px;
+            color: #FFFFFF;
+            font-size: 1em;
+        }
+        #tulos-alue p {
+            margin: 8px 0; /* Pieni väli tietorivien välille */
+        }
+        #tulos-alue strong {
+            color: #90EE90; /* Korostusväri avainsanoille */
+        }
+        .kunta-iso {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center; /* Keskitetään päänimike */
+            margin-bottom: 15px !important;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .sisalto-laatikko { margin: 15px auto; }
+            .teksti-alue { font-size: 1.0em; }
+            .paaotsikko { font-size: 1.4em; }
+            .leipateksti { font-size: 1.1em; text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sisalto-laatikko">
+        <div class="teksti-alue">
+            <div class="logo-container">
+                <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
+            </div>
+            <h3 class="paaotsikko">— Geokätköilijän Apuri —</h3>
+            <p class="leipateksti">
+                Tervetuloa käyttämään kätköilijän apuria! Täältä löydät hyödyllisiä työkaluja.
+            </p>
+            <p class="leipateksti">
+                Alla olevan työkalun avulla voit selvittää nykyisen kuntasi ja muita sijaintitietoja.
+            </p>
+            <div class="huomio-laatikko">
+                <p class="huomio-otsikko">SIJAINTITARKISTIN</p>
+                <button id="haeSijainti">Hae nykyinen sijainti</button>
+                
+                <div id="tulos-alue">
+                    </div>
+                </div>
+        </div>
+    </div>
+    
+    <script>
+    // === JAVASCRIPT-TOIMINNALLISUUS ===
+
+    const haeSijaintiNappi = document.getElementById('haeSijainti');
+    const tulosAlue = document.getElementById('tulos-alue'); // Otetaan käyttöön uusi pääelementti
+
+    haeSijaintiNappi.addEventListener('click', () => {
+        haeKunta();
+    });
+
+    function haeKunta() {
+        if (!("geolocation" in navigator)) {
+            tulosAlue.innerHTML = '<p>Selaimesi ei tue sijainnin hakua.</p>';
+            return;
+        }
+        tulosAlue.innerHTML = '<p>Haetaan sijaintiasi...</p>';
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    }
+
+    // --- MUOKATTU JAVASCRIPT-FUNKTIO LISÄTIETOJEN KÄSITTELYYN ALKAA ---
+    async function onSuccess(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        tulosAlue.innerHTML = '<p>Sijainti löydetty. Haetaan osoitetietoja...</p>';
+
+        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('Verkkovastaus ei ollut kunnossa.');
+            }
+            const data = await response.json();
+            const address = data.address;
+
+            // Puhdistetaan tulosalue ennen uusien tietojen lisäämistä
+            tulosAlue.innerHTML = '';
+
+            // 1. Haetaan ja näytetään kunta
+            const kunta = address.municipality || address.town || address.city || address.village;
+            if (kunta) {
+                tulosAlue.innerHTML += `<p class="kunta-iso">${kunta}</p>`;
+            } else {
+                tulosAlue.innerHTML += `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
+            }
+
+            // 2. Haetaan ja näytetään tarkempi osoite (katu, kaupunginosa)
+            // Käytetään `??` -operaattoria: jos tietoa ei löydy, näytetään 'Ei saatavilla'.
+            tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
+            tulosAlue.innerHTML += `<p><strong>Kaupunginosa:</strong> ${address.suburb ?? 'Ei saatavilla'}</p>`;
+            
+            // 3. Postinumero ja maa
+            tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${address.postcode ?? 'Ei saatavilla'}</p>`;
+            tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${address.country ?? 'Ei saatavilla'}</p>`;
+            
+            // 4. Koordinaatit
+            // toFixed(5) rajoittaa desimaalien määrän 5:een, mikä on riittävä tarkkuus.
+            tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${latitude.toFixed(5)}, ${longitude.toFixed(5)}</p>`;
+            
+            // 5. Koko osoite (display_name)
+            tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Koko osoite:</strong> ${data.display_name ?? 'Ei saatavilla'}</p>`;
+
+        } catch (error) {
+            console.error('Virhe osoitetietojen haussa:', error);
+            tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
+        }
+    }
+    // --- MUOKATTU JAVASCRIPT-FUNKTIO PÄÄTTYY ---
+
+    function onError(error) {
+        let virheViesti;
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                virheViesti = 'Et antanut lupaa sijainnin käyttöön.';
+                break;
+            case error.POSITION_UNAVAILABLE:
+                virheViesti = 'Sijaintitieto ei ole saatavilla.';
+                break;
+            case error.TIMEOUT:
+                virheViesti = 'Sijainnin haku kesti liian kauan.';
+                break;
+            default:
+                virheViesti = 'Tapahtui tuntematon virhe.';
+                break;
+        }
+        tulosAlue.innerHTML = `<p>${virheViesti}</p>`;
+    }
+    </script>
+
+</body>
+</html>
