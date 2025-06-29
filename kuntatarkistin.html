@@ -55,7 +55,7 @@
     <script>
     /*
       MIKKOKALEVIN KUNTATARKISTIN
-      Versio 9.5 - Yksinkertainen korjaus kuntatietoon (zoom-parametri)
+      Versio 9.6 - Pääpaikan nimen haku display_name-kentästä
     */
 
     // --- ELEMENTTIEN HAKU ---
@@ -150,9 +150,6 @@
         }
         marker.bindPopup(`<b>${paikanNimi}</b><br>${formatCoordinatesToDDM(lat, lon)}`).openPopup();
         
-        // --- KORJATTU KOHTA ---
-        // Lisätään &zoom=10, jotta saamme todennäköisemmin kuntatason tiedon
-        // Lisätään &accept-language=fi, jotta saamme paikannimet suomeksi
         const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&accept-language=fi`;
 
         try {
@@ -162,16 +159,22 @@
             const address = data.address;
             tulosAlue.innerHTML = '';
 
-            // Etsitään kunta tai vastaava tieto vastauksesta.
-            // Tämä etsii parasta mahdollista vastinetta kunnalle.
-            const kunta = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
-            const kokoNimi = data.display_name || 'Ei saatavilla';
+            // --- UUSI KORJATTU LOGIIKKA PAIKAN NIMELLE ---
+            let paatinimi = 'Kuntaa ei löytynyt'; // Asetetaan oletusarvo
+            if (data.display_name) {
+                // Pilkotaan koko osoitenimi osiin pilkun kohdalta ja otetaan ensimmäinen osa.
+                // .trim() poistaa mahdolliset tyhjät välit alusta ja lopusta.
+                paatinimi = data.display_name.split(',')[0].trim();
+            } else {
+                // Jos display_name-kenttää ei jostain syystä löydy, käytetään vanhaa logiikkaa.
+                paatinimi = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
+            }
 
-            tulosAlue.innerHTML += `<p class="kunta-iso">${kunta}</p>`;
+            // Näytetään juuri poimittu paatinimi keltaisella.
+            tulosAlue.innerHTML += `<p class="kunta-iso">${paatinimi}</p>`;
             
             tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${formatCoordinatesToDDM(lat, lon)}</p>`;
             
-            // Haetaan tarkempia tietoja, jos ne ovat saatavilla
             const tie = address.road || 'Ei saatavilla';
             const postinumero = address.postcode || 'Ei saatavilla';
             const maa = address.country || 'Ei saatavilla';
@@ -179,6 +182,9 @@
             tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${tie}</p>`;
             tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
             tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${maa}</p>`;
+            
+            // Näytetään edelleen koko osoiteketju lopussa lisätietona.
+            const kokoNimi = data.display_name || 'Ei saatavilla';
             tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
 
         } catch (error) {
