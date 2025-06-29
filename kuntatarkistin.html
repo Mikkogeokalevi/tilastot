@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MK kuntatarkistin</title>
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <style>
         body {
             background-color: #1a2015;
             font-family: 'Georgia', serif;
             margin: 0;
             padding: 20px;
-            transition: padding 0.3s ease;
         }
         .sisalto-laatikko {
             max-width: 800px;
@@ -21,39 +23,25 @@
             border: 3px solid #11150C;
             border-radius: 12px;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.6);
-            transition: margin 0.3s ease;
         }
         .teksti-alue {
             color: #F8F8F8;
-            line-height: 1.8;
-            text-align: justify;
             padding: 10px;
             font-size: 1.1em;
-            transition: font-size 0.3s ease;
         }
-        .logo-container {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .logo-container { text-align: center; margin-bottom: 15px; }
         .logo {
             width: 120px;
             height: 120px;
             border: 2px solid #90EE90;
             border-radius: 50%;
-            display: inline-block;
-            vertical-align: middle;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-            background-color: #3D4F2B;
-            padding: 3px;
         }
         .paaotsikko {
             color: #90EE90;
             text-align: center;
             margin-top: 0;
             margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             font-size: 1.6em;
-            letter-spacing: 0.5px;
         }
         .huomio-laatikko {
             background-color: #2A381C;
@@ -65,11 +53,9 @@
         }
         .huomio-otsikko {
             color: #FFD700;
-            font-size: 1.1em;
             font-weight: bold;
-            margin: 0 0 5px 0;
+            margin: 0 0 15px 0;
         }
-        
         #haeSijainti {
             background-color: #1a2015;
             color: #90EE90;
@@ -79,12 +65,6 @@
             font-family: 'Georgia', serif;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
-            margin-bottom: 15px;
-        }
-        #haeSijainti:hover {
-            background-color: #90EE90;
-            color: #1a2015;
         }
         #tulos-alue {
             text-align: left;
@@ -92,12 +72,8 @@
             color: #FFFFFF;
             font-size: 1em;
         }
-        #tulos-alue p {
-            margin: 8px 0;
-        }
-        #tulos-alue strong {
-            color: #90EE90;
-        }
+        #tulos-alue p { margin: 8px 0; }
+        #tulos-alue strong { color: #90EE90; }
         .kunta-iso {
             font-size: 1.2em;
             font-weight: bold;
@@ -105,26 +81,13 @@
             text-align: center;
             margin-bottom: 15px !important;
         }
-        
         #kartta-container {
             width: 100%;
-            height: 250px; /* Pienennetty korkeutta mobiilikäyttöön */
+            height: 300px; /* Korkeutta voi säätää */
             border-radius: 8px;
-            overflow: hidden;
-            margin-top: 20px; /* Lisätty pieni väli tekstin ja kartan väliin */
+            margin-top: 20px;
             border: 2px solid #90EE90;
-        }
-        #kartta-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .sisalto-laatikko { margin: 15px auto; }
-            .teksti-alue { font-size: 1.0em; }
-            .paaotsikko { font-size: 1.4em; }
+            background-color: #1a2015; /* Taustaväri latauksen ajaksi */
         }
     </style>
 </head>
@@ -135,18 +98,14 @@
             <div class="logo-container">
                 <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
             </div>
-            
             <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
-            
             <div class="huomio-laatikko">
                 <p class="huomio-otsikko">SIJAINTITARKISTIN</p>
                 <button id="haeSijainti">Hae nykyinen sijainti</button>
-                
                 <div id="tulos-alue">
-                    </div>
-                
-                <div id="kartta-container">
-                    </div>
+                    <p style="text-align: center;">Hae sijaintisi tai klikkaa karttaa.</p>
+                </div>
+                <div id="kartta-container"></div>
             </div>
         </div>
     </div>
@@ -156,84 +115,97 @@
     const tulosAlue = document.getElementById('tulos-alue');
     const karttaContainer = document.getElementById('kartta-container');
 
-    haeSijaintiNappi.addEventListener('click', () => {
-        haeKunta();
-    });
+    // Globaalit muuttujat kartalle ja merkille, jotta niitä voi muokata eri funktioista
+    let map;
+    let marker;
 
-    function haeKunta() {
+    // --- KARTAN ALUSTUS ---
+    // Tämä funktio ajetaan heti, kun sivu latautuu
+    function initMap() {
+        // Luodaan kartta ja asetetaan oletusnäkymä Lahteen
+        map = L.map('kartta-container').setView([60.98, 25.66], 10);
+
+        // Lisätään OpenStreetMap-karttapohja
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Lisätään kuuntelija kartan klikkauksille
+        map.on('click', onMapClick);
+    }
+    
+    // --- TAPAHTUMANKUUNTELIJAT ---
+    haeSijaintiNappi.addEventListener('click', haeGPSsijainti);
+    document.addEventListener('DOMContentLoaded', initMap); // Alustetaan kartta kun sivu on valmis
+
+    // --- FUNKTIOT ---
+    
+    // Ajetaan, kun "Hae nykyinen sijainti" -nappia painetaan
+    function haeGPSsijainti() {
         if (!("geolocation" in navigator)) {
             tulosAlue.innerHTML = '<p>Selaimesi ei tue sijainnin hakua.</p>';
             return;
         }
-        // Tyhjennetään vanhat tulokset ja näytetään latausviesti
-        tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan sijaintiasi...</p>';
-        karttaContainer.innerHTML = '';
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+        tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan GPS-sijaintia...</p>';
+        navigator.geolocation.getCurrentPosition(onGPSSuccess, onGPSError);
     }
 
-    async function onSuccess(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
+    // Ajetaan, kun GPS-haku onnistuu
+    function onGPSSuccess(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        map.setView([lat, lon], 13); // Keskistetään kartta GPS-sijaintiin
+        paivitaSijaintitiedot(lat, lon);
+    }
 
-        // Tyhjennetään latausviesti ennen tulosten näyttämistä
+    // Ajetaan, kun käyttäjä klikkaa karttaa
+    function onMapClick(e) {
+        const lat = e.latlng.lat;
+        const lon = e.latlng.lng;
+        paivitaSijaintitiedot(lat, lon);
+    }
+    
+    // YHTEINEN FUNKTIO, JOKA HAKEE TIEDOT JA PÄIVITTÄÄ NÄKYMÄN
+    async function paivitaSijaintitiedot(lat, lon) {
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan osoitetietoja...</p>';
         
-        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+        // Päivitetään merkin paikka kartalla
+        if (marker) {
+            marker.setLatLng([lat, lon]);
+        } else {
+            marker = L.marker([lat, lon]).addTo(map);
+        }
+
+        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
 
         try {
             const response = await fetch(apiUrl);
-            if (!response.ok) {
-                throw new Error('Verkkovastaus ei ollut kunnossa.');
-            }
+            if (!response.ok) throw new Error('Verkkovastaus ei ollut kunnossa.');
             const data = await response.json();
             const address = data.address;
 
-            // 1. NÄYTETÄÄN TEKSTITIEDOT
-            // Tyhjennetään tulosalue ennen uusien tietojen lisäämistä
             tulosAlue.innerHTML = '';
-
             const kunta = address.municipality || address.town || address.city || address.village;
-            if (kunta) {
-                tulosAlue.innerHTML += `<p class="kunta-iso">${kunta}</p>`;
-            } else {
-                tulosAlue.innerHTML += `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
-            }
+            tulosAlue.innerHTML += kunta ? `<p class="kunta-iso">${kunta}</p>` : `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
             tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Kaupunginosa:</strong> ${address.suburb ?? 'Ei saatavilla'}</p>`;
             tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${address.postcode ?? 'Ei saatavilla'}</p>`;
-            tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${address.country ?? 'Ei saatavilla'}</p>`;
-            tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${latitude.toFixed(5)}, ${longitude.toFixed(5)}</p>`;
-            tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Koko osoite:</strong> ${data.display_name ?? 'Ei saatavilla'}</p>`;
-
-            // 2. NÄYTETÄÄN KARTTA TEKSTITIETOJEN JÄLKEEN
-            const karttaUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude-0.01},${latitude-0.01},${longitude+0.01},${latitude+0.01}&layer=mapnik&marker=${latitude},${longitude}`;
-            karttaContainer.innerHTML = `<iframe src="${karttaUrl}"></iframe>`;
-
+            tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${lat.toFixed(5)}, ${lon.toFixed(5)}</p>`;
         } catch (error) {
-            console.error('Virhe osoitetietojen haussa:', error);
             tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
         }
     }
 
-    function onError(error) {
-        let virheViesti;
+    // GPS-haun virhekäsittelijä
+    function onGPSError(error) {
+        let virheViesti = 'Tapahtui tuntematon virhe.';
         switch (error.code) {
-            case error.PERMISSION_DENIED:
-                virheViesti = 'Et antanut lupaa sijainnin käyttöön.';
-                break;
-            case error.POSITION_UNAVAILABLE:
-                virheViesti = 'Sijaintitieto ei ole saatavilla.';
-                break;
-            case error.TIMEOUT:
-                virheViesti = 'Sijainnin haku kesti liian kauan.';
-                break;
-            default:
-                virheViesti = 'Tapahtui tuntematon virhe.';
-                break;
+            case error.PERMISSION_DENIED: virheViesti = 'Et antanut lupaa sijainnin käyttöön.'; break;
+            case error.POSITION_UNAVAILABLE: virheViesti = 'Sijaintitieto ei ole saatavilla.'; break;
+            case error.TIMEOUT: virheViesti = 'Sijainnin haku kesti liian kauan.'; break;
         }
         tulosAlue.innerHTML = `<p>${virheViesti}</p>`;
     }
     </script>
-
 </body>
 </html>
