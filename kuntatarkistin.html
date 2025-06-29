@@ -18,7 +18,7 @@
         .huomio-laatikko { background-color: #2A381C; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; border: 1px dashed #90EE90; }
         .huomio-otsikko { color: #FFD700; font-weight: bold; margin: 0 0 15px 0; }
         #haeSijainti { background-color: #1a2015; color: #90EE90; border: 1px solid #90EE90; padding: 12px 20px; font-size: 1em; font-family: 'Georgia', serif; border-radius: 6px; cursor: pointer; }
-        #tulos-alue { text-align: left; margin-top: 15px; color: #FFFFFF; font-size: 1em; }
+        #tulos-alue { text-align: left; margin-top: 15px; color: #FFFFFF; font-size: 1em; line-height: 1.6; }
         #tulos-alue p { margin: 8px 0; }
         #tulos-alue strong { color: #90EE90; }
         .kunta-iso { font-size: 1.2em; font-weight: bold; color: #FFD700; text-align: center; margin-bottom: 15px !important; }
@@ -53,6 +53,12 @@
     </div>
     
     <script>
+    /*
+      MIKKOKALEVIN KUNTATARKISTIN
+      Versio 9.5 - Yksinkertainen korjaus kuntatietoon (zoom-parametri)
+    */
+
+    // --- ELEMENTTIEN HAKU ---
     const haeSijaintiNappi = document.getElementById('haeSijainti');
     const tulosAlue = document.getElementById('tulos-alue');
     const karttaContainer = document.getElementById('kartta-container');
@@ -60,10 +66,13 @@
     const naytaKoordinaatitNappi = document.getElementById('naytaKoordinaatit');
     let map;
     let marker;
+
+    // --- TAPAHTUMANKUUNTELIJAT ---
     document.addEventListener('DOMContentLoaded', initMap);
     haeSijaintiNappi.addEventListener('click', haeGPSsijainti);
     naytaKoordinaatitNappi.addEventListener('click', haeManuaalisesti);
 
+    // --- KARTAN JA APUFUNKTIOIDEN ALUSTUS ---
     function initMap() {
         map = L.map('kartta-container').setView([60.98, 25.66], 10);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -71,6 +80,7 @@
         }).addTo(map);
         map.on('click', onMapClick);
     }
+    
     function parseCoordinates(input) {
         input = input.trim();
         const ddmRegex = /([ns])\s*(\d{1,3})[°\s]+([\d.]+)'?[\s,]*([ew])\s*(\d{1,3})[°\s]+([\d.]+)'?/i;
@@ -90,11 +100,26 @@
         }
         return null;
     }
+
+    function formatCoordinatesToDDM(lat, lon) {
+        const formatPart = (value, hemi1, hemi2) => {
+            const hemisphere = value >= 0 ? hemi1 : hemi2;
+            const absValue = Math.abs(value);
+            const degrees = Math.floor(absValue);
+            const minutes = (absValue - degrees) * 60;
+            const paddedDegrees = (hemi1 === 'E') ? degrees.toString().padStart(3, '0') : degrees;
+            return `${hemisphere} ${paddedDegrees}° ${minutes.toFixed(3)}'`;
+        };
+        return `${formatPart(lat, 'N', 'S')} ${formatPart(lon, 'E', 'W')}`;
+    }
+
+    // --- PÄÄTOIMINNOT ---
     function haeGPSsijainti() {
         if (!("geolocation" in navigator)) return;
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan GPS-sijaintia...</p>';
         navigator.geolocation.getCurrentPosition(onGPSSuccess, onGPSError);
     }
+    
     function haeManuaalisesti() {
         const coords = parseCoordinates(koordinaatitInput.value);
         if (coords) {
@@ -104,15 +129,18 @@
             alert("Koordinaattien muoto on virheellinen.\nSallitut muodot:\n- 60.98, 25.66\n- N 60° 55.690' E 025° 59.412'");
         }
     }
+    
     function onGPSSuccess(position) {
         const lat = position.coords.latitude, lon = position.coords.longitude;
         map.setView([lat, lon], 13);
         paivitaSijaintitiedot(lat, lon, "Oma sijainti");
     }
+
     function onMapClick(e) {
         const lat = e.latlng.lat, lon = e.latlng.lng;
         paivitaSijaintitiedot(lat, lon, "Klikattu sijainti");
     }
+    
     async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan osoitetietoja...</p>';
         if (marker) {
@@ -120,8 +148,13 @@
         } else {
             marker = L.marker([lat, lon]).addTo(map);
         }
-        marker.bindPopup(`<b>${paikanNimi}</b><br>${lat.toFixed(5)}, ${lon.toFixed(5)}`).openPopup();
-        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+        marker.bindPopup(`<b>${paikanNimi}</b><br>${formatCoordinatesToDDM(lat, lon)}`).openPopup();
+        
+        // --- KORJATTU KOHTA ---
+        // Lisätään &zoom=10, jotta saamme todennäköisemmin kuntatason tiedon
+        // Lisätään &accept-language=fi, jotta saamme paikannimet suomeksi
+        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&accept-language=fi`;
+
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('Verkkovastaus ei ollut kunnossa.');
@@ -129,29 +162,31 @@
             const address = data.address;
             tulosAlue.innerHTML = '';
 
-            // --- TÄMÄ ON UUSI, PARANNETTU LOGIIKKA KUNNAN NIMEÄ VARTEN ---
-            let kunta;
-            const hallinnollinenKunta = address.municipality;
-            const paikkakuntaNimi = address.city || address.town || address.village;
+            // Etsitään kunta tai vastaava tieto vastauksesta.
+            // Tämä etsii parasta mahdollista vastinetta kunnalle.
+            const kunta = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
+            const kokoNimi = data.display_name || 'Ei saatavilla';
 
-            if (hallinnollinenKunta && !hallinnollinenKunta.toLowerCase().includes('seutukunta')) {
-                // Jos löytyy kunta (`municipality`) EIKÄ se ole seutukunta, käytetään sitä.
-                // Tämä korjaa Hollola/Salpakangas-tapauksen.
-                kunta = hallinnollinenKunta;
-            } else {
-                // Muussa tapauksessa (on seutukunta tai puuttuu kokonaan), käytetään city/town/village.
-                // Tämä korjaa Orimattila/Lahden seutukunta -tapauksen.
-                kunta = paikkakuntaNimi || hallinnollinenKunta; // Viimeinen hätävara
-            }
-            // -------------------------------------------------------------
+            tulosAlue.innerHTML += `<p class="kunta-iso">${kunta}</p>`;
+            
+            tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${formatCoordinatesToDDM(lat, lon)}</p>`;
+            
+            // Haetaan tarkempia tietoja, jos ne ovat saatavilla
+            const tie = address.road || 'Ei saatavilla';
+            const postinumero = address.postcode || 'Ei saatavilla';
+            const maa = address.country || 'Ei saatavilla';
 
-            tulosAlue.innerHTML += kunta ? `<p class="kunta-iso">${kunta}</p>` : `<p class="kunta-iso">Kuntaa ei löytynyt</p>`;
-            tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${lat.toFixed(5)}, ${lon.toFixed(5)}</p>`;
-            tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${address.road ?? 'Ei saatavilla'}</p>`;
+            tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${tie}</p>`;
+            tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
+            tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${maa}</p>`;
+            tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
+
         } catch (error) {
+            console.error("Virhe haettaessa tietoja:", error);
             tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
         }
     }
+
     function onGPSError(error) {
         let virheViesti = 'Tapahtui tuntematon virhe.';
         switch (error.code) {
