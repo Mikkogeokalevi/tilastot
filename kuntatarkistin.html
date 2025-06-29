@@ -55,12 +55,6 @@
             font-size: 1.6em;
             letter-spacing: 0.5px;
         }
-        .leipateksti {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #FFFFFF;
-            font-size: 1.2em;
-        }
         .huomio-laatikko {
             background-color: #2A381C;
             padding: 15px;
@@ -112,12 +106,27 @@
             margin-bottom: 15px !important;
         }
         
+        /* --- LISÄTTY OSUUS KARTALLE ALKAA --- */
+        #kartta-container {
+            width: 100%;
+            height: 300px; /* Voit säätää kartan korkeutta tästä */
+            border-radius: 8px;
+            overflow: hidden; /* Varmistaa, että iframe pysyy pyöristysten sisällä */
+            margin-top: 20px;
+            border: 2px solid #90EE90;
+        }
+        #kartta-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* --- LISÄTTY OSUUS KARTALLE PÄÄTTYY --- */
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .sisalto-laatikko { margin: 15px auto; }
             .teksti-alue { font-size: 1.0em; }
             .paaotsikko { font-size: 1.4em; }
-            .leipateksti { font-size: 1.1em; text-align: left; }
         }
     </style>
 </head>
@@ -135,6 +144,7 @@
                 <p class="huomio-otsikko">SIJAINTITARKISTIN</p>
                 <button id="haeSijainti">Hae nykyinen sijainti</button>
                 
+                <div id="kartta-container"></div>
                 <div id="tulos-alue">
                     </div>
             </div>
@@ -144,6 +154,7 @@
     <script>
     const haeSijaintiNappi = document.getElementById('haeSijainti');
     const tulosAlue = document.getElementById('tulos-alue');
+    const karttaContainer = document.getElementById('kartta-container'); // Otetaan kartta-alue talteen
 
     haeSijaintiNappi.addEventListener('click', () => {
         haeKunta();
@@ -155,12 +166,24 @@
             return;
         }
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan sijaintiasi...</p>';
+        karttaContainer.innerHTML = ''; // Tyhjennetään vanha kartta
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
     }
 
     async function onSuccess(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
+
+        // --- LISÄTTY KARTAN LUONTI ALKAA ---
+        // Rakennetaan upotus-URL OpenStreetMapille
+        //bbox = sivusuunnassa näkyvä alue
+        //layer = karttatyyppi
+        //marker = merkin koordinaatit
+        const karttaUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${longitude-0.01},${latitude-0.01},${longitude+0.01},${latitude+0.01}&layer=mapnik&marker=${latitude},${longitude}`;
+        
+        // Luodaan iframe ja asetetaan sille lähteeksi luotu URL
+        karttaContainer.innerHTML = `<iframe src="${karttaUrl}"></iframe>`;
+        // --- LISÄTTY KARTAN LUONTI PÄÄTTYY ---
 
         tulosAlue.innerHTML = '<p style="text-align: center;">Sijainti löydetty. Haetaan osoitetietoja...</p>';
 
