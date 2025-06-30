@@ -55,7 +55,7 @@
     <script>
     /*
       MIKKOKALEVIN KUNTATARKISTIN
-      Versio 9.6 - Pääpaikan nimen haku display_name-kentästä
+      Versio 9.7 - Piilottaa tyhjät kentät (katu, postinumero)
     */
 
     // --- ELEMENTTIEN HAKU ---
@@ -159,31 +159,33 @@
             const address = data.address;
             tulosAlue.innerHTML = '';
 
-            // --- UUSI KORJATTU LOGIIKKA PAIKAN NIMELLE ---
-            let paatinimi = 'Kuntaa ei löytynyt'; // Asetetaan oletusarvo
+            let paatinimi = 'Kuntaa ei löytynyt';
             if (data.display_name) {
-                // Pilkotaan koko osoitenimi osiin pilkun kohdalta ja otetaan ensimmäinen osa.
-                // .trim() poistaa mahdolliset tyhjät välit alusta ja lopusta.
                 paatinimi = data.display_name.split(',')[0].trim();
             } else {
-                // Jos display_name-kenttää ei jostain syystä löydy, käytetään vanhaa logiikkaa.
                 paatinimi = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
             }
 
-            // Näytetään juuri poimittu paatinimi keltaisella.
             tulosAlue.innerHTML += `<p class="kunta-iso">${paatinimi}</p>`;
-            
             tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${formatCoordinatesToDDM(lat, lon)}</p>`;
             
-            const tie = address.road || 'Ei saatavilla';
-            const postinumero = address.postcode || 'Ei saatavilla';
+            // --- TÄSSÄ ON MUUTOS ---
+            const tie = address.road;
+            const postinumero = address.postcode;
             const maa = address.country || 'Ei saatavilla';
 
-            tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${tie}</p>`;
-            tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
+            // Näytetään katu vain, jos tieto on saatavilla
+            if (tie) {
+                tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${tie}</p>`;
+            }
+            
+            // Näytetään postinumero vain, jos tieto on saatavilla
+            if (postinumero) {
+                tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
+            }
+
             tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${maa}</p>`;
             
-            // Näytetään edelleen koko osoiteketju lopussa lisätietona.
             const kokoNimi = data.display_name || 'Ei saatavilla';
             tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
 
