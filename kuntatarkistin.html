@@ -17,6 +17,8 @@
         .paaotsikko { color: #90EE90; text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 1.6em; }
         .huomio-laatikko { background-color: #2A381C; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; border: 1px dashed #90EE90; }
         .huomio-otsikko { color: #FFD700; font-weight: bold; margin: 0 0 15px 0; }
+        #haeSijainti, #naytaKoordinaatit { transition: background-color 0.2s, color 0.2s; }
+        #haeSijainti:disabled, #naytaKoordinaatit:disabled { background-color: #555 !important; color: #888 !important; border-color: #555 !important; cursor: not-allowed; }
         #haeSijainti { background-color: #1a2015; color: #90EE90; border: 1px solid #90EE90; padding: 12px 20px; font-size: 1em; font-family: 'Georgia', serif; border-radius: 6px; cursor: pointer; }
         #tulos-alue { text-align: left; margin-top: 15px; color: #FFFFFF; font-size: 1em; line-height: 1.6; }
         #tulos-alue p { margin: 8px 0; }
@@ -55,7 +57,7 @@
     <script>
     /*
       MIKKOKALEVIN KUNTATARKISTIN
-      Versio 9.7 - Piilottaa tyhjät kentät (katu, postinumero)
+      Versio 9.8 - Parannettu UX ja API-käyttö
     */
 
     // --- ELEMENTTIEN HAKU ---
@@ -71,6 +73,11 @@
     document.addEventListener('DOMContentLoaded', initMap);
     haeSijaintiNappi.addEventListener('click', haeGPSsijainti);
     naytaKoordinaatitNappi.addEventListener('click', haeManuaalisesti);
+
+    function setButtonsDisabled(disabled) {
+        haeSijaintiNappi.disabled = disabled;
+        naytaKoordinaatitNappi.disabled = disabled;
+    }
 
     // --- KARTAN JA APUFUNKTIOIDEN ALUSTUS ---
     function initMap() {
@@ -116,6 +123,7 @@
     // --- PÄÄTOIMINNOT ---
     function haeGPSsijainti() {
         if (!("geolocation" in navigator)) return;
+        setButtonsDisabled(true);
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan GPS-sijaintia...</p>';
         navigator.geolocation.getCurrentPosition(onGPSSuccess, onGPSError);
     }
@@ -142,6 +150,7 @@
     }
     
     async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
+        setButtonsDisabled(true);
         tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan osoitetietoja...</p>';
         if (marker) {
             marker.setLatLng([lat, lon]);
@@ -153,12 +162,16 @@
         const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&accept-language=fi`;
 
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(apiUrl, {
+                headers: { 'User-Agent': 'MikkokalevinKuntatarkistin/1.0' }
+            });
             if (!response.ok) throw new Error('Verkkovastaus ei ollut kunnossa.');
+            
             const data = await response.json();
             const address = data.address;
-            tulosAlue.innerHTML = '';
-
+            
+            let htmlOutput = '';
+            
             let paatinimi = 'Kuntaa ei löytynyt';
             if (data.display_name) {
                 paatinimi = data.display_name.split(',')[0].trim();
@@ -166,32 +179,28 @@
                 paatinimi = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
             }
 
-            tulosAlue.innerHTML += `<p class="kunta-iso">${paatinimi}</p>`;
-            tulosAlue.innerHTML += `<p><strong>Koordinaatit:</strong> ${formatCoordinatesToDDM(lat, lon)}</p>`;
+            htmlOutput += `<p class="kunta-iso">${paatinimi}</p>`;
+            htmlOutput += `<p><strong>Koordinaatit:</strong> ${formatCoordinatesToDDM(lat, lon)}</p>`;
             
-            // --- TÄSSÄ ON MUUTOS ---
             const tie = address.road;
             const postinumero = address.postcode;
             const maa = address.country || 'Ei saatavilla';
 
-            // Näytetään katu vain, jos tieto on saatavilla
-            if (tie) {
-                tulosAlue.innerHTML += `<p><strong>Katu:</strong> ${tie}</p>`;
-            }
+            if (tie) htmlOutput += `<p><strong>Katu:</strong> ${tie}</p>`;
+            if (postinumero) htmlOutput += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
             
-            // Näytetään postinumero vain, jos tieto on saatavilla
-            if (postinumero) {
-                tulosAlue.innerHTML += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
-            }
-
-            tulosAlue.innerHTML += `<p><strong>Maa:</strong> ${maa}</p>`;
+            htmlOutput += `<p><strong>Maa:</strong> ${maa}</p>`;
             
             const kokoNimi = data.display_name || 'Ei saatavilla';
-            tulosAlue.innerHTML += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
+            htmlOutput += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
+            
+            tulosAlue.innerHTML = htmlOutput;
 
         } catch (error) {
             console.error("Virhe haettaessa tietoja:", error);
             tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
+        } finally {
+            setButtonsDisabled(false);
         }
     }
 
@@ -203,6 +212,7 @@
             case error.TIMEOUT: virheViesti = 'Sijainnin haku kesti liian kauan.'; break;
         }
         tulosAlue.innerHTML = `<p>${virheViesti}</p>`;
+        setButtonsDisabled(false);
     }
     </script>
 </body>
