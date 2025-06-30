@@ -13,8 +13,8 @@
         .sisalto-laatikko { max-width: 800px; margin: 30px auto; padding: 10px; background-color: #3D4F2B; border: 3px solid #11150C; border-radius: 12px; box-shadow: 5px 5px 15px rgba(0,0,0,0.6); }
         .teksti-alue { color: #F8F8F8; padding: 10px; font-size: 1.1em; }
         .logo-container { text-align: center; margin-bottom: 15px; }
-        .logo { width: 120px; height: 120px; border: 2px solid #90EE90; border-radius: 50%; }
-        .paaotsikko { color: #90EE90; text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 1.6em; }
+        .logo { width: 120px; height: 120px; border: 2px solid #90EE90; border-radius: 50%; transition: width 0.3s, height 0.3s; }
+        .paaotsikko { color: #90EE90; text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 1.6em; transition: font-size 0.3s; }
         .huomio-laatikko { background-color: #2A381C; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; border: 1px dashed #90EE90; }
         .huomio-otsikko { color: #FFD700; font-weight: bold; margin: 0 0 15px 0; }
         #haeSijainti, #naytaKoordinaatit { transition: background-color 0.2s, color 0.2s; }
@@ -31,10 +31,31 @@
         /* --- MOBIILIOPTIMOINTI --- */
         @media screen and (max-width: 480px) {
             body {
-                padding: 10px; /* Vähennetään sivun reunuksia kapeilla näytöillä */
+                padding: 10px;
             }
             .sisalto-laatikko {
-                margin: 15px auto; /* Pienennetään laatikon ylä- ja alamarginaalia */
+                margin: 15px auto;
+            }
+
+            /* UUDET SÄÄNNÖT LOGON JA OTSIKON ASETTELUUN */
+            .header-flex-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                padding-bottom: 10px;
+            }
+            .logo-container {
+                margin-bottom: 0;
+            }
+            .logo {
+                width: 75px;
+                height: 75px;
+            }
+            .paaotsikko {
+                font-size: 1.3em;
+                margin: 0;
+                text-align: left;
             }
         }
     </style>
@@ -42,10 +63,12 @@
 <body>
     <div class="sisalto-laatikko">
         <div class="teksti-alue">
-            <div class="logo-container">
-                <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
+            <div class="header-flex-container">
+                <div class="logo-container">
+                    <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
+                </div>
+                <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
             </div>
-            <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
             
             <div class="huomio-laatikko">
                 <p class="huomio-otsikko">OMA SIJAINTI</p>
@@ -67,7 +90,7 @@
     <script>
     /*
       MIKKOKALEVIN KUNTATARKISTIN
-      Versio 9.9 - Mobiilioptimointi ja UX-parannukset
+      Versio 10.0 - Mobiilin header-asettelun parannus
     */
 
     // --- ELEMENTTIEN HAKU ---
