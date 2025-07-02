@@ -316,3 +316,81 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         let htmlOutput = '';
         
         // KUNTA ON TÄRKEIN TIETO!
+        let paatinimi = 'Kuntaa ei löytynyt';
+        if (data.display_name) {
+            paatinimi = data.display_name.split(',')[0].trim();
+        } else {
+            paatinimi = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
+        }
+
+        htmlOutput += `<p class="kunta-iso">${paatinimi}</p>`;
+        
+        // Koordinaatit kopiointimahdollisuudella
+        const koordinaatitDDM = formatCoordinatesToDDM(lat, lon);
+        const koordinaatitDD = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+        
+        htmlOutput += `<div class="koordinaatti-rivi">
+            <strong>Koordinaatit (DDM):</strong> ${koordinaatitDDM}
+        </div>`;
+        
+        htmlOutput += `<div class="koordinaatti-rivi">
+            <strong>Koordinaatit (DD):</strong> ${koordinaatitDD}
+        </div>`;
+        
+        // Muut tiedot
+        const tie = address.road;
+        const postinumero = address.postcode;
+        const kunta = address.municipality || address.city || address.town || address.village;
+        const maa = address.country || 'Ei saatavilla';
+
+        if (tie) htmlOutput += `<p><strong>Katu:</strong> ${tie}</p>`;
+        if (postinumero) htmlOutput += `<p><strong>Postinumero:</strong> ${postinumero}</p>`;
+        if (kunta && kunta !== paatinimi) htmlOutput += `<p><strong>Kunta:</strong> ${kunta}</p>`;
+        
+        htmlOutput += `<p><strong>Maa:</strong> ${maa}</p>`;
+        
+        const kokoNimi = data.display_name || 'Ei saatavilla';
+        htmlOutput += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
+        
+        // Kopiointinappien lisäys
+        const kopioiDDM = luoKopioiNappi(koordinaatitDDM);
+        const kopioiDD = luoKopioiNappi(koordinaatitDD);
+        
+        tulosAlue.innerHTML = htmlOutput;
+        
+        // Lisää kopiointinappien event listenerit
+        const koordinaattiRivit = tulosAlue.querySelectorAll('.koordinaatti-rivi');
+        if (koordinaattiRivit.length >= 2) {
+            koordinaattiRivit[0].appendChild(kopioiDDM);
+            koordinaattiRivit[1].appendChild(kopioiDD);
+        }
+        
+        // Lisää historiaan
+        lisaaHistoriaan(paatinimi, koordinaatitDDM, paikanNimi);
+
+    } catch (error) {
+        console.error("Virhe haettaessa tietoja:", error);
+        tulosAlue.innerHTML = '<p>Virhe haettaessa tietoja. Yritä uudelleen.</p>';
+        naytaViesti('Virhe haettaessa sijaintitietoja', 'error');
+    } finally {
+        setButtonsDisabled(false);
+    }
+}
+
+function onGPSError(error) {
+    let virheViesti = 'Tapahtui tuntematon virhe.';
+    switch (error.code) {
+        case error.PERMISSION_DENIED: 
+            virheViesti = 'Et antanut lupaa sijainnin käyttöön.'; 
+            break;
+        case error.POSITION_UNAVAILABLE: 
+            virheViesti = 'Sijaintitieto ei ole saatavilla.'; 
+            break;
+        case error.TIMEOUT: 
+            virheViesti = 'Sijainnin haku kesti liian kauan.'; 
+            break;
+    }
+    tulosAlue.innerHTML = `<p>${virheViesti}</p>`;
+    naytaViesti(virheViesti, 'error');
+    setButtonsDisabled(false);
+}
