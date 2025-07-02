@@ -1,6 +1,6 @@
 /*
   MIKKOKALEVIN KUNTATARKISTIN
-  Versio 14.0 - Monipiste-etäisyysmittari raahattavilla pisteillä
+  Versio 15.0 - Etäisyysmittari näyttää myös välimatkat
 */
 
 // --- ELEMENTTIEN HAKU ---
@@ -27,7 +27,7 @@ let etaisyysViiva;
 let sijaintiHistoria = [];
 let kayttoTila = 'haku'; // 'haku' tai 'etaisyys'
 
-// --- UUDET ASETUKSET ETÄISYYSMITTARILLE ---
+// --- ASETUKSET ETÄISYYSMITTARILLE ---
 const MAX_ETAISYYS_PISTEET = 30; // Suositeltu maksimimäärä pisteitä
 
 
@@ -173,16 +173,6 @@ function luoKopioiNappi(teksti) {
 
 // --- ETÄISYYSLASKURIN PARANNETUT FUNKTIOT ---
 
-function laskeKokonaisEtaisyys(pisteet) {
-    let totalDistance = 0;
-    for (let i = 1; i < pisteet.length; i++) {
-        const [lat1, lon1] = pisteet[i-1];
-        const [lat2, lon2] = pisteet[i];
-        totalDistance += laskeKahdenPisteenEtaisyys(lat1, lon1, lat2, lon2);
-    }
-    return totalDistance;
-}
-
 function laskeKahdenPisteenEtaisyys(lat1, lon1, lat2, lon2) {
     const R = 6371; // Maapallon säde kilometreissä
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -200,8 +190,16 @@ function paivitaEtaisyysPolkuJaTulos() {
         map.removeLayer(etaisyysViiva);
     }
 
-    // Laske kokonaismatka
-    const kokonaisEtaisyys = laskeKokonaisEtaisyys(etaisyysPisteet);
+    // Laske kokonaismatka ja luo lista välimatkoista
+    let kokonaisEtaisyys = 0;
+    let segmenttiHtml = '';
+    for (let i = 1; i < etaisyysPisteet.length; i++) {
+        const [lat1, lon1] = etaisyysPisteet[i-1];
+        const [lat2, lon2] = etaisyysPisteet[i];
+        const segmentinEtaisyys = laskeKahdenPisteenEtaisyys(lat1, lon1, lat2, lon2);
+        kokonaisEtaisyys += segmentinEtaisyys;
+        segmenttiHtml += `<p class="segmentti-rivi">Piste ${i} &rarr; ${i + 1}: <strong>${segmentinEtaisyys.toFixed(2)} km</strong></p>`;
+    }
     
     // Päivitä viiva, jos pisteitä on vähintään 2
     if (etaisyysPisteet.length > 1) {
@@ -211,7 +209,12 @@ function paivitaEtaisyysPolkuJaTulos() {
     // Päivitä tulosnäkymä
     document.getElementById('etaisyys-pisteet').innerHTML = `<p>Pisteitä asetettu: ${etaisyysPisteet.length}/${MAX_ETAISYYS_PISTEET}</p>`;
     if (kokonaisEtaisyys > 0) {
-        etaisyysTulos.innerHTML = `<div class="etaisyys-tulos"><strong>Kokonaisetäisyys: ${kokonaisEtaisyys.toFixed(2)} km</strong></div>`;
+        etaisyysTulos.innerHTML = 
+            `<div class="etaisyys-tulos">
+                <p><strong>Kokonaisetäisyys: ${kokonaisEtaisyys.toFixed(2)} km</strong></p>
+                <hr style="border-color: #90EE9044; border-style: dashed; margin: 8px 0;">
+                ${segmenttiHtml}
+            </div>`;
     } else {
         etaisyysTulos.innerHTML = '';
     }
@@ -227,7 +230,7 @@ function lisaaEtaisyyspiste(lat, lon) {
     etaisyysPisteet.push([lat, lon]);
 
     const uusiMarker = L.marker([lat, lon], {
-        draggable: true, // TÄMÄ TEKEE PISTEESTÄ RAAHATTAVAN
+        draggable: true,
         icon: L.divIcon({
             className: 'etaisyys-marker',
             html: `<div style="background: red; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; font-weight: bold;">${pisteIndex + 1}</div>`,
@@ -235,13 +238,10 @@ function lisaaEtaisyyspiste(lat, lon) {
         })
     }).addTo(map);
 
-    // Lisää kuuntelija pisteen siirtämiselle
     uusiMarker.on('dragend', function(event) {
         const marker = event.target;
         const newPosition = marker.getLatLng();
-        // Päivitä pisteen sijainti taulukkoon
         etaisyysPisteet[pisteIndex] = [newPosition.lat, newPosition.lng];
-        // Päivitä koko polku ja matka
         paivitaEtaisyysPolkuJaTulos();
     });
 
