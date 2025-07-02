@@ -1,6 +1,6 @@
 /*
   MIKKOKALEVIN KUNTATARKISTIN
-  Versio 12.0 - Parannettu versio - Modulaarinen
+  Versio 13.0 - Parannettu versio - Tallennettu historia, UX-parannukset
 */
 
 // --- ELEMENTTIEN HAKU ---
@@ -14,6 +14,10 @@ const tyhjennaPisteetNappi = document.getElementById('tyhjenna-pisteet');
 const etaisyysTulos = document.getElementById('etaisyys-tulos');
 const historiaLista = document.getElementById('historia-lista');
 const tyhjennaHistoriaNappi = document.getElementById('tyhjenna-historia');
+const tilaHakuNappi = document.getElementById('tila-haku');
+const tilaEtaisyysNappi = document.getElementById('tila-etaisyys');
+const etaisyysLaatikko = document.getElementById('etaisyys-laatikko');
+
 
 let map;
 let marker;
@@ -22,14 +26,30 @@ let etaisyysPisteet = [];
 let etaisyysMarkerit = [];
 let etaisyysViiva;
 let sijaintiHistoria = [];
+let kayttoTila = 'haku'; // 'haku' tai 'etaisyys'
+
+// --- HISTORIAN LATAUS ---
+const tallennettuHistoria = localStorage.getItem('mk_kuntatarkistin_historia');
+if (tallennettuHistoria) {
+    sijaintiHistoria = JSON.parse(tallennettuHistoria);
+}
+
 
 // --- TAPAHTUMANKUUNTELIJAT ---
-document.addEventListener('DOMContentLoaded', initMap);
+document.addEventListener('DOMContentLoaded', () => {
+    initMap();
+    paivitaHistoria();
+    lueURLJaAsetaSijainti();
+});
 haeSijaintiNappi.addEventListener('click', haeGPSsijainti);
 naytaKoordinaatitNappi.addEventListener('click', haeManuaalisesti);
 karttaTyyli.addEventListener('change', vaihdaKarttaTyyli);
 tyhjennaPisteetNappi.addEventListener('click', tyhjennaEtaisyysPisteet);
 tyhjennaHistoriaNappi.addEventListener('click', tyhjennaHistoria);
+
+tilaHakuNappi.addEventListener('click', () => vaihdaKayttoTila('haku'));
+tilaEtaisyysNappi.addEventListener('click', () => vaihdaKayttoTila('etaisyys'));
+
 
 function setButtonsDisabled(disabled) {
     haeSijaintiNappi.disabled = disabled;
@@ -48,7 +68,6 @@ function naytaViesti(viesti, tyyppi = 'info') {
 function initMap() {
     map = L.map('kartta-container').setView([60.98, 25.66], 10);
     
-    // Karttatasot - oletuksena CartoDB Light (toimivampi kuin dark)
     currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
@@ -172,6 +191,7 @@ function lisaaHistoriaan(kunta, koordinaatit, tyyppi) {
     sijaintiHistoria.unshift(uusiSijainti);
     if (sijaintiHistoria.length > 5) sijaintiHistoria.pop();
     
+    localStorage.setItem('mk_kuntatarkistin_historia', JSON.stringify(sijaintiHistoria));
     paivitaHistoria();
 }
 
@@ -200,6 +220,7 @@ window.siirryHistoriaSijaintiin = function(index) {
 
 function tyhjennaHistoria() {
     sijaintiHistoria = [];
+    localStorage.removeItem('mk_kuntatarkistin_historia');
     paivitaHistoria();
     naytaViesti('Historia tyhjennetty');
 }
@@ -216,6 +237,19 @@ function tyhjennaEtaisyysPisteet() {
     document.getElementById('etaisyys-pisteet').innerHTML = '<p>Klikkaa karttaa kahdesti etäisyyden laskemiseksi</p>';
 }
 
+function vaihdaKayttoTila(uusiTila) {
+    kayttoTila = uusiTila;
+    if (uusiTila === 'haku') {
+        tilaHakuNappi.classList.add('aktiivinen-tila');
+        tilaEtaisyysNappi.classList.remove('aktiivinen-tila');
+        etaisyysLaatikko.style.display = 'none';
+    } else { // 'etaisyys'
+        tilaHakuNappi.classList.remove('aktiivinen-tila');
+        tilaEtaisyysNappi.classList.add('aktiivinen-tila');
+        etaisyysLaatikko.style.display = 'block';
+    }
+}
+
 // --- PÄÄTOIMINNOT ---
 function haeGPSsijainti() {
     if (!("geolocation" in navigator)) {
@@ -225,7 +259,6 @@ function haeGPSsijainti() {
     setButtonsDisabled(true);
     tulosAlue.innerHTML = '<p style="text-align: center;">Haetaan GPS-sijaintia...</p>';
     
-    // Parannettu GPS-lupa käsittely
     navigator.geolocation.getCurrentPosition(onGPSSuccess, onGPSError, {
         enableHighAccuracy: true,
         timeout: 15000,
@@ -251,9 +284,12 @@ function onGPSSuccess(position) {
 
 function onMapClick(e) {
     const lat = e.latlng.lat, lon = e.latlng.lng;
-    
-    // Etäisyyslaskuri
-    if (etaisyysPisteet.length < 2) {
+
+    if (kayttoTila === 'etaisyys') {
+        if (etaisyysPisteet.length >= 2) {
+            tyhjennaEtaisyysPisteet(); // Aloita alusta, jos 2 pistettä on jo asetettu
+        }
+        
         etaisyysPisteet.push([lat, lon]);
         const marker = L.marker([lat, lon], {
             icon: L.divIcon({
@@ -264,8 +300,7 @@ function onMapClick(e) {
         }).addTo(map);
         etaisyysMarkerit.push(marker);
         
-        document.getElementById('etaisyys-pisteet').innerHTML = 
-            `<p>Piste ${etaisyysPisteet.length}/2 asetettu</p>`;
+        document.getElementById('etaisyys-pisteet').innerHTML = `<p>Piste ${etaisyysPisteet.length}/2 asetettu</p>`;
         
         if (etaisyysPisteet.length === 2) {
             const [lat1, lon1] = etaisyysPisteet[0];
@@ -281,13 +316,11 @@ function onMapClick(e) {
                     Piste 2: ${formatCoordinatesToDDM(lat2, lon2)}
                 </div>`;
             
-            document.getElementById('etaisyys-pisteet').innerHTML = 
-                '<p>Kaksi pistettä asetettu - etäisyys laskettu</p>';
+            document.getElementById('etaisyys-pisteet').innerHTML = '<p>Kaksi pistettä asetettu. Klikkaa uudelleen aloittaaksesi alusta.</p>';
         }
+    } else { // kayttoTila on 'haku'
+        paivitaSijaintitiedot(lat, lon, "Klikattu sijainti");
     }
-    
-    // Tavallinen sijaintihaku
-    paivitaSijaintitiedot(lat, lon, "Klikattu sijainti");
 }
 
 async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
@@ -299,7 +332,9 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
     } else {
         marker = L.marker([lat, lon]).addTo(map);
     }
-    marker.bindPopup(`<b>${paikanNimi}</b><br>${formatCoordinatesToDDM(lat, lon)}`).openPopup();
+    
+    const koordinaatitDDM = formatCoordinatesToDDM(lat, lon);
+    marker.bindPopup(`<b>${paikanNimi}</b><br>${koordinaatitDDM}`).openPopup();
     
     const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&accept-language=fi`;
 
@@ -315,29 +350,13 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         
         let htmlOutput = '';
         
-        // KUNTA ON TÄRKEIN TIETO!
-        let paatinimi = 'Kuntaa ei löytynyt';
-        if (data.display_name) {
-            paatinimi = data.display_name.split(',')[0].trim();
-        } else {
-            paatinimi = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
-        }
-
+        let paatinimi = address.municipality || address.city || address.town || address.village || 'Kuntaa ei löytynyt';
         htmlOutput += `<p class="kunta-iso">${paatinimi}</p>`;
-        
-        // Koordinaatit kopiointimahdollisuudella
-        const koordinaatitDDM = formatCoordinatesToDDM(lat, lon);
-        const koordinaatitDD = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
         
         htmlOutput += `<div class="koordinaatti-rivi">
             <strong>Koordinaatit (DDM):</strong> ${koordinaatitDDM}
         </div>`;
         
-        htmlOutput += `<div class="koordinaatti-rivi">
-            <strong>Koordinaatit (DD):</strong> ${koordinaatitDD}
-        </div>`;
-        
-        // Muut tiedot
         const tie = address.road;
         const postinumero = address.postcode;
         const kunta = address.municipality || address.city || address.town || address.village;
@@ -352,21 +371,16 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         const kokoNimi = data.display_name || 'Ei saatavilla';
         htmlOutput += `<hr style="border-color: #90EE9044; border-style: dashed;"><p><strong>Tarkka sijainti:</strong> ${kokoNimi}</p>`;
         
-        // Kopiointinappien lisäys
-        const kopioiDDM = luoKopioiNappi(koordinaatitDDM);
-        const kopioiDD = luoKopioiNappi(koordinaatitDD);
-        
         tulosAlue.innerHTML = htmlOutput;
         
-        // Lisää kopiointinappien event listenerit
-        const koordinaattiRivit = tulosAlue.querySelectorAll('.koordinaatti-rivi');
-        if (koordinaattiRivit.length >= 2) {
-            koordinaattiRivit[0].appendChild(kopioiDDM);
-            koordinaattiRivit[1].appendChild(kopioiDD);
+        const kopioiDDM = luoKopioiNappi(koordinaatitDDM);
+        const koordinaattiRivi = tulosAlue.querySelector('.koordinaatti-rivi');
+        if (koordinaattiRivi) {
+            koordinaattiRivi.appendChild(kopioiDDM);
         }
         
-        // Lisää historiaan
         lisaaHistoriaan(paatinimi, koordinaatitDDM, paikanNimi);
+        updateURL(lat, lon, map.getZoom());
 
     } catch (error) {
         console.error("Virhe haettaessa tietoja:", error);
@@ -380,17 +394,43 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
 function onGPSError(error) {
     let virheViesti = 'Tapahtui tuntematon virhe.';
     switch (error.code) {
-        case error.PERMISSION_DENIED: 
-            virheViesti = 'Et antanut lupaa sijainnin käyttöön.'; 
-            break;
-        case error.POSITION_UNAVAILABLE: 
-            virheViesti = 'Sijaintitieto ei ole saatavilla.'; 
-            break;
-        case error.TIMEOUT: 
-            virheViesti = 'Sijainnin haku kesti liian kauan.'; 
-            break;
+        case error.PERMISSION_DENIED: virheViesti = 'Et antanut lupaa sijainnin käyttöön.'; break;
+        case error.POSITION_UNAVAILABLE: virheViesti = 'Sijaintitieto ei ole saatavilla.'; break;
+        case error.TIMEOUT: virheViesti = 'Sijainnin haku kesti liian kauan.'; break;
     }
     tulosAlue.innerHTML = `<p>${virheViesti}</p>`;
     naytaViesti(virheViesti, 'error');
     setButtonsDisabled(false);
+}
+
+// --- URL-KÄSITTELY ---
+function updateURL(lat, lon, zoom) {
+    const ddmCoords = formatCoordinatesToDDM(lat, lon);
+    const hash = `#${encodeURIComponent(ddmCoords)}/${zoom}`;
+    if (history.replaceState) {
+        history.replaceState(null, null, hash);
+    } else {
+        window.location.hash = hash;
+    }
+}
+
+function lueURLJaAsetaSijainti() {
+    if (window.location.hash) {
+        try {
+            const hash = decodeURIComponent(window.location.hash.substring(1));
+            const parts = hash.split('/');
+            if (parts.length === 2) {
+                const coordsString = parts[0];
+                const zoom = parseInt(parts[1], 10);
+                const coords = parseCoordinates(coordsString);
+                if (coords && !isNaN(zoom)) {
+                    map.setView([coords.lat, coords.lon], zoom);
+                    paivitaSijaintitiedot(coords.lat, coords.lon, "Jaettu sijainti");
+                    naytaViesti("Sijainti ladattu jaetusta linkistä!");
+                }
+            }
+        } catch (e) {
+            console.error("Virhe URL-hajautteen lukemisessa:", e);
+        }
+    }
 }
