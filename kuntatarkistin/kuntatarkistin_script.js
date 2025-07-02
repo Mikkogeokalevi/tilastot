@@ -1,9 +1,9 @@
 /*
   MIKKOKALEVIN KUNTATARKISTIN
-  Versio 16.0 - Virallinen kuntatieto Maanmittauslaitoksen API:lla
+  Versio 16.1 - Parannettu virheenkäsittely MML-rajapinnalle
 */
 
-// --- LISÄÄ OMA API-AVAIMESI TÄHÄN ---
+// --- API-AVAIMESI ---
 const MML_API_KEY = '465a275a-7100-42fc-bb99-506fc447256b';
 
 
@@ -276,7 +276,7 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
     const mmlUrl = `https://avoin-paikkatieto.maanmittauslaitos.fi/geocoding/v1/reverse?lat=${lat}&lon=${lon}&limit=1&lang=fi&api-key=${MML_API_KEY}`;
 
     try {
-        if (MML_API_KEY === 'LISÄÄ TÄHÄN MAANMITTAUSLAITOKSELTA SAAMASI API-AVAIN') {
+        if (MML_API_KEY.startsWith('LISÄÄ TÄHÄN')) {
             throw new Error("Maanmittauslaitoksen API-avain puuttuu. Lisää se kuntatarkistin_script.js-tiedostoon.");
         }
 
@@ -285,7 +285,16 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
             fetch(mmlUrl)
         ]);
 
-        if (!mmlResponse.ok) throw new Error(`MML-rajapintavirhe: ${mmlResponse.statusText}`);
+        if (!mmlResponse.ok) {
+            let mmlErrorMsg = `MML-rajapintavirhe (status: ${mmlResponse.status}). `;
+            if (mmlResponse.status === 401 || mmlResponse.status === 403) {
+                mmlErrorMsg += "Tarkista, että API-avain on oikein ja aktiivinen.";
+            } else {
+                mmlErrorMsg += mmlResponse.statusText;
+            }
+            throw new Error(mmlErrorMsg);
+        }
+        
         const mmlData = await mmlResponse.json();
         
         let virallinenKunta = 'Kuntaa ei löytynyt';
