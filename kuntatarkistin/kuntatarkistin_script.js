@@ -1,6 +1,6 @@
 /*
   MIKKOKALEVIN KUNTATARKISTIN
-  Versio 16.1 - Parannettu virheenkäsittely MML-rajapinnalle
+  Versio 16.2 - Korjattu MML-rajapinnan osoite (URL)
 */
 
 // --- API-AVAIMESI ---
@@ -273,11 +273,13 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
     marker.bindPopup(`<b>${paikanNimi}</b><br>${koordinaatitDDM}`).openPopup();
     
     const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&accept-language=fi`;
-    const mmlUrl = `https://avoin-paikkatieto.maanmittauslaitos.fi/geocoding/v1/reverse?lat=${lat}&lon=${lon}&limit=1&lang=fi&api-key=${MML_API_KEY}`;
+    
+    // --- KORJATTU OSOITE ALLA ---
+    const mmlUrl = `https://avoin-paikkatieto.maanmittauslaitos.fi/ogc/features/v1/collections/paikannimet/items?lat=${lat}&lon=${lon}&limit=1&lang=fi&api-key=${MML_API_KEY}`;
 
     try {
-        if (MML_API_KEY.startsWith('LISÄÄ TÄHÄN')) {
-            throw new Error("Maanmittauslaitoksen API-avain puuttuu. Lisää se kuntatarkistin_script.js-tiedostoon.");
+        if (MML_API_KEY.startsWith('465a275a') === false) { // Tarkistetaan vain osa avaimesta ettei se ole enää placeholder
+            throw new Error("Maanmittauslaitoksen API-avain on virheellinen tai puuttuu. Lisää se kuntatarkistin_script.js-tiedostoon.");
         }
 
         const [nominatimResponse, mmlResponse] = await Promise.all([
@@ -289,7 +291,10 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
             let mmlErrorMsg = `MML-rajapintavirhe (status: ${mmlResponse.status}). `;
             if (mmlResponse.status === 401 || mmlResponse.status === 403) {
                 mmlErrorMsg += "Tarkista, että API-avain on oikein ja aktiivinen.";
-            } else {
+            } else if (mmlResponse.status === 404) {
+                 mmlErrorMsg += "Pyydettyä osoitetta ei löytynyt palvelimelta.";
+            }
+            else {
                 mmlErrorMsg += mmlResponse.statusText;
             }
             throw new Error(mmlErrorMsg);
@@ -298,8 +303,9 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
         const mmlData = await mmlResponse.json();
         
         let virallinenKunta = 'Kuntaa ei löytynyt';
-        if (mmlData.features && mmlData.features.length > 0) {
-            virallinenKunta = mmlData.features[0].properties.municipality.name;
+        // Varmistetaan, että datan rakenne on odotettu
+        if (mmlData.features && mmlData.features.length > 0 && mmlData.features[0].properties.kunta) {
+            virallinenKunta = mmlData.features[0].properties.kunta[0].teksti;
         }
 
         const nominatimData = nominatimResponse.ok ? await nominatimResponse.json() : null;
