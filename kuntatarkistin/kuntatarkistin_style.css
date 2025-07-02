@@ -231,6 +231,12 @@ body {
     z-index: 1000; 
 }
 
+.aktiivinen-tila {
+    background-color: #90EE90 !important;
+    color: #1a2015 !important;
+    font-weight: bold;
+}
+
 /* --- MOBIILIOPTIMOINTI --- */
 @media screen and (max-width: 480px) {
     body { 
