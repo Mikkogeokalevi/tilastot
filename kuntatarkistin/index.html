@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MK kuntatarkistin</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <link rel="stylesheet" href="kuntatarkistin_style.css">
+</head>
+<body>
+    <div class="sisalto-laatikko">
+        <div class="teksti-alue">
+            <div class="header-flex-container">
+                <div class="logo-container">
+                    <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
+                </div>
+                <h3 class="paaotsikko">— Mikkokalevin kuntatarkistin —</h3>
+            </div>
+            
+            <div class="huomio-laatikko">
+                <p class="huomio-otsikko">OMA SIJAINTI</p>
+                <button id="haeSijainti" class="nappi">Hae nykyinen sijainti</button>
+                <div id="tulos-alue">
+                    <p style="text-align: center;">Hae sijaintisi, klikkaa karttaa tai syötä koordinaatit.</p>
+                </div>
+                
+                <div class="kartta-kontrollit">
+                    <label for="kartta-tyyli" style="color: #90EE90;">Kartan tyyli: </label>
+                    <select id="kartta-tyyli">
+                        <option value="osm">OpenStreetMap</option>
+                        <option value="cartodb">CartoDB Light</option>
+                        <option value="satellite">Satelliitti</option>
+                        <option value="terrain">Maastokartta</option>
+                    </select>
+                </div>
+                
+                <div id="kartta-container"></div>
+            </div>
+
+            <div class="huomio-laatikko">
+                <p class="huomio-otsikko">HAE KOORDINAATEILLA</p>
+                <input type="text" id="koordinaatit-input" class="manual-input" placeholder="Syötä koordinaatit...">
+                <div class="ehdotus-teksti">
+                    Esimerkit: "60.98, 25.66" tai "N 60° 55.690' E 025° 59.412'"
+                </div>
+                <button id="naytaKoordinaatit" class="nappi nappi-keltainen">Näytä kartalla</button>
+            </div>
+
+            <div class="huomio-laatikko">
+                <p class="huomio-otsikko">ETÄISYYSLASKURI</p>
+                <div id="etaisyys-pisteet">
+                    <p>Klikkaa karttaa kahdesti etäisyyden laskemiseksi</p>
+                </div>
+                <button id="tyhjenna-pisteet" class="nappi nappi-pieni">Tyhjennä pisteet</button>
+                <div id="etaisyys-tulos"></div>
+            </div>
+
+            <div class="huomio-laatikko">
+                <p class="huomio-otsikko">SIJAINTIHISTORIA</p>
+                <div id="historia-lista">
+                    <p>Ei vielä haettuja sijainteja</p>
+                </div>
+                <button id="tyhjenna-historia" class="nappi nappi-pieni">Tyhjennä historia</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="kuntatarkistin_script.js"></script>
+</body>
+</html>

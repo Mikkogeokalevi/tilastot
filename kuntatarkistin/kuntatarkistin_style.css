@@ -1,0 +1,290 @@
+body { 
+    background-color: #1a2015; 
+    font-family: 'Georgia', serif; 
+    margin: 0; 
+    padding: 20px; 
+}
+
+.sisalto-laatikko { 
+    max-width: 800px; 
+    margin: 30px auto; 
+    padding: 10px; 
+    background-color: #3D4F2B; 
+    border: 3px solid #11150C; 
+    border-radius: 12px; 
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.6); 
+}
+
+.teksti-alue { 
+    color: #F8F8F8; 
+    padding: 10px; 
+    font-size: 1.1em; 
+}
+
+.logo-container { 
+    text-align: center; 
+    margin-bottom: 15px; 
+}
+
+.logo { 
+    width: 120px; 
+    height: 120px; 
+    border: 2px solid #90EE90; 
+    border-radius: 50%; 
+    transition: width 0.3s, height 0.3s; 
+}
+
+.paaotsikko { 
+    color: #90EE90; 
+    text-align: center; 
+    margin-top: 0; 
+    margin-bottom: 20px; 
+    font-size: 1.6em; 
+    transition: font-size 0.3s; 
+}
+
+.huomio-laatikko { 
+    background-color: #2A381C; 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-top: 20px; 
+    text-align: center; 
+    border: 1px dashed #90EE90; 
+}
+
+.huomio-otsikko { 
+    color: #FFD700; 
+    font-weight: bold; 
+    margin: 0 0 15px 0; 
+}
+
+/* Napit */
+.nappi { 
+    transition: background-color 0.2s, color 0.2s; 
+    background-color: #1a2015; 
+    color: #90EE90; 
+    border: 1px solid #90EE90; 
+    padding: 12px 20px; 
+    font-size: 1em; 
+    font-family: 'Georgia', serif; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    margin: 5px; 
+}
+
+.nappi:hover { 
+    background-color: #90EE90; 
+    color: #1a2015; 
+}
+
+.nappi:disabled { 
+    background-color: #555 !important; 
+    color: #888 !important; 
+    border-color: #555 !important; 
+    cursor: not-allowed; 
+}
+
+.nappi-keltainen { 
+    background-color: #FFD700; 
+    color: #1a2015; 
+    border: none; 
+    font-weight: bold; 
+}
+
+.nappi-keltainen:hover { 
+    background-color: #FFA500; 
+}
+
+.nappi-pieni { 
+    padding: 8px 12px; 
+    font-size: 0.9em; 
+}
+
+#tulos-alue { 
+    text-align: left; 
+    margin-top: 15px; 
+    color: #FFFFFF; 
+    font-size: 1em; 
+    line-height: 1.6; 
+}
+
+#tulos-alue p { 
+    margin: 8px 0; 
+}
+
+#tulos-alue strong { 
+    color: #90EE90; 
+}
+
+.kunta-iso { 
+    font-size: 1.2em; 
+    font-weight: bold; 
+    color: #FFD700; 
+    text-align: center; 
+    margin-bottom: 15px !important; 
+}
+
+#kartta-container { 
+    width: 100%; 
+    height: 300px; 
+    border-radius: 8px; 
+    margin-top: 20px; 
+    border: 2px solid #90EE90; 
+    background-color: #1a2015; 
+}
+
+.manual-input { 
+    width: calc(100% - 24px); 
+    padding: 10px; 
+    margin-bottom: 10px; 
+    background-color: #1a2015; 
+    border: 1px solid #90EE90; 
+    color: #FFFFFF; 
+    border-radius: 4px; 
+    font-family: monospace; 
+}
+
+/* Uudet tyylit */
+.koordinaatti-rivi { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin: 10px 0; 
+}
+
+.kopioi-nappi { 
+    padding: 5px 10px; 
+    font-size: 0.8em; 
+    background-color: #666; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+}
+
+.kopioi-nappi:hover { 
+    background-color: #90EE90; 
+    color: #1a2015; 
+}
+
+.historia-item { 
+    background-color: #1a2015; 
+    padding: 8px; 
+    margin: 5px 0; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-size: 0.9em; 
+    border: 1px solid #666; 
+}
+
+.historia-item:hover { 
+    border-color: #90EE90; 
+}
+
+.etaisyys-tulos { 
+    background-color: #2A381C; 
+    padding: 10px; 
+    border-radius: 6px; 
+    margin: 10px 0; 
+    border: 1px solid #90EE90; 
+}
+
+.kartta-kontrollit { 
+    margin: 10px 0; 
+}
+
+.kartta-kontrollit select { 
+    background-color: #1a2015; 
+    color: #90EE90; 
+    border: 1px solid #90EE90; 
+    padding: 8px; 
+    border-radius: 4px; 
+}
+
+.ehdotus-teksti { 
+    font-size: 0.9em; 
+    color: #AAA; 
+    margin-top: 5px; 
+}
+
+.virhe-viesti { 
+    background-color: #8B0000; 
+    color: white; 
+    padding: 10px; 
+    border-radius: 6px; 
+    margin: 10px 0; 
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    z-index: 1000; 
+}
+
+.onnistui-viesti { 
+    background-color: #228B22; 
+    color: white; 
+    padding: 10px; 
+    border-radius: 6px; 
+    margin: 10px 0; 
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    z-index: 1000; 
+}
+
+/* --- MOBIILIOPTIMOINTI --- */
+@media screen and (max-width: 480px) {
+    body { 
+        padding: 10px; 
+    }
+    
+    .sisalto-laatikko { 
+        margin: 15px auto; 
+    }
+    
+    .header-flex-container { 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 15px; 
+        padding-bottom: 10px; 
+    }
+    
+    .logo-container { 
+        margin-bottom: 0; 
+    }
+    
+    .logo { 
+        width: 75px; 
+        height: 75px; 
+    }
+    
+    .paaotsikko { 
+        font-size: 1.3em; 
+        margin: 0; 
+        text-align: left; 
+    }
+    
+    .koordinaatti-rivi { 
+        flex-direction: column; 
+        align-items: stretch; 
+    }
+    
+    .nappi { 
+        width: 100%; 
+        margin: 5px 0; 
+    }
+    
+    .historia-item { 
+        font-size: 0.8em; 
+    }
+    
+    #kartta-container { 
+        height: 250px; 
+    }
+    
+    .virhe-viesti, .onnistui-viesti { 
+        position: relative; 
+        top: auto; 
+        right: auto; 
+    }
+}
