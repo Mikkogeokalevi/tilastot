@@ -1,6 +1,6 @@
 /*
   MIKKOKALEVIN KUNTATARKISTIN
-  Versio 16.2 - Korjattu MML-rajapinnan osoite (URL)
+  Versio 16.3 - Lisätty CORS-välityspalvelin MML-kyselyyn
 */
 
 // --- API-AVAIMESI ---
@@ -274,36 +274,29 @@ async function paivitaSijaintitiedot(lat, lon, paikanNimi) {
     
     const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&accept-language=fi`;
     
-    // --- KORJATTU OSOITE ALLA ---
-    const mmlUrl = `https://avoin-paikkatieto.maanmittauslaitos.fi/ogc/features/v1/collections/paikannimet/items?lat=${lat}&lon=${lon}&limit=1&lang=fi&api-key=${MML_API_KEY}`;
+    const mmlTargetUrl = `https://avoin-paikkatieto.maanmittauslaitos.fi/ogc/features/v1/collections/paikannimet/items?lat=${lat}&lon=${lon}&limit=1&lang=fi&api-key=${MML_API_KEY}`;
+    
+    // --- KÄYTETÄÄN VÄLITYSPALVELINTA CORS-ONGELMAN KIERTÄMISEKSI ---
+    const mmlProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mmlTargetUrl)}`;
 
     try {
-        if (MML_API_KEY.startsWith('465a275a') === false) { // Tarkistetaan vain osa avaimesta ettei se ole enää placeholder
-            throw new Error("Maanmittauslaitoksen API-avain on virheellinen tai puuttuu. Lisää se kuntatarkistin_script.js-tiedostoon.");
+        if (MML_API_KEY.startsWith('465a275a') === false) {
+            throw new Error("Maanmittauslaitoksen API-avain on virheellinen tai puuttuu.");
         }
 
         const [nominatimResponse, mmlResponse] = await Promise.all([
             fetch(nominatimUrl, { headers: { 'User-Agent': 'MikkokalevinKuntatarkistin/1.0' } }),
-            fetch(mmlUrl)
+            fetch(mmlProxyUrl) // Kutsutaan välityspalvelinta, ei suoraan MML:ää
         ]);
 
         if (!mmlResponse.ok) {
-            let mmlErrorMsg = `MML-rajapintavirhe (status: ${mmlResponse.status}). `;
-            if (mmlResponse.status === 401 || mmlResponse.status === 403) {
-                mmlErrorMsg += "Tarkista, että API-avain on oikein ja aktiivinen.";
-            } else if (mmlResponse.status === 404) {
-                 mmlErrorMsg += "Pyydettyä osoitetta ei löytynyt palvelimelta.";
-            }
-            else {
-                mmlErrorMsg += mmlResponse.statusText;
-            }
-            throw new Error(mmlErrorMsg);
+            throw new Error(`MML-välityspalvelimen virhe (status: ${mmlResponse.status})`);
         }
         
+        // Välityspalvelimen vastaus on tekstiä, joka pitää muuttaa JSON-olioksi
         const mmlData = await mmlResponse.json();
         
         let virallinenKunta = 'Kuntaa ei löytynyt';
-        // Varmistetaan, että datan rakenne on odotettu
         if (mmlData.features && mmlData.features.length > 0 && mmlData.features[0].properties.kunta) {
             virallinenKunta = mmlData.features[0].properties.kunta[0].teksti;
         }
