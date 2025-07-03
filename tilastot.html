@@ -41,19 +41,19 @@
 
         /* New style for the logo within the userControlArea */
         #userControlArea .logo {
-            height: 40px; /* Example size - Adjust as needed for mikkokalevi.png */
-            width: 40px;  /* Example size - Adjust as needed */
-            margin-right: 10px; /* Space between logo and subsequent items */
-            flex-shrink: 0; /* Prevent shrinking */
-            object-fit: contain; /* Maintain aspect ratio without stretching */
-            vertical-align: middle; /* Align logo nicely */
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            object-fit: contain;
+            vertical-align: middle;
         }
 
          #userControlArea > div:first-of-type { /* Geokätkötilastot käyttäjälle div */
-             margin: 0; /* Remove default div margin */
-             flex-shrink: 1; /* Allow this div to take space but shrink if needed */
-             white-space: nowrap; /* Prevent wrapping for the text */
-             min-width: 150px; /* Ensure it takes some space */
+             margin: 0;
+             flex-shrink: 1;
+             white-space: nowrap;
+             min-width: 150px;
          }
 
         /* Container for input, button, and suggestions */
@@ -61,12 +61,11 @@
             display: flex;
             gap: 10px;
             align-items: center;
-            flex-grow: 1; /* Allow to take available space */
-            flex-wrap: wrap; /* Allow input and button to wrap */
-            position: relative; /* Tarvitaan ehdotusten absoluuttiseen positiointiin */
+            flex-grow: 1;
+            flex-wrap: wrap;
+            position: relative;
         }
 
-        /* Styles for the input and button */
         #usernameInput {
              padding: 8px;
              border-radius: 5px;
@@ -74,21 +73,21 @@
              background-color: #333;
              color: #fff;
              font-size: 14px;
-             flex-grow: 1; /* Allow input to grow */
-             min-width: 120px; /* Minimum width for input */
+             flex-grow: 1;
+             min-width: 120px;
          }
 
         #updateButton {
-            padding: 8px 15px; /* Add padding for button */
+            padding: 8px 15px;
             border-radius: 5px;
-            border: 1px solid #0077cc; /* Blue border */
-            background-color: #0077cc; /* Blue background */
+            border: 1px solid #0077cc;
+            background-color: #0077cc;
             color: white;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s, border-color 0.3s;
-            flex-shrink: 0; /* Prevent button from shrinking */
+            flex-shrink: 0;
         }
 
          #updateButton:hover {
@@ -99,14 +98,14 @@
          #clearButton {
              padding: 8px 15px;
              border-radius: 5px;
-             border: 1px solid #555; /* Grey border */
-             background-color: #555; /* Grey background */
+             border: 1px solid #555;
+             background-color: #555;
              color: white;
              font-size: 14px;
              font-weight: bold;
              cursor: pointer;
              transition: background-color 0.3s, border-color 0.3s;
-             flex-shrink: 0; /* Prevent button from shrinking */
+             flex-shrink: 0;
          }
 
          #clearButton:hover {
@@ -116,18 +115,18 @@
 
 
         nav {
-            position: fixed; /* Keep it fixed */
+            position: fixed;
             /* top will be set by JavaScript */
             left: 0;
             width: 100%;
             background-color: #1f1f1f;
             border-bottom: 1px solid #333;
             padding: 10px;
-            box-sizing: border-box; /* Include padding in width */
+            box-sizing: border-box;
             display: flex;
-            flex-wrap: wrap; /* Allow items to wrap */
+            flex-wrap: wrap;
             align-items: center;
-            z-index: 999; /* Below userControlArea but above content */
+            z-index: 999;
         }
 
         .nav-title {
@@ -174,44 +173,44 @@
             color: white;
         }
 
-        /* Piilota sisältöalue oletuksena */
         #statsContent {
-            display: none; /* Initially hidden */
-            position: relative; /* Needed for positioning spinner absolutely */
-            min-height: 200px; /* Prevent content collapse when hidden/loading - Adjust as needed */
-            padding: 0 10px; /* Lisää sisäpuolista paddingia */
+            display: none;
+            position: relative;
+            min-height: 200px;
+            padding: 0 10px;
         }
-
-        h2 {
-            margin: 0; /* Nollattu, koska summary-elementti hoitaa välistyksen */
-            font-size: 22px;
-             /* scroll-margin-top will be set by JavaScript */
-             padding-left: 10px; /* Siirrä otsikkoa hieman sisään */
-        }
-
-        h3 {
-            margin: 20px 0 10px; /* Adjust margin */
-            font-size: 18px;
-            color: #cccccc;
-             padding-left: 10px; /* Siirrä otsikkoa hieman sisään */
-        }
-
-        img {
+        
+        /* KORJATTU SÄÄNTÖ: Koskee vain tilastokuvia, ei logoa */
+        #statsContent img {
             max-width: 100%;
             height: auto;
             display: block;
             margin: 0 auto 20px 0;
             border-radius: 5px;
-             box-sizing: border-box;
-             /* Uutta: Oletuksena piilossa, kunnes lazy loader lataa ne */
-             visibility: hidden;
-             opacity: 0;
-             transition: opacity 0.5s;
+            box-sizing: border-box;
+            /* Oletuksena piilossa, kunnes lazy loader lataa ne */
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 22px;
+             /* scroll-margin-top will be set by JavaScript */
+             padding-left: 10px;
+        }
+
+        h3 {
+            margin: 20px 0 10px;
+            font-size: 18px;
+            color: #cccccc;
+             padding-left: 10px;
         }
 
         .content-link {
             display: inline-block;
-            margin: 10px 0; /* Adjust margin */
+            margin: 10px 0;
             padding: 8px 14px;
             background-color: #0077cc;
             color: white;
@@ -226,16 +225,14 @@
             background-color: #005fa3;
         }
 
-        /* Style for the back-to-top link button placed after H2 */
         .back-to-top {
             display: inline-block;
             margin: 0 10px 0 10px;
             font-size: 12px;
             vertical-align: middle;
-            flex-shrink: 0; /* Estää linkkiä kutistumasta */
+            flex-shrink: 0;
         }
 
-         /* VALINNAINEN: Tyyli toimimattomille userid-linkeille */
          .content-link[data-param-type="userid"]:not([href]) {
             opacity: 0.5;
             cursor: not-allowed;
@@ -248,10 +245,9 @@
             text-align: right;
         }
 
-        /* Spinner styles */
         #loadingSpinner {
             display: none;
-            position: fixed; /* Kiinnitetty, jotta näkyy aina keskellä ruutua */
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -261,7 +257,7 @@
             border-top: 5px solid #0077cc;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            z-index: 2000; /* Kaiken päällä */
+            z-index: 2000;
         }
 
         @keyframes spin {
@@ -269,7 +265,6 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Styles for the suggestions dropdown */
         .suggestions-dropdown {
             position: absolute;
             top: 100%;
@@ -300,14 +295,13 @@
             color: #ffffff;
         }
 
-        /* --- UUDET TYYLIT: Hamburger-valikko --- */
         #nav-toggle {
-            display: none; /* Piilotettu oletuksena isommilla näytöillä */
+            display: none;
             background: none;
             border: none;
             cursor: pointer;
             padding: 10px;
-            z-index: 1001; /* Varmista, että se on navigaation päällä */
+            z-index: 1001;
         }
 
         #nav-toggle span {
@@ -321,31 +315,30 @@
 
         @media (max-width: 767px) {
             .nav-title {
-                display: none; /* Piilotetaan "Navigointi:" teksti mobiilissa */
+                display: none;
             }
 
             #nav-toggle {
-                display: block; /* Näytetään hamburger-ikoni mobiilissa */
+                display: block;
             }
 
             .nav-group {
-                display: none; /* Piilotetaan valikko oletuksena */
+                display: none;
                 position: absolute;
-                top: 100%; /* Asetetaan nav-palkin alapuolelle */
+                top: 100%;
                 left: 0;
                 width: 100%;
                 background-color: #1f1f1f;
-                flex-direction: column; /* Linkit allekkain */
+                flex-direction: column;
                 padding: 10px;
                 box-sizing: border-box;
                 border-top: 1px solid #333;
             }
 
             nav.nav-open .nav-group {
-                display: flex; /* Näytetään valikko, kun nav-elementillä on luokka */
+                display: flex;
             }
 
-            /* Animaatio ikonille (risti) kun valikko on auki */
             nav.nav-open #nav-toggle span:nth-child(1) {
                 transform: translateY(8px) rotate(45deg);
             }
@@ -357,7 +350,6 @@
             }
         }
 
-        /* --- UUDET TYYLIT: Harmonikka-valikot (Accordions) --- */
         .stats-section {
             border-bottom: 1px solid #333;
             margin-bottom: 10px;
@@ -376,7 +368,6 @@
             padding: 5px 0;
         }
 
-        /* Poista listamerkki, jonka selain lisää summaryyn */
         .stats-section summary::-webkit-details-marker,
         .stats-section summary::marker {
             display: none;
@@ -606,14 +597,14 @@
         </details>
 
     </div> 
-    <div class="version">Versio 31 (Mobiilioptimoitu)</div>
+    <div class="version">Versio 31.1 (Mobiilioptimoitu, logo korjattu)</div>
 
     <br><br><br><br><br>
 
     <script>
         const userControlArea = document.getElementById('userControlArea');
         const navBar = document.querySelector('nav');
-        const navToggle = document.getElementById('nav-toggle'); // UUSI
+        const navToggle = document.getElementById('nav-toggle');
         const navLinks = document.querySelectorAll("nav a");
         const sections = document.querySelectorAll("h2[id]");
         
@@ -638,7 +629,6 @@
         const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
         let isSuggestionClick = false;
 
-        // UUSI: IntersectionObserver kuvien laiskaa latausta varten
         const lazyImageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -646,19 +636,17 @@
                     const src = img.getAttribute('data-src');
                     if (src) {
                         img.setAttribute('src', src);
-                        // Kuva alkaa latautua, tehdään se näkyväksi kun lataus on valmis
                         img.addEventListener('load', () => {
                             img.style.visibility = 'visible';
                             img.style.opacity = '1';
                         });
                     }
-                    observer.unobserve(img); // Lopeta tämän kuvan tarkkailu
+                    observer.unobserve(img);
                 }
             });
-        }, { rootMargin: "0px 0px 200px 0px" }); // Lataa kuvat, kun ne ovat 200px päässä näkymästä
+        }, { rootMargin: "0px 0px 200px 0px" });
 
 
-        // Funktio asettelun säätämiseen
         function adjustLayout() {
             const userAreaHeight = userControlArea.offsetHeight;
             const navHeight = navBar.offsetHeight;
@@ -670,12 +658,10 @@
             h2Elements.forEach(h2 => {
                 h2.style.scrollMarginTop = totalFixedHeight + 'px';
             });
-
-            // Säädä observerin marginaalia, jotta aktiivinen linkki korostuu oikein
+            
             scrollObserver.rootMargin = `-${totalFixedHeight}px 0px -50% 0px`;
         }
 
-        // Observer navigointilinkkien korostamiseen
         const scrollObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -693,15 +679,13 @@
             scrollObserver.observe(section);
         });
 
-        // --- PÄÄFUNKTIO TILASTOJEN PÄIVITYKSEEN ---
         function updateStats(username) {
             const cleanUsername = username.trim();
 
             if (!cleanUsername) {
                 statsContent.style.display = 'none';
                 currentUsernameSpan.textContent = "[Ei käyttäjää]";
-                // Puhdista vanhat observerit
-                document.querySelectorAll('#statsContent img[src]').forEach(img => lazyImageObserver.unobserve(img));
+                document.querySelectorAll('#statsContent img').forEach(img => lazyImageObserver.unobserve(img));
                 localStorage.removeItem('lastGeocacheUsername');
                 return;
             }
@@ -717,9 +701,7 @@
             const elementsToUpdate = statsContent.querySelectorAll('img, a[data-href]');
 
             elementsToUpdate.forEach(element => {
-                // Käsittele kuvat
                 if (element.tagName === 'IMG') {
-                    // Nollaa kuvan tila
                     lazyImageObserver.unobserve(element);
                     element.removeAttribute('src');
                     element.style.visibility = 'hidden';
@@ -738,7 +720,6 @@
                     }
 
                 } 
-                // Käsittele linkit
                 else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
                     const originalUrl = element.getAttribute('data-href');
                     const needsUserId = element.getAttribute('data-param-type') === 'userid';
@@ -750,20 +731,17 @@
                             element.removeAttribute('href');
                         }
                     } else {
-                        element.href = originalUrl; // Oletus, jos ei user-parametria
+                        element.href = originalUrl;
                          if (originalUrl.includes('user=')) {
                             element.href = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
                         }
                     }
                 }
             });
-
-            // Piilota spinner heti, koska sivu on käyttövalmis
+            
             loadingSpinner.style.display = 'none';
         }
 
-
-        // --- Käyttäjänimiehdotusten logiikka ---
         function populateSuggestions() {
             if (suggestedUsernames.length === 0) return;
             usernameSuggestionsDiv.innerHTML = '';
@@ -791,9 +769,6 @@
             }
         });
 
-
-        // --- TAPAHTUMANKUUNTELIJAT (Event Listeners) ---
-
         updateButton.addEventListener('click', () => updateStats(usernameInput.value));
         clearButton.addEventListener('click', () => {
             usernameInput.value = '';
@@ -803,12 +778,10 @@
             if (e.key === 'Enter') updateStats(usernameInput.value);
         });
 
-        // UUSI: Hamburger-valikon toiminnallisuus
         navToggle.addEventListener('click', () => {
             navBar.classList.toggle('nav-open');
         });
 
-        // Sulje mobiilivalikko, kun linkkiä klikataan
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 767) {
@@ -817,7 +790,6 @@
             });
         });
 
-        // --- SIVUN LATAUTUESSA ---
         document.addEventListener('DOMContentLoaded', () => {
             adjustLayout();
             populateSuggestions();
