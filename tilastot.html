@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-LSBHRFCKEP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -67,7 +66,6 @@
             position: relative; /* Tarvitaan ehdotusten absoluuttiseen positiointiin */
         }
 
-
         /* Styles for the input and button */
         #usernameInput {
              padding: 8px;
@@ -98,7 +96,6 @@
              border-color: #005fa3;
          }
 
-         /* UUSI CSS: Style for the Clear button */
          #clearButton {
              padding: 8px 15px;
              border-radius: 5px;
@@ -148,13 +145,6 @@
             margin-top: 0;
         }
 
-         @media (max-width: 767px) {
-             .nav-group {
-                 margin-top: 10px; /* Add space if wrapping occurs */
-                 width: 100%; /* Take full width */
-             }
-         }
-
         .nav-heading {
             font-weight: bold;
             font-size: 15px;
@@ -193,8 +183,7 @@
         }
 
         h2 {
-            /* margin-top will be taken care of by body padding-top */
-            margin: 40px 0 5px; /* Reduced bottom margin to place link closer */
+            margin: 0; /* Nollattu, koska summary-elementti hoitaa välistyksen */
             font-size: 22px;
              /* scroll-margin-top will be set by JavaScript */
              padding-left: 10px; /* Siirrä otsikkoa hieman sisään */
@@ -211,13 +200,13 @@
             max-width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto 20px 0; /* Center images? Or keep left? Kept left alignment from original. Removed left margin, added padding to container */
+            margin: 0 auto 20px 0;
             border-radius: 5px;
-             box-sizing: border-box; /* Include border in width */
-        }
-
-        h3 + img {
-             margin-top: 10px;
+             box-sizing: border-box;
+             /* Uutta: Oletuksena piilossa, kunnes lazy loader lataa ne */
+             visibility: hidden;
+             opacity: 0;
+             transition: opacity 0.5s;
         }
 
         .content-link {
@@ -239,20 +228,18 @@
 
         /* Style for the back-to-top link button placed after H2 */
         .back-to-top {
-            /* Inherits content-link styles */
-            display: inline-block; /* Keep it inline-block to flow after H2 */
-            margin: 0 10px 20px 10px; /* Adjust margin: top right bottom left */
-            font-size: 12px; /* Slightly smaller font */
-            vertical-align: middle; /* Align vertically with the heading */
+            display: inline-block;
+            margin: 0 10px 0 10px;
+            font-size: 12px;
+            vertical-align: middle;
+            flex-shrink: 0; /* Estää linkkiä kutistumasta */
         }
 
          /* VALINNAINEN: Tyyli toimimattomille userid-linkeille */
          .content-link[data-param-type="userid"]:not([href]) {
-            opacity: 0.5; /* Himmennä linkki */
-            cursor: not-allowed; /* Muuta kursori */
-            /* text-decoration: line-through; */ /* Yliviivaus, jos halutaan */
+            opacity: 0.5;
+            cursor: not-allowed;
          }
-
 
         .version {
             margin: 30px 10px 10px;
@@ -263,18 +250,18 @@
 
         /* Spinner styles */
         #loadingSpinner {
-            display: none; /* Initially hidden by JS */
-            position: absolute;
+            display: none;
+            position: fixed; /* Kiinnitetty, jotta näkyy aina keskellä ruutua */
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 50px;
             height: 50px;
             border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top: 5px solid #0077cc; /* Spinner color */
+            border-top: 5px solid #0077cc;
             border-radius: 50%;
-            animation: spin 1s linear infinite; /* Animation */
-            z-index: 10; /* Above potential content */
+            animation: spin 1s linear infinite;
+            z-index: 2000; /* Kaiken päällä */
         }
 
         @keyframes spin {
@@ -284,36 +271,116 @@
 
         /* Styles for the suggestions dropdown */
         .suggestions-dropdown {
-            position: absolute; /* Position relative to the containing block (#inputContainer) */
-            top: 100%; /* Position below the inputContainer */
+            position: absolute;
+            top: 100%;
             left: 0;
-            right: 0; /* Extend to the right edge of inputContainer */
-            z-index: 1002; /* Above userControlArea */
-            background-color: #2b2b2b; /* Dark background */
+            right: 0;
+            z-index: 1002;
+            background-color: #2b2b2b;
             border: 1px solid #555;
-            border-top: none; /* No top border as it connects to input */
-            border-radius: 0 0 5px 5px; /* Rounded bottom corners */
-            max-height: 150px; /* Limit height and enable scrolling */
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            max-height: 150px;
             overflow-y: auto;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            display: none; /* Hidden by default */
-            padding: 0; /* No internal padding */
-            margin-top: 0; /* No margin top */
+            display: none;
+            padding: 0;
+            margin-top: 0;
         }
 
         .suggestions-dropdown span {
-            display: block; /* Each suggestion on a new line */
-            padding: 8px 15px; /* Padding inside suggestion item */
+            display: block;
+            padding: 8px 15px;
             cursor: pointer;
             color: #e0e0e0;
         }
 
         .suggestions-dropdown span:hover {
-            background-color: #3c3c3c; /* Hover effect */
+            background-color: #3c3c3c;
             color: #ffffff;
         }
 
+        /* --- UUDET TYYLIT: Hamburger-valikko --- */
+        #nav-toggle {
+            display: none; /* Piilotettu oletuksena isommilla näytöillä */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001; /* Varmista, että se on navigaation päällä */
+        }
 
+        #nav-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #e0e0e0;
+            margin: 5px 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        @media (max-width: 767px) {
+            .nav-title {
+                display: none; /* Piilotetaan "Navigointi:" teksti mobiilissa */
+            }
+
+            #nav-toggle {
+                display: block; /* Näytetään hamburger-ikoni mobiilissa */
+            }
+
+            .nav-group {
+                display: none; /* Piilotetaan valikko oletuksena */
+                position: absolute;
+                top: 100%; /* Asetetaan nav-palkin alapuolelle */
+                left: 0;
+                width: 100%;
+                background-color: #1f1f1f;
+                flex-direction: column; /* Linkit allekkain */
+                padding: 10px;
+                box-sizing: border-box;
+                border-top: 1px solid #333;
+            }
+
+            nav.nav-open .nav-group {
+                display: flex; /* Näytetään valikko, kun nav-elementillä on luokka */
+            }
+
+            /* Animaatio ikonille (risti) kun valikko on auki */
+            nav.nav-open #nav-toggle span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+            nav.nav-open #nav-toggle span:nth-child(2) {
+                opacity: 0;
+            }
+            nav.nav-open #nav-toggle span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+        }
+
+        /* --- UUDET TYYLIT: Harmonikka-valikot (Accordions) --- */
+        .stats-section {
+            border-bottom: 1px solid #333;
+            margin-bottom: 10px;
+        }
+
+        .stats-section[open] > summary {
+            border-bottom: 1px solid #333;
+            margin-bottom: 15px;
+        }
+
+        .stats-section summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        /* Poista listamerkki, jonka selain lisää summaryyn */
+        .stats-section summary::-webkit-details-marker,
+        .stats-section summary::marker {
+            display: none;
+        }
     </style>
 </head>
 <body id="top">
@@ -326,11 +393,15 @@
             <input type="text" id="usernameInput" value="" placeholder="Syötä käyttäjätunnus">
             <button id="updateButton">Päivitä</button>
             <button id="clearButton">Tyhjennä</button>
-            <div id="usernameSuggestions" class="suggestions-dropdown">
-                </div>
+            <div id="usernameSuggestions" class="suggestions-dropdown"></div>
         </div>
     </div>
     <nav>
+        <button id="nav-toggle" aria-label="Avaa valikko">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <div class="nav-title">Navigointi:</div>
         <div class="nav-group">
             <div class="nav-heading">*</div>
@@ -341,7 +412,7 @@
             <a href="#vvtyyp">VV / tyyppi</a>
 
             <div class="nav-heading">*</div>
-            <a href="#paiva">Päivä läydöt</a>
+            <a href="#paiva">Päivä löydöt</a>
 
             <div class="nav-heading">*</div>
             <a href="#kaikki">Vuosikalenterit</a>
@@ -360,166 +431,234 @@
         </div>
     </nav>
 
+    <div id="loadingSpinner" class="spinner"></div>
+
     <div id="statsContent">
-        <div id="loadingSpinner" class="spinner"></div>
+        <details class="stats-section">
+            <summary>
+                <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=1">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=2">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=3">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=6">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=7">
+        </details>
 
-        <h2 id="dt2025">T/D 2025</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=1">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=2">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=3">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=6">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&year=2025&cachetype=7">
+        <details class="stats-section">
+            <summary>
+                <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=1">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=2">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=3">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=6">
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=7">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <h3>Tammikuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=01">
+            <h3>Helmikuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=02">
+            <h3>Maaliskuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=03">
+            <h3>Huhtikuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=04">
+            <h3>Toukokuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=05">
+            <h3>Kesäkuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=06">
+            <h3>Heinäkuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=07">
+            <h3>Elokuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=08">
+            <h3>Syyskuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=09">
+            <h3>Lokakuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=10">
+            <h3>Marraskuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=11">
+            <h3>Joulukuu</h3>
+            <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=12">
+        </details>
 
+        <details class="stats-section">
+            <summary>
+                 <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <a class="content-link" data-href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="paiva">Päivä löydöt</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&year=2025">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=1">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=2">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=3">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=4">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=99">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=7">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=9">
+            <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=20">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <h3>Päijät-häme</h3>
+            <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=P%C3%A4ij%C3%A4t-H%C3%A4me">
+            <h3>Kymenlaakso</h3>
+            <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=kymenlaakso">
+            <h3>Kanta-häme</h3>
+            <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Kanta-H%C3%A4me">
+            <h3>Varsinais-Suomi</h3>
+            <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Varsinais-Suomi">
+            <h3>Uusimaa</h3>
+            <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Uusimaa">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" data-param-type="userid" target="_blank">Yleis kartta</a>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" data-param-type="userid" target="_blank">Tradi kartta</a>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=2">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=2" data-param-type="userid" target="_blank">Multi kartta</a>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=3" data-param-type="userid" target="_blank">Mysse kartta</a>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=6" data-param-type="userid" target="_blank">Öörtti kartta</a>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" data-param-type="userid" target="_blank">Virtu kartta</a>
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" data-param-type="userid" target="_blank">Tripletti kartta</a>
+        </details>
 
-        <h2 id="dt">T/D full</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=1">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=2">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=3">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=6">
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&cachetype=7">
+        <details class="stats-section">
+            <summary>
+                 <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
+        </details>
 
+        <details class="stats-section">
+            <summary>
+                 <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" data-param-type="userid" target="_blank">ISO kuntakartta linkeillä</a>
+        </details>
+        
+        <details class="stats-section">
+            <summary>
+                 <h2 id="jasmer">Jasmer</h2><a href="#top" class="content-link back-to-top">Ylös</a>
+            </summary>
+            <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
+            <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
+            <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=2" target="_blank">Jasmer multi</a>
+            <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=3" target="_blank">Jasmer mysse</a>
+        </details>
 
-        <h2 id="dt_month">T/D Kuukaudet</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <h3>Tammikuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=01">
-        <h3>Helmikuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=02">
-        <h3>Maaliskuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=03">
-        <h3>Huhtikuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=04">
-        <h3>Toukokuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=05">
-        <h3>Kesäkuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=06">
-        <h3>Heinäkuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=07">
-        <h3>Elokuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=08">
-        <h3>Syyskuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=09">
-        <h3>Lokakuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=10">
-        <h3>Marraskuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=11">
-        <h3>Joulukuu</h3>
-        <img data-src="https://www.geocache.fi/stat/matrix.php?la=&user=mikkokalevi&month=12">
-
-
-        <h2 id="dt_day">T/D kk/päivät PGC</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <a class="content-link" data-href="https://project-gc.com/Challenges//76983" target="_blank">Linkki chekkeriin</a>
-
-
-        <h2 id="vvtyyp">Löydöt vuosi / tyyppi</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/yeartype.php?la=&user=mikkokalevi">
-
-
-        <h2 id="paiva">Päivä läydöt</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/day.php?la=&user=mikkokalevi">
-
-
-        <h2 id="kaikki">Vuosikalenterit</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&year=2025">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=1">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=2">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=3">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=4">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=99">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=7">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=9">
-        <img data-src="http://www.geocache.fi/stat/year.php?&user=mikkokalevi&cachetype=20">
-
-
-        <h2 id="maakunta">Maakunnat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <h3>Päijät-häme</h3>
-        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=P%C3%A4ij%C3%A4t-H%C3%A4me">
-        <h3>Kymenlaakso</h3>
-        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=kymenlaakso">
-        <h3>Kanta-häme</h3>
-        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Kanta-H%C3%A4me">
-        <h3>Varsinais-Suomi</h3>
-        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Varsinais-Suomi">
-        <h3>Uusimaa</h3>
-        <img data-src="https://www.geocache.fi/stat/year.php?&user=mikkokalevi&mkunta=Uusimaa">
-
-
-        <h2 id="kuntakartta">Kuntakartat</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" data-param-type="userid" target="_blank">Yleis kartta</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=1">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=1" data-param-type="userid" target="_blank">Tradi kartta</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=2">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=2" data-param-type="userid" target="_blank">Multi kartta</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=3">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=3" data-param-type="userid" target="_blank">Mysse kartta</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=6">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=6" data-param-type="userid" target="_blank">Öörtti kartta</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=7">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=7" data-param-type="userid" target="_blank">Virtu kartta</a>
-
-
-        <h2 id="tripletti">Tripletti kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&user=mikkokalevi&slide=0&cachetype=90">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1&cachetype=90" data-param-type="userid" target="_blank">Tripletti kartta</a>
-
-        <h2 id="graticule">Graticule</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/grat.php?la=&user=mikkokalevi">
-
-        <h2 id="ftf">FTF Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/ftfkunta.php?la=&slide=1&user=mikkokalevi">
-
-
-        <h2 id="miitti">Miitti Kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <img data-src="https://www.geocache.fi/stat/kunta.php?la=&slide=1&user=mikkokalevi&cachetype=99">
-
-
-        <h2 id="isokunta">Iso kuntakartta</h2><a href="#top" class="content-link back-to-top">Takaisin ylös</a>
-        <a class="content-link" data-href="https://www.geocache.fi/stat/kunta/?user=mikkokalevi&names=1" data-param-type="userid" target="_blank">ISO kuntakartta linkeillä</a>
-
-
-        <h2 id="jasmer">Jasmer</h2>
-        <img data-src="https://www.geocache.fi/stat/hiddenday.php?la=&type=2&user=mikkokalevi">
-        <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=1" target="_blank">Jasmer tradi</a>
-        <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=2" target="_blank">Jasmer multi</a>
-        <a class="content-link" data-href="https://www.geocache.fi/stat/hiddenday.php?la=&user=mikkokalevi&type=2&cachetype=3" target="_blank">Jasmer mysse</a>
-
-    </div> <div class="version">Versio 30 (muokattu)</div>
+    </div> 
+    <div class="version">Versio 31 (Mobiilioptimoitu)</div>
 
     <br><br><br><br><br>
 
     <script>
-        const sections = document.querySelectorAll("h2[id]");
-        const navLinks = document.querySelectorAll("nav a");
         const userControlArea = document.getElementById('userControlArea');
         const navBar = document.querySelector('nav');
+        const navToggle = document.getElementById('nav-toggle'); // UUSI
+        const navLinks = document.querySelectorAll("nav a");
+        const sections = document.querySelectorAll("h2[id]");
+        
         const usernameInput = document.getElementById('usernameInput');
         const updateButton = document.getElementById('updateButton');
-        // UUSI JS: Hae viittaus Tyhjennä-nappiin
         const clearButton = document.getElementById('clearButton');
         const currentUsernameSpan = document.getElementById('currentUsername');
-        const h2Elements = document.querySelectorAll('h2');
         const statsContent = document.getElementById('statsContent');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const usernameSuggestionsDiv = document.getElementById('usernameSuggestions');
+        
+        const h2Elements = document.querySelectorAll('h2');
 
-        // UUSI JS: Mappaus nimimerkkiin ja ID:hen - TÄYDENNETTY Milde04:n ID
         const userIdMapping = {
             'mikkokalevi': 306478,
             'eukka': 36206,
             'Tiltu': 309395,
             'lahjemies': 308779,
-            'milde04': 29523 // <-- Milde04:n ID lisätty
+            'milde04': 29523
         };
 
         const suggestedUsernames = ['mikkokalevi', 'eukka', 'Tiltu', 'lahjemies', 'milde04'];
-        let currentImagesLoading = 0;
         let isSuggestionClick = false;
 
+        // UUSI: IntersectionObserver kuvien laiskaa latausta varten
+        const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const src = img.getAttribute('data-src');
+                    if (src) {
+                        img.setAttribute('src', src);
+                        // Kuva alkaa latautua, tehdään se näkyväksi kun lataus on valmis
+                        img.addEventListener('load', () => {
+                            img.style.visibility = 'visible';
+                            img.style.opacity = '1';
+                        });
+                    }
+                    observer.unobserve(img); // Lopeta tämän kuvan tarkkailu
+                }
+            });
+        }, { rootMargin: "0px 0px 200px 0px" }); // Lataa kuvat, kun ne ovat 200px päässä näkymästä
 
-        // Function to adjust padding and margins based on fixed header heights
+
+        // Funktio asettelun säätämiseen
         function adjustLayout() {
             const userAreaHeight = userControlArea.offsetHeight;
             const navHeight = navBar.offsetHeight;
@@ -532,11 +671,12 @@
                 h2.style.scrollMarginTop = totalFixedHeight + 'px';
             });
 
-            observer.rootMargin = `-${totalFixedHeight + 10}px 0px -60% 0px`;
+            // Säädä observerin marginaalia, jotta aktiivinen linkki korostuu oikein
+            scrollObserver.rootMargin = `-${totalFixedHeight}px 0px -50% 0px`;
         }
 
-
-        const observer = new IntersectionObserver((entries) => {
+        // Observer navigointilinkkien korostamiseen
+        const scrollObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute("id");
@@ -547,193 +687,91 @@
                     }
                 }
             });
-        }, {
-             threshold: 0.1
-        });
+        }, { threshold: 0.1 });
 
         sections.forEach(section => {
-            observer.observe(section);
+            scrollObserver.observe(section);
         });
 
-        // --- JavaScript for username update and loading ---
-
+        // --- PÄÄFUNKTIO TILASTOJEN PÄIVITYKSEEN ---
         function updateStats(username) {
             const cleanUsername = username.trim();
-            console.log('updateStats called with:', username, '(trimmed:', cleanUsername + ')');
-
-            if (statsContent) { statsContent.style.display = 'none'; }
-            if (loadingSpinner) { loadingSpinner.style.display = 'none'; }
-
 
             if (!cleanUsername) {
-                console.warn("Username is empty after trimming, skipping update.");
-                if (currentUsernameSpan) {
-                   currentUsernameSpan.textContent = "[Ei käyttäjää]";
-                }
-
-                 // KORJAUS: Tyhjennä src/href KAIKISTA dynaamisista elementeistä statsContentissa
-                 document.querySelectorAll('#statsContent img[data-src], #statsContent a[data-href]').forEach(element => {
-                      if (element.tagName === 'IMG') {
-                          element.removeAttribute('src'); // Poista src
-                           element.style.visibility = 'hidden'; // Piilota kuva
-                           element.style.opacity = '0'; // Aseta läpinäkyvyys
-                      } else if (element.tagName === 'A') {
-                          element.removeAttribute('href'); // Poista href
-                           // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää tyyli, jos käytössä
-                      }
-                  });
-
-                 localStorage.removeItem('lastGeocacheUsername');
-                 return;
-            }
-
-            localStorage.setItem('lastGeocacheUsername', cleanUsername);
-            console.log('Stored username in localStorage:', cleanUsername);
-
-            if (statsContent) { statsContent.style.display = 'block'; }
-            if (loadingSpinner) { loadingSpinner.style.display = 'block'; }
-
-            if (currentUsernameSpan) { currentUsernameSpan.textContent = cleanUsername; }
-
-            const elementsToUpdate = statsContent.querySelectorAll('img[data-src], a[data-href]');
-            // UUSI JS: Hae käyttäjän ID-numero, jos käyttäjä löytyy esiasetetuista
-            const userId = userIdMapping[cleanUsername]; // Palauttaa ID:n (number), nullin tai undefined
-
-            const userParamRegex = /user=([^&]+)/; // Regex user= parametrin löytämiseen
-
-            currentImagesLoading = 0;
-            const imagesToLoad = statsContent.querySelectorAll('img[data-src]');
-
-            imagesToLoad.forEach(img => {
-                 img.style.visibility = 'hidden';
-                 img.style.opacity = '0';
-                 img.removeEventListener('load', handleImageLoadError);
-                 img.removeEventListener('error', handleImageLoadError);
-             });
-
-
-            elementsToUpdate.forEach(element => {
-                let originalUrl;
-                let urlAttribute;
-                // UUSI JS: Tarkista, tarvitseeko tämä elementti userid-parametrin
-                const needsUserId = element.hasAttribute('data-param-type') && element.getAttribute('data-param-type') === 'userid';
-
-                if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
-                    originalUrl = element.getAttribute('data-src');
-                    urlAttribute = 'src';
-                    // Kuvat käyttävät aina user= (tämänhetkisessä rakenteessa)
-                } else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
-                    originalUrl = element.getAttribute('data-href');
-                    urlAttribute = 'href';
-                     // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Poista mahdollinen "disabled" tyyli linkistä ennen kuin yritetään asettaa href
-                } else {
-                    return;
-                }
-
-                let newUrl = originalUrl; // Aloita alkuperäisellä URLilla data-attribuutista
-
-                if (originalUrl && originalUrl.includes('user=')) { // Tarkista sisältääkö alkuperäinen template user=
-                     // UUSI LOGIIKKA: Päivitä URL käyttäjän tai userid:n mukaan
-                    if (needsUserId) {
-                         // Tämä linkki tarvitsee userid:n
-                         if (userId !== undefined && userId !== null) {
-                             // Käyttäjä löytyi esiasetetuista ja ID on tiedossa -> käytä userid:tä
-                             newUrl = originalUrl.replace(userParamRegex, 'userid=' + encodeURIComponent(userId));
-                             element[urlAttribute] = newUrl;
-                             // VAPAAYHTEINEN: element.classList.remove('disabled-link'); // Varmista, että tyyli poistetaan
-                         } else {
-                             // Käyttäjä EI ole esiasetettu TAI ID puuttuu (userId on undefined tai null) -> tämä userid-linkki ei toimi tällä käyttäjällä
-                             element.removeAttribute(urlAttribute); // Poista href jotta linkki ei toimi
-                             // VAPAAYHTEINEN: element.href = '#'; // Tai aseta href #
-                             // VAPAAYHTEINEN: element.classList.add('disabled-link'); // Lisää "disabled" tyyli, jos haluat himmentää tms.
-                             console.warn(`User ID not found for ${cleanUsername}. Disabled userid link: ${originalUrl}`);
-                         }
-                    } else {
-                         // Tämä linkki/kuva käyttää user= (ei tarvitse userid:tä) -> käytä nimimerkkiä
-                         newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
-                         element[urlAttribute] = newUrl;
-                    }
-                } else if (originalUrl && !element[urlAttribute]) {
-                    // Staattinen linkki/kuva ilman user= parametria (kuten PGC checker) - aseta src/href kerran, jos ei asetettu.
-                    element[urlAttribute] = originalUrl;
-                }
-
-                // Kuormituslaskurin ja spinnerin logiikka vain kuvien lataukseen
-                if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
-                     // Lisää laskuriin ja kuuntelijat vain jos kuva sai src:n asetusvaiheessa
-                     if (element.hasAttribute('src')) {
-                         currentImagesLoading++;
-                          // Aseta kuuntelijat vasta kun src on asetettu
-                         element.addEventListener('load', handleImageLoadError);
-                         element.addEventListener('error', handleImageLoadError);
-                     }
-                     // Jos kuva ei saanut src:tä (esim. userid-kuva ilman ID:tä), se jää piiloon ja ei lisätä laskuriin/kuuntelijoita.
-                }
-
-            });
-
-            // Check immediately if there were no images to load initially
-             if (imagesToLoad.length === 0 || currentImagesLoading === 0) {
-                 checkLoadingComplete();
-             }
-
-
-        }
-
-         // Single handler for image load or error
-        function handleImageLoadError() {
-            currentImagesLoading--;
-            this.style.visibility = 'visible';
-            this.style.opacity = '1';
-             // Clean up listeners
-            this.removeEventListener('load', handleImageLoadError);
-            this.removeEventListener('error', handleImageLoadError);
-            checkLoadingComplete();
-        }
-
-
-        // Function to check if all images have loaded and hide spinner
-        function checkLoadingComplete() {
-             setTimeout(() => {
-                 if (currentImagesLoading <= 0) {
-                     if (loadingSpinner) {
-                         loadingSpinner.style.display = 'none';
-                          console.log('All images processed, hiding spinner.');
-                     }
-                 } else {
-                     if (loadingSpinner && loadingSpinner.style.display === 'none') {
-                         loadingSpinner.style.display = 'block';
-                         console.log('Images still loading, showing spinner (safeguard). Remaining:', currentImagesLoading);
-                     } else if (!loadingSpinner) {
-                         console.warn('loadingSpinner element not found.');
-                     }
-                 }
-             }, 50);
-        }
-
-
-        // --- JavaScript for suggestions ---
-
-        // Populate the suggestions dropdown
-        function populateSuggestions() {
-            if (suggestedUsernames.length === 0) {
-                usernameSuggestionsDiv.style.display = 'none';
+                statsContent.style.display = 'none';
+                currentUsernameSpan.textContent = "[Ei käyttäjää]";
+                // Puhdista vanhat observerit
+                document.querySelectorAll('#statsContent img[src]').forEach(img => lazyImageObserver.unobserve(img));
+                localStorage.removeItem('lastGeocacheUsername');
                 return;
             }
-            usernameSuggestionsDiv.innerHTML = '';
 
+            loadingSpinner.style.display = 'block';
+            localStorage.setItem('lastGeocacheUsername', cleanUsername);
+            statsContent.style.display = 'block';
+            currentUsernameSpan.textContent = cleanUsername;
+
+            const userId = userIdMapping[cleanUsername];
+            const userParamRegex = /user=([^&]+)/;
+
+            const elementsToUpdate = statsContent.querySelectorAll('img, a[data-href]');
+
+            elementsToUpdate.forEach(element => {
+                // Käsittele kuvat
+                if (element.tagName === 'IMG') {
+                    // Nollaa kuvan tila
+                    lazyImageObserver.unobserve(element);
+                    element.removeAttribute('src');
+                    element.style.visibility = 'hidden';
+                    element.style.opacity = '0';
+                    
+                    let originalUrl = element.getAttribute('data-src-template');
+                    if (!originalUrl) {
+                        originalUrl = element.getAttribute('data-src');
+                        element.setAttribute('data-src-template', originalUrl);
+                    }
+
+                    if(originalUrl) {
+                        const newUrl = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
+                        element.setAttribute('data-src', newUrl); 
+                        lazyImageObserver.observe(element);
+                    }
+
+                } 
+                // Käsittele linkit
+                else if (element.tagName === 'A' && element.hasAttribute('data-href')) {
+                    const originalUrl = element.getAttribute('data-href');
+                    const needsUserId = element.getAttribute('data-param-type') === 'userid';
+
+                    if (needsUserId) {
+                        if (userId !== undefined && userId !== null) {
+                            element.href = originalUrl.replace(userParamRegex, 'userid=' + encodeURIComponent(userId));
+                        } else {
+                            element.removeAttribute('href');
+                        }
+                    } else {
+                        element.href = originalUrl; // Oletus, jos ei user-parametria
+                         if (originalUrl.includes('user=')) {
+                            element.href = originalUrl.replace(userParamRegex, 'user=' + encodeURIComponent(cleanUsername));
+                        }
+                    }
+                }
+            });
+
+            // Piilota spinner heti, koska sivu on käyttövalmis
+            loadingSpinner.style.display = 'none';
+        }
+
+
+        // --- Käyttäjänimiehdotusten logiikka ---
+        function populateSuggestions() {
+            if (suggestedUsernames.length === 0) return;
+            usernameSuggestionsDiv.innerHTML = '';
             suggestedUsernames.forEach(name => {
                 const suggestionSpan = document.createElement('span');
                 suggestionSpan.textContent = name;
-
-                // Aseta flag mousedown-tapahtumassa ENNEN bluria
-                suggestionSpan.addEventListener('mousedown', (event) => {
-                     isSuggestionClick = true;
-                     // event.preventDefault(); // Vapaaehtoinen
-                });
-
+                suggestionSpan.addEventListener('mousedown', () => { isSuggestionClick = true; });
                 suggestionSpan.addEventListener('click', () => {
-                    console.log('Suggestion clicked:', name);
                     usernameInput.value = name;
                     usernameSuggestionsDiv.style.display = 'none';
                     updateStats(name);
@@ -742,77 +780,55 @@
             });
         }
 
-        // Event listeners for suggestions
         usernameInput.addEventListener('focus', () => {
-             if (suggestedUsernames.length > 0 && usernameSuggestionsDiv.children.length > 0) {
-                 usernameSuggestionsDiv.style.display = 'block';
-             }
-              isSuggestionClick = false;
+             if (suggestedUsernames.length > 0) usernameSuggestionsDiv.style.display = 'block';
+             isSuggestionClick = false;
         });
 
-         // Piilota ehdotukset, kun kenttä menettää fokuksen
         usernameInput.addEventListener('blur', () => {
-             console.log('Input blurred. isSuggestionClick:', isSuggestionClick);
-            if (isSuggestionClick) {
-                setTimeout(() => {
-                     isSuggestionClick = false;
-                     console.log('isSuggestionClick reset to false after blur timeout.');
-                }, 50);
-
-            } else {
-                 setTimeout(() => {
-                     if (document.activeElement !== usernameInput) {
-                        usernameSuggestionsDiv.style.display = 'none';
-                        console.log('Normal blur: Hiding suggestions after timeout.');
-                     } else {
-                         console.log('Normal blur: Focus returned to input, not hiding.');
-                     }
-                }, 200);
+            if (!isSuggestionClick) {
+                 setTimeout(() => { usernameSuggestionsDiv.style.display = 'none'; }, 200);
             }
         });
 
 
-        // --- Event Listeners ---
+        // --- TAPAHTUMANKUUNTELIJAT (Event Listeners) ---
 
-        updateButton.addEventListener('click', () => {
-            console.log('Update button clicked.');
-            const username = usernameInput.value;
-            updateStats(username);
-        });
-
-        usernameInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                const username = usernameInput.value;
-                updateStats(username);
-            }
-        });
-
-        // UUSI JS: Event listener for the Clear button
+        updateButton.addEventListener('click', () => updateStats(usernameInput.value));
         clearButton.addEventListener('click', () => {
-            console.log('Clear button clicked.');
-            usernameInput.value = ''; // Tyhjennä syöttökenttä
-            updateStats(''); // Kutsu updateStats tyhjällä merkkijonolla, mikä nollaa näkymän ja localStorage tallennuksen
+            usernameInput.value = '';
+            updateStats('');
+        });
+        usernameInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') updateStats(usernameInput.value);
         });
 
+        // UUSI: Hamburger-valikon toiminnallisuus
+        navToggle.addEventListener('click', () => {
+            navBar.classList.toggle('nav-open');
+        });
 
-        // --- Initial Load ---
+        // Sulje mobiilivalikko, kun linkkiä klikataan
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 767) {
+                    navBar.classList.remove('nav-open');
+                }
+            });
+        });
+
+        // --- SIVUN LATAUTUESSA ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded event fired.');
             adjustLayout();
             populateSuggestions();
-
             const lastUsername = localStorage.getItem('lastGeocacheUsername');
             if (lastUsername) {
-                console.log('Found last username in localStorage:', lastUsername);
                 usernameInput.value = lastUsername;
                 updateStats(lastUsername);
             } else {
-                console.log('No last username found in localStorage. Hiding stats content.');
-                 if (statsContent) { statsContent.style.display = 'none'; }
-                 if (currentUsernameSpan) { currentUsernameSpan.textContent = "[Ei käyttäjää]"; }
+                 statsContent.style.display = 'none';
+                 currentUsernameSpan.textContent = "[Ei käyttäjää]";
             }
-
         });
 
         window.addEventListener('resize', adjustLayout);
