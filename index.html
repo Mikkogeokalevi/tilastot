@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
-  <title>Tilastogeneraattorit - Etusivu</title>
+  <title>Tilastogeneraattorit - MK</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LSBHRFCKEP"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -12,377 +12,252 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* Teemamuuttujat (säilytetty ennallaan) */
     :root {
-      /* Oletus (Tumma/Sininen) teema */
-      --bg-color: #1e1e2e;
-      --text-color: #cdd6f4;
-      --card-bg: #313244;
-      --border-color: #45475a;
-      --accent-color: #89b4fa; 
-      --button-bg: #585b70; 
-      --button-hover-bg: #6c7086; 
-      --link-color: var(--accent-color); 
-      --link-hover-color: #a6e3a1; 
-      
-      --border-radius: 8px;
-      --spacing-small: 0.5em;
-      --spacing-medium: 1em;
-      --spacing-large: 1.5em;
-      --spacing-mobile-small: 0.3em;
-      --spacing-mobile-medium: 0.8em;
-      --spacing-mobile-large: 1em;
+      --bg-color: #1e1e2e; --text-color: #cdd6f4; --card-bg: #313244;
+      --border-color: #45475a; --accent-color: #89b4fa; --button-bg: #585b70;
+      --button-hover-bg: #6c7086; --link-color: var(--accent-color); --link-hover-color: #a6e3a1;
+      --border-radius: 8px; --spacing-small: 0.5em; --spacing-medium: 1em; --spacing-large: 1.5em;
     }
-
-    /* Vihreä (Maasto) teema */
     .theme-green {
-      --bg-color: #283618;
-      --text-color: #fefae0;
-      --card-bg: #3a5a40;
-      --border-color: #588157;
-      --accent-color: #a3b18a;
-      --button-bg: #588157;
-      --button-hover-bg: #3a5a40;
-      --link-color: #a3b18a;
-      --link-hover-color: #dda15e;
+      --bg-color: #283618; --text-color: #fefae0; --card-bg: #3a5a40;
+      --border-color: #588157; --accent-color: #a3b18a; --button-bg: #588157;
+      --button-hover-bg: #3a5a40; --link-color: #a3b18a; --link-hover-color: #dda15e;
     }
-
-    /* Keltainen (Kevät) teema */
     .theme-yellow {
-      --bg-color: #fffbe6;
-      --text-color: #576000;
-      --card-bg: #fef9c3;
-      --border-color: #fde047;
-      --accent-color: #a3bf58;
-      --button-bg: #fde047;
-      --button-hover-bg: #facc15;
-      --link-color: #a3bf58;
-      --link-hover-color: #84cc16;
+      --bg-color: #fffbe6; --text-color: #576000; --card-bg: #fef9c3;
+      --border-color: #fde047; --accent-color: #a3bf58; --button-bg: #fde047;
+      --button-hover-bg: #facc15; --link-color: #a3bf58; --link-hover-color: #84cc16;
     }
-    .theme-yellow select, .theme-yellow input {
-        background-color: #fffce8;
-        color: var(--text-color);
-        border: 1px solid var(--border-color);
-    }
-
-    /* Punainen teema */
     .theme-red {
-      --bg-color: #40000D;
-      --text-color: #ffe5e5;
-      --card-bg: #60001B;
-      --border-color: #A0002B;
-      --accent-color: #ff6666;
-      --button-bg: #A0002B;
-      --button-hover-bg: #800022;
-      --link-color: #ff6666;
-      --link-hover-color: #ff8c8c;
+        --bg-color: #40000D; --text-color: #ffe5e5; --card-bg: #60001B;
+        --border-color: #A0002B; --accent-color: #ff6666; --button-bg: #A0002B;
+        --button-hover-bg: #800022; --link-color: #ff6666; --link-hover-color: #ff8c8c;
+    }
+    .theme-brown {
+        --bg-color: #3d2b1f; --text-color: #f5f5dc; --card-bg: #5a3d2b;
+        --border-color: #7b5b3f; --accent-color: #c8a070; --button-bg: #7b5b3f;
+        --button-hover-bg: #5a3d2b; --link-color: #c8a070; --link-hover-color: #e0b98c;
     }
 
-    /* Ruskea teema */
-    .theme-brown {
-      --bg-color: #3d2b1f;
-      --text-color: #f5f5dc;
-      --card-bg: #5a3d2b;
-      --border-color: #7b5b3f;
-      --accent-color: #c8a070;
-      --button-bg: #7b5b3f;
-      --button-hover-bg: #5a3d2b;
-      --link-color: #c8a070;
-      --link-hover-color: #e0b98c;
+    /* UUDET JA MUOKATUT TYYLIT */
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* Estää pääsivun vierityksen */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: var(--spacing-medium);
-      line-height: 1.6;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .container {
-      max-width: 800px; /* Hieman leveämpi container linkeille */
-      margin: var(--spacing-large) auto;
-      padding: var(--spacing-large);
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s;
-    }
-
-    .header-area {
+        background-color: var(--bg-color);
+        color: var(--text-color);
         display: flex;
-        align-items: center;
+        flex-direction: column;
+    }
+    
+    /* YLÄPALKKI */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
         justify-content: space-between;
-        margin-bottom: var(--spacing-large);
-        padding-bottom: var(--spacing-medium);
-        border-bottom: 1px solid var(--border-color);
-        transition: border-color 0.3s;
-        flex-wrap: wrap;
-    }
-    
-    .header-title-area {
-        display: flex;
         align-items: center;
-    }
-
-    .header-area .logo {
-        width: 60px;
-        height: 60px;
-        margin-right: var(--spacing-medium);
-        border: none;
+        padding: var(--spacing-small) var(--spacing-medium);
+        background-color: var(--card-bg);
+        border-bottom: 2px solid var(--border-color);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1000;
         flex-shrink: 0;
-        border-radius: var(--border-radius);
     }
+    
+    .header-left { display: flex; align-items: center; }
+    .header-left img { width: 40px; height: 40px; margin-right: var(--spacing-medium); }
+    .header-left h1 { font-size: 1.4em; margin: 0; color: var(--text-color); }
 
-    .header-area h2 {
+    .header-right { display: flex; align-items: center; }
+
+    /* NAVIGAATIO JA ALASVETOVALIKKO */
+    nav ul {
         margin: 0;
-        font-size: 1.6em;
-        color: var(--text-color);
-    }
-    
-    #themeSelectorContainer {
-        display: flex;
-        align-items: center;
-        margin-top: var(--spacing-small); 
-    }
-    #themeSelectorContainer label {
-        margin-right: var(--spacing-small);
-        margin-top:0;
-        margin-bottom: 0;
-        font-size: 0.8em;
-        font-weight: normal;
-        color: var(--text-color); 
-    }
-
-    #themeSelector {
-        padding: 0.3em 0.5em;
-        border-radius: var(--border-radius);
-        border: 1px solid var(--border-color);
-        background-color: var(--button-bg); 
-        color: var(--text-color);
-        font-size: 0.8em;
-        width: auto; 
-        margin-bottom: 0; 
-        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    }
-    
-    .link-list {
-        list-style: none;
         padding: 0;
-        margin: var(--spacing-medium) 0 0 0; 
+        list-style: none;
+        display: flex;
     }
 
-    .link-list li {
-        margin-bottom: var(--spacing-large); /* Lisätty enemmän tilaa kuvauksille */
-        padding-bottom: var(--spacing-small);
-        border-bottom: 1px dashed var(--border-color); /* Erotinviiva linkkien väliin */
+    nav li {
+        position: relative;
+        margin-right: var(--spacing-medium);
     }
-    .link-list li:last-child {
-        border-bottom: none; /* Ei erotinviivaa viimeisen linkin jälkeen */
-    }
-
-    .link-list a {
-      color: var(--link-color); 
-      text-decoration: none;
-      font-size: 1.2em;
-      font-weight: bold; /* Lihavoidaan linkkiotsikko */
-      transition: color 0.3s ease;
-      display: block; /* Linkki vie koko rivin, helpottaa klikkausta */
-      margin-bottom: 0.2em; /* Pieni tila linkin ja kuvauksen väliin */
+    
+    nav a, .dropdown-toggle {
+        color: var(--text-color);
+        text-decoration: none;
+        padding: var(--spacing-small) var(--spacing-medium);
+        display: block;
+        border-radius: var(--border-radius);
+        background: none;
+        border: none;
+        font-size: 1em;
+        cursor: pointer;
     }
 
-    .link-list a:hover {
-        color: var(--link-hover-color); 
-        text-decoration: underline;
-    }
-    .link-description {
-        font-size: 0.9em;
-        line-height: 1.4;
-        color: var(--text-color); /* Varmistetaan, että kuvaus käyttää teeman tekstiväriä */
-        opacity: 0.85; /* Hieman himmeämpi kuin pääteksti */
+    nav a:hover, .dropdown-toggle:hover {
+        background-color: var(--button-bg);
     }
 
-    .link-category-title {
-        font-size: 1.4em;
-        font-weight: bold;
-        margin-top: var(--spacing-large);
-        margin-bottom: var(--spacing-medium);
-        color: var(--accent-color);
-        border-bottom: 1px solid var(--accent-color);
-        padding-bottom: var(--spacing-small);
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--card-bg);
+        min-width: 250px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        border: 1px solid var(--border-color);
+        border-top: none;
     }
-    .link-category-title:first-of-type { /* Ei ylämarginaalia ensimmäiselle kategorialle */
-        margin-top: 0;
-    }
-
-
-    @media (max-width: 700px) {
-        .header-area {
-            flex-direction: column; 
-            align-items: flex-start; 
-        }
-        .header-title-area {
-            margin-bottom: var(--spacing-small); 
-        }
-        #themeSelectorContainer {
-            margin-left: 0; 
-            width: 100%; 
-            justify-content: flex-start; 
-        }
+    
+    .dropdown-content a {
+        padding: 12px 16px;
+        display: block;
+        width: auto;
+        border-radius: 0;
     }
 
-    @media (max-width: 600px) {
-        body { margin: var(--spacing-mobile-medium); }
-        .container {
-            padding: var(--spacing-mobile-large);
-            margin: var(--spacing-mobile-large) auto;
-        }
-        .header-area .logo {
-            width: 50px; height: 50px;
-            margin-bottom: var(--spacing-mobile-small); 
-        }
-        .header-area h2 { font-size: 1.4em; }
-        #themeSelectorContainer label { font-size: 0.75em; }
-        #themeSelector { font-size: 0.75em; padding: 0.2em 0.4em;}
-        .link-list li { margin-bottom: var(--spacing-mobile-medium); }
-        .link-list a { font-size: 1.1em; }
-        .link-category-title { font-size: 1.2em; }
+    /* Näytä alasvetovalikko, kun "dropdown"-luokan omaava li-elementti hoveroidaan */
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    
+    /* Teemavalitsin */
+    #themeSelectorContainer { margin-left: var(--spacing-medium); }
+    #themeSelector {
+        padding: 0.3em 0.5em; border-radius: var(--border-radius); border: 1px solid var(--border-color);
+        background-color: var(--button-bg); color: var(--text-color);
+    }
+
+    /* SISÄLLÖN NÄYTTÖALUE (IFRAME) */
+    main {
+        flex-grow: 1;
+        padding-top: 65px; /* Yläpalkin korkeus + pieni marginaali */
+        height: 100vh;
+        box-sizing: border-box;
+    }
+
+    #contentFrame {
+        width: 100%;
+        height: 100%;
+        border: none;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header-area">
-        <div class="header-title-area">
-            <img src="mikkokalevi.png" alt="Sivuston logo" class="logo">
-            <h2>Tilastot & Linkit</h2> </div>
-        <div id="themeSelectorContainer">
-            <label for="themeSelector">Teema:</label>
-            <select id="themeSelector">
-                <option value="default">Oletus</option>
-                <option value="theme-green">Vihreä</option>
-                <option value="theme-yellow">Keltainen</option>
-                <option value="theme-red">Punainen</option>
-                <option value="theme-brown">Ruskea</option>
-            </select>
-        </div>
+
+  <header>
+    <div class="header-left">
+      <img src="mikkokalevi.png" alt="Sivuston logo">
+      <h1>MK Työkalut</h1>
     </div>
-
-    <h3 class="link-category-title">Omat työkalut</h3>
-    <ul class="link-list">
-      <li>
-        <a href="MKkuvakeneraattori.html">Kuvageneraattori (MK)</a>
-        <p class="link-description">Monipuolinen työkalu erilaisten geokätköilytilastokuvien luomiseen.</p>
-      </li>
-            <li>
-                <a href="https://mikkogeokalevi.github.io/kuntatarkistin/">MK kuntatarkistin VER 2.0 (MK)
-                <p class="link-description">Tarkista missä kunnassa olet! + muita työkaluja </p></a>
-            </li>
-            <li>
-                <a href="kuntatarkistin.html">MK kuntatarkistin (MK)
-                <p class="link-description">Tarkista missä kunnassa olet! </p></a>
-            </li>
-      <li>
-        <a href="tilastot.html">Tilastokuvat (Vanhempi)</a>
-        <p class="link-description">Aiempi versio tilastokuvien generointiin.</p>
-      </li>
-    </ul>
-
-    <h3 class="link-category-title">Yleiset Geokätköilysivustot</h3>
-    <ul class="link-list">
-      <li>
-        <a href="https://www.geocaching.com/" target="_blank" rel="noopener noreferrer">Geocaching.com</a>
-        <p class="link-description">Geokätköilyn virallinen pääsivusto. Kätköjen etsintä, omien kätköjen hallinta ja yhteisö.</p>
-      </li>
-      <li>
-        <a href="https://www.geocache.fi/" target="_blank" rel="noopener noreferrer">Geocache.fi</a>
-        <p class="link-description">Suomalainen geokätköilysivusto: uutisia, foorumi, tilastoja ja muita resursseja.</p>
-      </li>
-    </ul>
-
-    <h3 class="link-category-title">Työkaluja Mysteereihin ja Kätköilyyn</h3>
-    <ul class="link-list">
-      <li>
-        <a href="https://www.geocachingtoolbox.com/" target="_blank" rel="noopener noreferrer">Geocaching Toolbox</a>
-        <p class="link-description">Laaja kokoelma työkaluja mm. koordinaattimuunnoksiin ja salakirjoitusten purkuun.</p>
-      </li>
-      <li>
-        <a href="https://gcutils.de/" target="_blank" rel="noopener noreferrer">GCUtils.de</a>
-        <p class="link-description"></p>
-      </li>
-      <li>
-        <a href="https://www.dcode.fr/en" target="_blank" rel="noopener noreferrer">dCode.fr</a>
-        <p class="link-description">Erittäin kattava sivusto erilaisten salakirjoitusten ja koodien purkamiseen. (englanniksi/ranskaksi)</p>
-      </li>
-  <li>
-        <a href="https://xiit.dy.fi/gc/" target="_blank" rel="noopener noreferrer">geocalcing2</a>
-        <p class="link-description"></p>
-      </li>
-  <li>
-        <a href="https://gc.de/gc/reversewherigo/" target="_blank" rel="noopener noreferrer">Reverse wherigo solver</a>
-        <p class="link-description"></p>
-      </li>
-        <li>
-            <a href="https://solvedjigidi.com/" target="_blank" rel="noopener noreferrer">solved jigidi</a>
-            <p class="link-description"></p>
-        </li>
-
-
-
-
-    </ul>
     
-    <h3 class="link-category-title">Kartat ja Paikannus</h3>
-    <ul class="link-list">
-      <li>
-        <a href="https://www.retkikartta.fi/" target="_blank" rel="noopener noreferrer">Retkikartta.fi</a>
-        <p class="link-description">Metsähallituksen tarkat maastokartat koko Suomesta. Erinomainen apu suunnistukseen.</p>
-      </li>
-      <li>
-        <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" target="_blank" rel="noopener noreferrer">Karttapaikka (MML)</a>
-        <p class="link-description">Maanmittauslaitoksen karttapalvelu, josta löytyy tarkat kartat ja ilmakuvat.</p>
-      </li>
-    </ul>
+    <nav>
+        <ul>
+            <li><a href="index.html" class="nav-link" data-internal="true">Etusivu</a></li>
 
-    <h3 class="link-category-title">Muita Hyödyllisiä Sivustoja</h3>
-    <ul class="link-list">
-        <li>
-            <a href="https://project-gc.com/" target="_blank" rel="noopener noreferrer">Project-GC</a>
-            <p class="link-description">Laaja tilastosivusto ja työkalu geokätköilijöille, tarjoaa paljon dataa ja tapoja analysoida kätköilyä.</p>
-        </li>
-    </ul>
+            <li class="dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
+                <div class="dropdown-content">
+                    <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori</a>
+                    <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
+                    <a href="kuntatarkistin.html" class="nav-link">Kuntatarkistin (vanha)</a>
+                    <a href="tilastot.html" class="nav-link">Tilastokuvat (vanhempi)</a>
+                </div>
+            </li>
 
-  </div>
+            <li class="dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
+                <div class="dropdown-content">
+                    <a href="https://www.geocaching.com/" target="_blank" rel="noopener noreferrer">Geocaching.com</a>
+                    <a href="https://www.geocache.fi/" target="_blank" rel="noopener noreferrer">Geocache.fi</a>
+                    <a href="https://www.geocachingtoolbox.com/" target="_blank" rel="noopener noreferrer">Geocaching Toolbox</a>
+                    <a href="https://project-gc.com/" target="_blank" rel="noopener noreferrer">Project-GC</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="header-right">
+      <div id="themeSelectorContainer">
+        <label for="themeSelector">Teema:</label>
+        <select id="themeSelector">
+            <option value="default">Oletus</option>
+            <option value="theme-green">Vihreä</option>
+            <option value="theme-yellow">Keltainen</option>
+            <option value="theme-red">Punainen</option>
+            <option value="theme-brown">Ruskea</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <iframe id="contentFrame" src="vanha_etusivu.html" title="Sivun sisältö"></iframe>
+  </main>
 
   <script>
+    // Teemanvaihtoskripti (muokattu hieman)
     function applyTheme(themeName) {
         document.body.className = ''; 
         if (themeName !== 'default') {
             document.body.classList.add(themeName);
         }
         localStorage.setItem('selectedTheme', themeName);
-
-        if (themeName === 'theme-yellow') {
-            document.querySelectorAll('.theme-yellow select, .theme-yellow input').forEach(el => {
-                if (el.id !== 'themeSelector') { // Älä muuta teemavalitsimen taustaa erikseen täällä
-                    // Varmistetaan, että input-kentät perivät teeman värit oikein,
-                    // mutta niiden tausta voi olla hieman eri kuin body.bg-color
-                    // CSS-säännöt .theme-yellow select/input hoitavat tämän jo.
-                }
-            });
-        }
     }
 
+    // UUSI JAVASCRIPT SISÄLLÖN LATAAMISEEN
     document.addEventListener('DOMContentLoaded', () => {
+        const contentFrame = document.getElementById('contentFrame');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        // Ladataan tallennettu teema tai oletus
         const themeSelector = document.getElementById('themeSelector');
-        if (themeSelector) {
-            themeSelector.addEventListener('change', (e) => {
-                applyTheme(e.target.value);
+        const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+        applyTheme(savedTheme);
+        themeSelector.value = savedTheme;
+        
+        themeSelector.addEventListener('change', (e) => {
+            applyTheme(e.target.value);
+        });
+
+        // Aseta oletussivu iframeen.
+        // HUOM! Nimeä alkuperäinen index.html-tiedostosi uudelleen, esim. "etusivu_sisalto.html"
+        // ja laita se tähän alle.
+        contentFrame.src = "etusivu_sisalto.html";
+
+        // Lisätään kuuntelija kaikille navigaation linkeille
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                // Estetään linkin oletustoiminta (sivun uudelleenlataus)
+                event.preventDefault();
+
+                const pageUrl = this.getAttribute('href');
+
+                // Jos linkki on ulkoinen (target="_blank"), avataan se uuteen välilehteen
+                if (this.getAttribute('target') === '_blank') {
+                    window.open(pageUrl, '_blank');
+                    return; // Lopetetaan suoritus tähän
+                }
+                
+                // Vaihdetaan iframen lähde klikatun linkin osoitteeseen
+                if (pageUrl && pageUrl !== '#') {
+                    contentFrame.src = pageUrl;
+                }
             });
-            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
-            applyTheme(savedTheme);
-            themeSelector.value = savedTheme; 
-        }
+        });
     });
   </script>
 </body>
