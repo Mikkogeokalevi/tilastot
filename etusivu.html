@@ -3,31 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etusivu</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #cdd6f4;
             background-color: #1e1e2e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 90vh;
             margin: 0;
-            text-align: center;
+            padding: 1.5em;
         }
-        .content {
-            max-width: 600px;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
         }
-        h1 {
+        h1, h2 {
             color: #89b4fa;
+            border-bottom: 1px solid #45475a;
+            padding-bottom: 0.3em;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #313244;
+            border: 1px solid #45475a;
+            border-radius: 8px;
+            padding: 1em;
+            margin-bottom: 1em;
+        }
+        p {
+            margin: 0.3em 0 0 0;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        .link-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #a6e3a1;
         }
     </style>
 </head>
 <body>
-    <div class="content">
+    <div class="container">
         <h1>Tervetuloa!</h1>
-        <p>Valitse yläpalkin valikoista työkalu tai sivu, jonka haluat näyttää.</p>
-        <p>Tämä sivusto kokoaa yhteen paikkaan hyödyllisiä geokätköilytyökaluja ja -linkkejä.</p>
+        <p>Tämä sivusto kokoaa yhteen hyödyllisiä geokätköilytyökaluja ja -linkkejä. Voit siirtyä sivuille yläpalkin valikosta tai tutustua niihin alla olevasta listasta.</p>
+
+        <h2>Omat Työkalut</h2>
+        <ul>
+            <li>
+                <span class="link-title">Kuvageneraattori</span>
+                <p>Monipuolinen työkalu erilaisten geokätköilytilastokuvien luomiseen.</p>
+            </li>
+            <li>
+                <span class="link-title">Kuntatarkistin v2.0</span>
+                <p>Tarkista, missä kunnassa olet! Sisältää myös muita hyödyllisiä työkaluja.</p>
+            </li>
+             <li>
+                <span class="link-title">Kuntatarkistin (vanha)</span>
+                <p>Vanhempi versio kuntatarkistimesta.</p>
+            </li>
+            <li>
+                <span class="link-title">Tilastokuvat (vanhempi)</span>
+                <p>Aiempi versio tilastokuvien generointiin.</p>
+            </li>
+        </ul>
+
+        <h2>Muualla Netissä</h2>
+        <ul>
+            <li>
+                <span class="link-title">Geocaching.com</span>
+                <p>Geokätköilyn virallinen pääsivusto.</p>
+            </li>
+            <li>
+                <span class="link-title">Geocache.fi</span>
+                <p>Suomalainen geokätköilysivusto: uutisia, foorumi ja resursseja.</p>
+            </li>
+            <li>
+                <span class="link-title">Geocaching Toolbox</span>
+                <p>Laaja kokoelma työkaluja mm. koordinaattimuunnoksiin ja salakirjoitusten purkuun.</p>
+            </li>
+            <li>
+                <span class="link-title">Project-GC</span>
+                <p>Kattava tilastosivusto ja työkalu geokätköilijöille.</p>
+            </li>
+        </ul>
     </div>
 </body>
 </html>
