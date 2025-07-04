@@ -92,7 +92,6 @@
   </style>
 </head>
 <body>
-
   <header>
     <div class="header-left">
       <img src="mikkokalevi.png" alt="Sivuston logo">
@@ -114,10 +113,10 @@
           <li class="dropdown">
             <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
             <div class="dropdown-content">
-              <a href="https://www.geocaching.com/" class="nav-link">Geocaching.com</a>
+              <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com</a>
               <a href="https://www.geocache.fi/" class="nav-link">Geocache.fi</a>
               <a href="https://www.geocachingtoolbox.com/" class="nav-link">Geocaching Toolbox</a>
-              <a href="https://project-gc.com/" class="nav-link">Project-GC</a>
+              <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC</a>
             </div>
           </li>
         </ul>
@@ -127,13 +126,10 @@
       </button>
     </div>
   </header>
-
   <main>
     <iframe id="contentFrame" src="etusivu.html" title="Sivun sisältö"></iframe>
   </main>
-
   <script>
-    // JavaScript säilyy ennallaan
     document.addEventListener('DOMContentLoaded', () => {
         const contentFrame = document.getElementById('contentFrame');
         const mainNav = document.getElementById('main-nav');
@@ -152,6 +148,12 @@
 
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
+                // MUUTOS: Jos linkki on tarkoitettu uuteen ikkunaan, älä tee mitään.
+                if (this.getAttribute('target') === '_blank') {
+                    return;
+                }
+                
+                // Muussa tapauksessa suorita normaali toiminto.
                 e.preventDefault();
                 const pageUrl = this.getAttribute('href');
                 if (pageUrl && pageUrl !== '#') contentFrame.src = pageUrl;
