@@ -133,12 +133,13 @@
             <a href="javascript:void(0);" class="dropdown-toggle">Työkalut & Sivustot &#9662;</a>
             <div class="dropdown-content">
               <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com<span class="new-window-icon">↗</span></a>
-              <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC<span class="new-window-icon">↗</span></a>
               <a href="https://www.geocache.fi/" class="nav-link">Geocache.fi</a>
+              <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC<span class="new-window-icon">↗</span></a>
               <a href="https://www.geocachingtoolbox.com/" class="nav-link">Geocaching Toolbox</a>
-              <a href="https://gcutils.de/" class="nav-link" target="_blank">GCUtils.de<span class="new-window-icon">↗</span></a>
               <a href="https://www.dcode.fr/en" class="nav-link" target="_blank">dCode.fr<span class="new-window-icon">↗</span></a>
+              <a href="https://xiit.dy.fi/gc/" class="nav-link">Geocalcing2</a>
               <a href="https://gc.de/gc/reversewherigo/" class="nav-link" target="_blank">Reverse Wherigo Solver<span class="new-window-icon">↗</span></a>
+              <a href="https://solvedjigidi.com/" class="nav-link">Solved Jigidi</a>
             </div>
           </li>
           <li class="dropdown">
@@ -163,15 +164,12 @@
         const contentFrame = document.getElementById('contentFrame');
         const mainNav = document.getElementById('main-nav');
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-
-        // KORJATTU MOBIILIVALIKON AVAUSLOGIIKKA
         if (mobileMenuToggle) {
             mobileMenuToggle.addEventListener('click', function(event) {
-                event.stopPropagation(); // Estää klikkauksen etenemisen
+                event.stopPropagation();
                 mainNav.classList.toggle('active');
             });
         }
-
         document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768 && e.target.parentElement.classList.contains('dropdown')) {
@@ -180,7 +178,6 @@
                 }
             });
         });
-        
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 if (this.getAttribute('target') === '_blank') return;
