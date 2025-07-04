@@ -54,7 +54,7 @@
     nav a:hover, .dropdown-toggle:hover { background-color: var(--button-bg); }
     .dropdown-content {
         display: none; position: absolute; top: 100%; right: 0;
-        background-color: var(--card-bg); min-width: 260px; /* Hieman leveämpi pidemmille nimille */
+        background-color: var(--card-bg); min-width: 260px;
         box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1;
         border-radius: 0 0 var(--border-radius) var(--border-radius);
         border: 1px solid var(--border-color); border-top: none;
@@ -75,7 +75,12 @@
         height: 100vh; box-sizing: border-box;
     }
     #contentFrame { width: 100%; height: 100%; border: none; }
-    @media (max-width: 900px) { /* Laajennetaan hieman mobiilin rajaa */
+    .new-window-icon { /* TYYLI IKONILLE */
+        font-size: 0.8em;
+        vertical-align: top;
+        margin-left: 4px;
+    }
+    @media (max-width: 900px) {
         .header-left h1 { font-size: 1.2em; }
         nav {
             display: none; position: absolute; top: 100%;
@@ -109,6 +114,7 @@
           <li class="dropdown">
             <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
             <div class="dropdown-content">
+              <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
               <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori (MK)</a>
               <a href="kuntatarkistin.html" class="nav-link">MK kuntatarkistin (MK)</a>
               <a href="kunnat_maakunnittain.html" class="nav-link">Triplettikunnat</a>
@@ -120,14 +126,14 @@
           <li class="dropdown">
             <a href="javascript:void(0);" class="dropdown-toggle">Työkalut & Sivustot &#9662;</a>
             <div class="dropdown-content">
-                <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com</a>
+                <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com<span class="new-window-icon">↗</span></a>
                 <a href="https://www.geocache.fi/" class="nav-link">Geocache.fi</a>
-                <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC</a>
+                <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC<span class="new-window-icon">↗</span></a>
                 <a href="https://www.geocachingtoolbox.com/" class="nav-link">Geocaching Toolbox</a>
-                <a href="https://gcutils.de/" class="nav-link">GCUtils.de</a>
-                <a href="https://www.dcode.fr/en" class="nav-link">dCode.fr</a>
+                <a href="https://gcutils.de/" class="nav-link" target="_blank">GCUtils.de<span class="new-window-icon">↗</span></a>
+                <a href="https://www.dcode.fr/en" class="nav-link" target="_blank">dCode.fr<span class="new-window-icon">↗</span></a>
                 <a href="https://xiit.dy.fi/gc/" class="nav-link">Geocalcing2</a>
-                <a href="https://gc.de/gc/reversewherigo/" class="nav-link">Reverse Wherigo Solver</a>
+                <a href="https://gc.de/gc/reversewherigo/" class="nav-link" target="_blank">Reverse Wherigo Solver<span class="new-window-icon">↗</span></a>
                 <a href="https://solvedjigidi.com/" class="nav-link">Solved Jigidi</a>
             </div>
           </li>
@@ -135,7 +141,7 @@
             <a href="javascript:void(0);" class="dropdown-toggle">Kartat &#9662;</a>
             <div class="dropdown-content">
                 <a href="https://www.retkikartta.fi/" class="nav-link">Retkikartta.fi</a>
-                <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" class="nav-link">Karttapaikka (MML)</a>
+                <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" class="nav-link" target="_blank">Karttapaikka (MML)<span class="new-window-icon">↗</span></a>
             </div>
           </li>
         </ul>
@@ -155,9 +161,7 @@
         const contentFrame = document.getElementById('contentFrame');
         const mainNav = document.getElementById('main-nav');
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-
         mobileMenuToggle.addEventListener('click', () => mainNav.classList.toggle('active'));
-
         document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
                 if (window.innerWidth <= 900 && e.target.parentElement.classList.contains('dropdown')) {
@@ -166,7 +170,6 @@
                 }
             });
         });
-
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 if (this.getAttribute('target') === '_blank') {
