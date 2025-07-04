@@ -54,7 +54,6 @@
         border: 1px solid var(--border-color); border-top: none;
     }
     .dropdown-content a { padding: 12px 16px; width: auto; border-radius: 0; }
-    /* UUSI TYYLI SISENNYKSELLE */
     .dropdown-content a.sub-link {
         padding-left: 2.5em;
         font-size: 0.9em;
@@ -164,7 +163,15 @@
         const contentFrame = document.getElementById('contentFrame');
         const mainNav = document.getElementById('main-nav');
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        mobileMenuToggle.addEventListener('click', () => mainNav.classList.toggle('active'));
+
+        // KORJATTU MOBIILIVALIKON AVAUSLOGIIKKA
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function(event) {
+                event.stopPropagation(); // Estää klikkauksen etenemisen
+                mainNav.classList.toggle('active');
+            });
+        }
+
         document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768 && e.target.parentElement.classList.contains('dropdown')) {
@@ -173,6 +180,7 @@
                 }
             });
         });
+        
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 if (this.getAttribute('target') === '_blank') return;
