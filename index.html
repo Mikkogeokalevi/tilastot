@@ -12,12 +12,12 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Teemamuuttujat (säilytetty ennallaan) */
+    /* Teemamuuttujat (ennallaan) */
     :root {
       --bg-color: #1e1e2e; --text-color: #cdd6f4; --card-bg: #313244;
       --border-color: #45475a; --accent-color: #89b4fa; --button-bg: #585b70;
       --button-hover-bg: #6c7086; --link-color: var(--accent-color); --link-hover-color: #a6e3a1;
-      --border-radius: 8px; --spacing-small: 0.5em; --spacing-medium: 1em; --spacing-large: 1.5em;
+      --border-radius: 8px; --spacing-small: 0.5em; --spacing-medium: 1em;
     }
     .theme-green {
       --bg-color: #283618; --text-color: #fefae0; --card-bg: #3a5a40;
@@ -40,119 +40,119 @@
         --button-hover-bg: #5a3d2b; --link-color: #c8a070; --link-hover-color: #e0b98c;
     }
 
-    /* UUDET JA MUOKATUT TYYLIT */
+    /* YLEISET TYYLIT */
     html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden; /* Estää pääsivun vierityksen */
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0; padding: 0; height: 100%;
+        overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif;
     }
-
     body {
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        flex-direction: column;
+        background-color: var(--bg-color); color: var(--text-color);
+        display: flex; flex-direction: column;
     }
     
     /* YLÄPALKKI */
     header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        position: fixed; top: 0; left: 0; width: 100%;
+        display: flex; justify-content: space-between; align-items: center;
         padding: var(--spacing-small) var(--spacing-medium);
-        background-color: var(--card-bg);
-        border-bottom: 2px solid var(--border-color);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        z-index: 1000;
-        flex-shrink: 0;
+        background-color: var(--card-bg); border-bottom: 2px solid var(--border-color);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;
+        box-sizing: border-box;
     }
     
     .header-left { display: flex; align-items: center; }
     .header-left img { width: 40px; height: 40px; margin-right: var(--spacing-medium); }
-    .header-left h1 { font-size: 1.4em; margin: 0; color: var(--text-color); }
+    .header-left h1 { font-size: 1.4em; margin: 0; }
 
-    .header-right { display: flex; align-items: center; }
+    .header-right { display: flex; align-items: center; gap: var(--spacing-medium); }
 
-    /* NAVIGAATIO JA ALASVETOVALIKKO */
-    nav ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        display: flex;
-    }
-
-    nav li {
-        position: relative;
-        margin-right: var(--spacing-medium);
-    }
-    
+    /* NAVIGAATIO */
+    .nav-container { display: flex; align-items: center; }
+    nav ul { margin: 0; padding: 0; list-style: none; display: flex; }
+    nav li { position: relative; }
     nav a, .dropdown-toggle {
-        color: var(--text-color);
-        text-decoration: none;
+        color: var(--text-color); text-decoration: none;
         padding: var(--spacing-small) var(--spacing-medium);
-        display: block;
-        border-radius: var(--border-radius);
-        background: none;
-        border: none;
-        font-size: 1em;
-        cursor: pointer;
+        display: block; border-radius: var(--border-radius);
+        background: none; border: none; font-size: 1em; cursor: pointer;
     }
-
-    nav a:hover, .dropdown-toggle:hover {
-        background-color: var(--button-bg);
-    }
+    nav a:hover, .dropdown-toggle:hover { background-color: var(--button-bg); }
 
     .dropdown-content {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background-color: var(--card-bg);
-        min-width: 250px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
+        display: none; position: absolute; top: 100%; left: 0;
+        background-color: var(--card-bg); min-width: 250px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1;
         border-radius: 0 0 var(--border-radius) var(--border-radius);
-        border: 1px solid var(--border-color);
-        border-top: none;
+        border: 1px solid var(--border-color); border-top: none;
     }
+    .dropdown-content a { padding: 12px 16px; width: auto; border-radius: 0; }
+    .dropdown:hover .dropdown-content { display: block; }
     
-    .dropdown-content a {
-        padding: 12px 16px;
-        display: block;
-        width: auto;
-        border-radius: 0;
-    }
-
-    /* Näytä alasvetovalikko, kun "dropdown"-luokan omaava li-elementti hoveroidaan */
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-    
-    /* Teemavalitsin */
-    #themeSelectorContainer { margin-left: var(--spacing-medium); }
     #themeSelector {
         padding: 0.3em 0.5em; border-radius: var(--border-radius); border: 1px solid var(--border-color);
         background-color: var(--button-bg); color: var(--text-color);
     }
 
-    /* SISÄLLÖN NÄYTTÖALUE (IFRAME) */
-    main {
-        flex-grow: 1;
-        padding-top: 65px; /* Yläpalkin korkeus + pieni marginaali */
-        height: 100vh;
-        box-sizing: border-box;
+    /* MOBIILINAVIGAATIO (HAMPURILAINEN) */
+    #mobile-menu-toggle {
+        display: none; /* Piilotettu oletuksena */
+        background: none; border: none;
+        cursor: pointer; padding: 8px;
+    }
+    #mobile-menu-toggle .bar {
+        display: block;
+        width: 25px; height: 3px;
+        margin: 5px auto;
+        background-color: var(--text-color);
+        transition: 0.4s;
     }
 
-    #contentFrame {
-        width: 100%;
-        height: 100%;
-        border: none;
+    /* IFRAME-SISÄLTÖ */
+    main {
+        flex-grow: 1; padding-top: 60px; /* Yläpalkin korkeus */
+        height: 100vh; box-sizing: border-box;
+    }
+    #contentFrame { width: 100%; height: 100%; border: none; }
+
+    /* Mediakysely mobiililaitteille */
+    @media (max-width: 850px) {
+        .header-left h1 { display: none; } /* Piilota otsikko, jotta tilaa riittää */
+        .nav-container {
+            order: 3; /* Siirrä navigaatio teemanvalitsimen jälkeen */
+            flex-grow: 1;
+            justify-content: flex-end;
+        }
+        .header-right {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header-left { flex-grow: 1; }
+        .header-left h1 { font-size: 1.2em; display: block; }
+        .nav-container { order: initial; flex-grow: initial; }
+        nav {
+            display: none; /* Piilota normaali navigaatio */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+        }
+        nav.active { display: block; } /* Näytä nav, kun aktiivinen */
+        nav ul { flex-direction: column; }
+        nav ul li { width: 100%; }
+        nav ul a { text-align: center; border-bottom: 1px solid var(--border-color); }
+        .dropdown-content { position: static; display: none; box-shadow: none; border: none; }
+        .dropdown:hover .dropdown-content { display: none; } /* Estä hover-toiminto mobiilissa */
+        .dropdown.open .dropdown-content { display: block; background-color: var(--button-bg); } /* Näytä klikatessa */
+        .dropdown-content a { padding-left: 2em; background-color: var(--button-hover-bg); }
+
+        #mobile-menu-toggle { display: block; } /* Näytä hamppari */
+        .header-right { width: auto; }
+        .nav-container { display: none; } /* Piilota vanha navigaation "wrapper" */
     }
   </style>
 </head>
@@ -163,34 +163,36 @@
       <img src="mikkokalevi.png" alt="Sivuston logo">
       <h1>MK Työkalut</h1>
     </div>
-    
-    <nav>
-        <ul>
-            <li><a href="index.html" class="nav-link" data-internal="true">Etusivu</a></li>
-
-            <li class="dropdown">
-                <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
-                <div class="dropdown-content">
-                    <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori</a>
-                    <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
-                    <a href="kuntatarkistin.html" class="nav-link">Kuntatarkistin (vanha)</a>
-                    <a href="tilastot.html" class="nav-link">Tilastokuvat (vanhempi)</a>
-                </div>
-            </li>
-
-            <li class="dropdown">
-                <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
-                <div class="dropdown-content">
-                    <a href="https://www.geocaching.com/" target="_blank" rel="noopener noreferrer">Geocaching.com</a>
-                    <a href="https://www.geocache.fi/" target="_blank" rel="noopener noreferrer">Geocache.fi</a>
-                    <a href="https://www.geocachingtoolbox.com/" target="_blank" rel="noopener noreferrer">Geocaching Toolbox</a>
-                    <a href="https://project-gc.com/" target="_blank" rel="noopener noreferrer">Project-GC</a>
-                </div>
-            </li>
-        </ul>
-    </nav>
 
     <div class="header-right">
+      <div class="nav-container">
+        <nav id="main-nav">
+          <ul>
+            <li><a href="etusivu.html" class="nav-link">Etusivu</a></li>
+
+            <li class="dropdown">
+              <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
+              <div class="dropdown-content">
+                <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori</a>
+                <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
+                <a href="kuntatarkistin.html" class="nav-link">Kuntatarkistin (vanha)</a>
+                <a href="tilastot.html" class="nav-link">Tilastokuvat (vanhempi)</a>
+              </div>
+            </li>
+
+            <li class="dropdown">
+              <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
+              <div class="dropdown-content">
+                <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com</a>
+                <a href="https://www.geocache.fi/" class="nav-link" target="_blank">Geocache.fi</a>
+                <a href="https://www.geocachingtoolbox.com/" class="nav-link" target="_blank">Geocaching Toolbox</a>
+                <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC</a>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
       <div id="themeSelectorContainer">
         <label for="themeSelector">Teema:</label>
         <select id="themeSelector">
@@ -201,60 +203,73 @@
             <option value="theme-brown">Ruskea</option>
         </select>
       </div>
+      
+      <button id="mobile-menu-toggle">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
     </div>
   </header>
 
   <main>
-    <iframe id="contentFrame" src="vanha_etusivu.html" title="Sivun sisältö"></iframe>
+    <iframe id="contentFrame" title="Sivun sisältö"></iframe>
   </main>
 
   <script>
-    // Teemanvaihtoskripti (muokattu hieman)
     function applyTheme(themeName) {
         document.body.className = ''; 
-        if (themeName !== 'default') {
-            document.body.classList.add(themeName);
-        }
+        if (themeName !== 'default') document.body.classList.add(themeName);
         localStorage.setItem('selectedTheme', themeName);
     }
 
-    // UUSI JAVASCRIPT SISÄLLÖN LATAAMISEEN
     document.addEventListener('DOMContentLoaded', () => {
         const contentFrame = document.getElementById('contentFrame');
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        // Ladataan tallennettu teema tai oletus
+        const mainNav = document.getElementById('main-nav');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const themeSelector = document.getElementById('themeSelector');
+
+        // Aseta oletusteema ja -sivu
         const savedTheme = localStorage.getItem('selectedTheme') || 'default';
         applyTheme(savedTheme);
         themeSelector.value = savedTheme;
-        
-        themeSelector.addEventListener('change', (e) => {
-            applyTheme(e.target.value);
+        contentFrame.src = 'etusivu.html'; // KORJATTU OLETUSSIVU
+
+        // Teemanvaihto
+        themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
+
+        // Hampurilaisvalikon toiminta
+        mobileMenuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            // Siirrä navigaatio headerin lapseksi, jotta se toimii mobiilissa
+            if(mainNav.classList.contains('active')) {
+                document.querySelector('header').appendChild(mainNav);
+            } else {
+                document.querySelector('.nav-container').appendChild(mainNav);
+            }
         });
 
-        // Aseta oletussivu iframeen.
-        // HUOM! Nimeä alkuperäinen index.html-tiedostosi uudelleen, esim. "etusivu_sisalto.html"
-        // ja laita se tähän alle.
-        contentFrame.src = "etusivu_sisalto.html";
-
-        // Lisätään kuuntelija kaikille navigaation linkeille
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(event) {
-                // Estetään linkin oletustoiminta (sivun uudelleenlataus)
-                event.preventDefault();
-
-                const pageUrl = this.getAttribute('href');
-
-                // Jos linkki on ulkoinen (target="_blank"), avataan se uuteen välilehteen
-                if (this.getAttribute('target') === '_blank') {
-                    window.open(pageUrl, '_blank');
-                    return; // Lopetetaan suoritus tähän
+        // Alasvetovalikoiden toiminta mobiilissa (klikattava)
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    toggle.parentElement.classList.toggle('open');
                 }
+            });
+        });
+
+        // Linkkien klikkausten käsittely
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('target') === '_blank') return;
                 
-                // Vaihdetaan iframen lähde klikatun linkin osoitteeseen
+                e.preventDefault();
+                const pageUrl = this.getAttribute('href');
                 if (pageUrl && pageUrl !== '#') {
                     contentFrame.src = pageUrl;
+                }
+                // Sulje mobiilivalikko klikkauksen jälkeen
+                if (window.innerWidth <= 768) {
+                    mainNav.classList.remove('active');
                 }
             });
         });
