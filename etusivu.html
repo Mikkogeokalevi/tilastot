@@ -7,24 +7,16 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #cdd6f4;
-            background-color: #1e1e2e;
-            margin: 0;
-            padding: 1.5em;
+            color: #cdd6f4; background-color: #1e1e2e;
+            margin: 0; padding: 1.5em;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .container { max-width: 800px; margin: 0 auto; }
         h1, h2 {
             color: #89b4fa;
             border-bottom: 1px solid #45475a;
             padding-bottom: 0.3em;
         }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+        ul { list-style: none; padding: 0; }
         li {
             background-color: #313244;
             border: 1px solid #45475a;
@@ -32,39 +24,40 @@
             padding: 1em;
             margin-bottom: 1em;
         }
-        p {
-            margin: 0.3em 0 0 0;
-            opacity: 0.9;
-            line-height: 1.5;
-        }
-        .link-title {
+        p { margin: 0.3em 0 0 0; opacity: 0.9; line-height: 1.5; }
+        a.link-title { /* TÄMÄ TYYLI MUUTETTU SPANISTA A:HAN */
             font-weight: bold;
             font-size: 1.2em;
             color: #a6e3a1;
+            text-decoration: none;
+            display: block;
+        }
+        a.link-title:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Tervetuloa!</h1>
-        <p>Tämä sivusto kokoaa yhteen hyödyllisiä geokätköilytyökaluja ja -linkkejä. Voit siirtyä sivuille yläpalkin valikosta tai tutustua niihin alla olevasta listasta.</p>
+        <p>Tämä sivusto kokoaa yhteen hyödyllisiä geokätköilytyökaluja ja -linkkejä. Voit siirtyä sivuille yläpalkin valikosta tai suoraan alla olevista linkeistä.</p>
 
         <h2>Omat Työkalut</h2>
         <ul>
             <li>
-                <span class="link-title">Kuvageneraattori</span>
+                <a href="MKkuvakeneraattori.html" class="link-title">Kuvageneraattori</a>
                 <p>Monipuolinen työkalu erilaisten geokätköilytilastokuvien luomiseen.</p>
             </li>
             <li>
-                <span class="link-title">Kuntatarkistin v2.0</span>
+                <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="link-title">Kuntatarkistin v2.0</a>
                 <p>Tarkista, missä kunnassa olet! Sisältää myös muita hyödyllisiä työkaluja.</p>
             </li>
              <li>
-                <span class="link-title">Kuntatarkistin (vanha)</span>
+                <a href="kuntatarkistin.html" class="link-title">Kuntatarkistin (vanha)</a>
                 <p>Vanhempi versio kuntatarkistimesta.</p>
             </li>
             <li>
-                <span class="link-title">Tilastokuvat (vanhempi)</span>
+                <a href="tilastot.html" class="link-title">Tilastokuvat (vanhempi)</a>
                 <p>Aiempi versio tilastokuvien generointiin.</p>
             </li>
         </ul>
@@ -72,19 +65,19 @@
         <h2>Muualla Netissä</h2>
         <ul>
             <li>
-                <span class="link-title">Geocaching.com</span>
+                <a href="https://www.geocaching.com/" class="link-title">Geocaching.com</a>
                 <p>Geokätköilyn virallinen pääsivusto.</p>
             </li>
             <li>
-                <span class="link-title">Geocache.fi</span>
+                <a href="https://www.geocache.fi/" class="link-title">Geocache.fi</a>
                 <p>Suomalainen geokätköilysivusto: uutisia, foorumi ja resursseja.</p>
             </li>
             <li>
-                <span class="link-title">Geocaching Toolbox</span>
+                <a href="https://www.geocachingtoolbox.com/" class="link-title">Geocaching Toolbox</a>
                 <p>Laaja kokoelma työkaluja mm. koordinaattimuunnoksiin ja salakirjoitusten purkuun.</p>
             </li>
             <li>
-                <span class="link-title">Project-GC</span>
+                <a href="https://project-gc.com/" class="link-title">Project-GC</a>
                 <p>Kattava tilastosivusto ja työkalu geokätköilijöille.</p>
             </li>
         </ul>
