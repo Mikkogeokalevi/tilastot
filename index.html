@@ -12,32 +12,17 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Teemamuuttujat (ennallaan) */
+    /* OLETUSTEEMA */
     :root {
-      --bg-color: #1e1e2e; --text-color: #cdd6f4; --card-bg: #313244;
-      --border-color: #45475a; --accent-color: #89b4fa; --button-bg: #585b70;
-      --button-hover-bg: #6c7086; --link-color: var(--accent-color); --link-hover-color: #a6e3a1;
-      --border-radius: 8px; --spacing-small: 0.5em; --spacing-medium: 1em;
-    }
-    .theme-green {
-      --bg-color: #283618; --text-color: #fefae0; --card-bg: #3a5a40;
-      --border-color: #588157; --accent-color: #a3b18a; --button-bg: #588157;
-      --button-hover-bg: #3a5a40; --link-color: #a3b18a; --link-hover-color: #dda15e;
-    }
-    .theme-yellow {
-      --bg-color: #fffbe6; --text-color: #576000; --card-bg: #fef9c3;
-      --border-color: #fde047; --accent-color: #a3bf58; --button-bg: #fde047;
-      --button-hover-bg: #facc15; --link-color: #a3bf58; --link-hover-color: #84cc16;
-    }
-    .theme-red {
-        --bg-color: #40000D; --text-color: #ffe5e5; --card-bg: #60001B;
-        --border-color: #A0002B; --accent-color: #ff6666; --button-bg: #A0002B;
-        --button-hover-bg: #800022; --link-color: #ff6666; --link-hover-color: #ff8c8c;
-    }
-    .theme-brown {
-        --bg-color: #3d2b1f; --text-color: #f5f5dc; --card-bg: #5a3d2b;
-        --border-color: #7b5b3f; --accent-color: #c8a070; --button-bg: #7b5b3f;
-        --button-hover-bg: #5a3d2b; --link-color: #c8a070; --link-hover-color: #e0b98c;
+      --bg-color: #1e1e2e;
+      --text-color: #cdd6f4;
+      --card-bg: #313244;
+      --border-color: #45475a;
+      --button-bg: #585b70;
+      --button-hover-bg: #6c7086;
+      --border-radius: 8px;
+      --spacing-small: 0.5em;
+      --spacing-medium: 1em;
     }
 
     /* YLEISET TYYLIT */
@@ -63,11 +48,9 @@
     .header-left { display: flex; align-items: center; }
     .header-left img { width: 40px; height: 40px; margin-right: var(--spacing-medium); }
     .header-left h1 { font-size: 1.4em; margin: 0; }
-
-    .header-right { display: flex; align-items: center; gap: var(--spacing-medium); }
+    .header-right { display: flex; align-items: center; }
 
     /* NAVIGAATIO */
-    .nav-container { display: flex; align-items: center; }
     nav ul { margin: 0; padding: 0; list-style: none; display: flex; }
     nav li { position: relative; }
     nav a, .dropdown-toggle {
@@ -79,7 +62,7 @@
     nav a:hover, .dropdown-toggle:hover { background-color: var(--button-bg); }
 
     .dropdown-content {
-        display: none; position: absolute; top: 100%; left: 0;
+        display: none; position: absolute; top: 100%; right: 0;
         background-color: var(--card-bg); min-width: 250px;
         box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1;
         border-radius: 0 0 var(--border-radius) var(--border-radius);
@@ -87,23 +70,15 @@
     }
     .dropdown-content a { padding: 12px 16px; width: auto; border-radius: 0; }
     .dropdown:hover .dropdown-content { display: block; }
-    
-    #themeSelector {
-        padding: 0.3em 0.5em; border-radius: var(--border-radius); border: 1px solid var(--border-color);
-        background-color: var(--button-bg); color: var(--text-color);
-    }
 
     /* MOBIILINAVIGAATIO (HAMPURILAINEN) */
     #mobile-menu-toggle {
-        display: none; /* Piilotettu oletuksena */
-        background: none; border: none;
-        cursor: pointer; padding: 8px;
+        display: none; background: none; border: none;
+        cursor: pointer; padding: 8px; margin-left: auto;
     }
     #mobile-menu-toggle .bar {
-        display: block;
-        width: 25px; height: 3px;
-        margin: 5px auto;
-        background-color: var(--text-color);
+        display: block; width: 25px; height: 3px;
+        margin: 5px auto; background-color: var(--text-color);
         transition: 0.4s;
     }
 
@@ -115,44 +90,24 @@
     #contentFrame { width: 100%; height: 100%; border: none; }
 
     /* Mediakysely mobiililaitteille */
-    @media (max-width: 850px) {
-        .header-left h1 { display: none; } /* Piilota otsikko, jotta tilaa riittää */
-        .nav-container {
-            order: 3; /* Siirrä navigaatio teemanvalitsimen jälkeen */
-            flex-grow: 1;
-            justify-content: flex-end;
-        }
-        .header-right {
-            width: 100%;
-            justify-content: space-between;
-        }
-    }
-
     @media (max-width: 768px) {
-        .header-left { flex-grow: 1; }
-        .header-left h1 { font-size: 1.2em; display: block; }
-        .nav-container { order: initial; flex-grow: initial; }
+        .header-left h1 { font-size: 1.2em; }
         nav {
-            display: none; /* Piilota normaali navigaatio */
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
+            display: none; position: absolute; top: 100%;
+            left: 0; width: 100%;
             background-color: var(--card-bg);
             border-top: 1px solid var(--border-color);
         }
-        nav.active { display: block; } /* Näytä nav, kun aktiivinen */
+        nav.active { display: block; }
         nav ul { flex-direction: column; }
         nav ul li { width: 100%; }
         nav ul a { text-align: center; border-bottom: 1px solid var(--border-color); }
         .dropdown-content { position: static; display: none; box-shadow: none; border: none; }
-        .dropdown:hover .dropdown-content { display: none; } /* Estä hover-toiminto mobiilissa */
-        .dropdown.open .dropdown-content { display: block; background-color: var(--button-bg); } /* Näytä klikatessa */
+        .dropdown:hover .dropdown-content { display: none; }
+        .dropdown.open .dropdown-content { display: block; background-color: var(--button-bg); }
         .dropdown-content a { padding-left: 2em; background-color: var(--button-hover-bg); }
-
-        #mobile-menu-toggle { display: block; } /* Näytä hamppari */
-        .header-right { width: auto; }
-        .nav-container { display: none; } /* Piilota vanha navigaation "wrapper" */
+        #mobile-menu-toggle { display: block; }
+        .header-right { margin-left: auto; }
     }
   </style>
 </head>
@@ -165,45 +120,29 @@
     </div>
 
     <div class="header-right">
-      <div class="nav-container">
-        <nav id="main-nav">
-          <ul>
-            <li><a href="etusivu.html" class="nav-link">Etusivu</a></li>
-
-            <li class="dropdown">
-              <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
-              <div class="dropdown-content">
-                <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori</a>
-                <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
-                <a href="kuntatarkistin.html" class="nav-link">Kuntatarkistin (vanha)</a>
-                <a href="tilastot.html" class="nav-link">Tilastokuvat (vanhempi)</a>
-              </div>
-            </li>
-
-            <li class="dropdown">
-              <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
-              <div class="dropdown-content">
-                <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com</a>
-                <a href="https://www.geocache.fi/" class="nav-link" target="_blank">Geocache.fi</a>
-                <a href="https://www.geocachingtoolbox.com/" class="nav-link" target="_blank">Geocaching Toolbox</a>
-                <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC</a>
-              </div>
-            </li>
-          </ul>
-        </nav>
-      </div>
-
-      <div id="themeSelectorContainer">
-        <label for="themeSelector">Teema:</label>
-        <select id="themeSelector">
-            <option value="default">Oletus</option>
-            <option value="theme-green">Vihreä</option>
-            <option value="theme-yellow">Keltainen</option>
-            <option value="theme-red">Punainen</option>
-            <option value="theme-brown">Ruskea</option>
-        </select>
-      </div>
-      
+      <nav id="main-nav">
+        <ul>
+          <li><a href="etusivu.html" class="nav-link">Etusivu</a></li>
+          <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
+            <div class="dropdown-content">
+              <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori</a>
+              <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
+              <a href="kuntatarkistin.html" class="nav-link">Kuntatarkistin (vanha)</a>
+              <a href="tilastot.html" class="nav-link">Tilastokuvat (vanhempi)</a>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
+            <div class="dropdown-content">
+              <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com</a>
+              <a href="https://www.geocache.fi/" class="nav-link" target="_blank">Geocache.fi</a>
+              <a href="https://www.geocachingtoolbox.com/" class="nav-link" target="_blank">Geocaching Toolbox</a>
+              <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
       <button id="mobile-menu-toggle">
         <span class="bar"></span><span class="bar"></span><span class="bar"></span>
       </button>
@@ -211,48 +150,26 @@
   </header>
 
   <main>
-    <iframe id="contentFrame" title="Sivun sisältö"></iframe>
+    <iframe id="contentFrame" src="etusivu.html" title="Sivun sisältö"></iframe>
   </main>
 
   <script>
-    function applyTheme(themeName) {
-        document.body.className = ''; 
-        if (themeName !== 'default') document.body.classList.add(themeName);
-        localStorage.setItem('selectedTheme', themeName);
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
         const contentFrame = document.getElementById('contentFrame');
         const mainNav = document.getElementById('main-nav');
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const themeSelector = document.getElementById('themeSelector');
-
-        // Aseta oletusteema ja -sivu
-        const savedTheme = localStorage.getItem('selectedTheme') || 'default';
-        applyTheme(savedTheme);
-        themeSelector.value = savedTheme;
-        contentFrame.src = 'etusivu.html'; // KORJATTU OLETUSSIVU
-
-        // Teemanvaihto
-        themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
 
         // Hampurilaisvalikon toiminta
         mobileMenuToggle.addEventListener('click', () => {
             mainNav.classList.toggle('active');
-            // Siirrä navigaatio headerin lapseksi, jotta se toimii mobiilissa
-            if(mainNav.classList.contains('active')) {
-                document.querySelector('header').appendChild(mainNav);
-            } else {
-                document.querySelector('.nav-container').appendChild(mainNav);
-            }
         });
 
         // Alasvetovalikoiden toiminta mobiilissa (klikattava)
         document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
-                if (window.innerWidth <= 768) {
+                if (window.innerWidth <= 768 && e.target.parentElement.classList.contains('dropdown')) {
                     e.preventDefault();
-                    toggle.parentElement.classList.toggle('open');
+                    e.target.parentElement.classList.toggle('open');
                 }
             });
         });
@@ -267,10 +184,10 @@
                 if (pageUrl && pageUrl !== '#') {
                     contentFrame.src = pageUrl;
                 }
-                // Sulje mobiilivalikko klikkauksen jälkeen
-                if (window.innerWidth <= 768) {
-                    mainNav.classList.remove('active');
-                }
+                
+                // Sulje valikot klikkauksen jälkeen
+                mainNav.classList.remove('active');
+                document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
             });
         });
     });
