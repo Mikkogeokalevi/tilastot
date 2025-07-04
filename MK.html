@@ -60,6 +60,21 @@
         border: 1px solid var(--border-color); border-top: none;
     }
     .dropdown-content a { padding: 12px 16px; width: auto; border-radius: 0; }
+    /* UUSI TYYLI SISENNYKSELLE */
+    .dropdown-content a.sub-link {
+        padding-left: 2.5em;
+        font-size: 0.9em;
+        position: relative;
+    }
+    .dropdown-content a.sub-link::before {
+        content: '↳';
+        position: absolute;
+        left: 1.2em;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-color);
+        opacity: 0.7;
+    }
     .dropdown:hover .dropdown-content { display: block; }
     #mobile-menu-toggle {
         display: none; background: none; border: none;
@@ -115,7 +130,7 @@
             <a href="javascript:void(0);" class="dropdown-toggle">Omat Työkalut &#9662;</a>
             <div class="dropdown-content">
               <a href="https://mikkogeokalevi.github.io/kuntatarkistin/" class="nav-link">Kuntatarkistin v2.0</a>
-              <a href="https://mikkogeokalevi.github.io/kuntatarkistin/teko.html" class="nav-link">Kuntalistan teko</a>
+              <a href="https://mikkogeokalevi.github.io/kuntatarkistin/teko.html" class="nav-link sub-link">Kuntalistan teko</a>
               <a href="MKkuvakeneraattori.html" class="nav-link">Kuvageneraattori (MK)</a>
               <a href="kuntatarkistin.html" class="nav-link">MK kuntatarkistin (MK)</a>
               <a href="kunnat_maakunnittain.html" class="nav-link">Triplettikunnat</a>
@@ -183,7 +198,6 @@
                 document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
             });
         });
-    });
-  </script>
+    </script>
 </body>
 </html>
