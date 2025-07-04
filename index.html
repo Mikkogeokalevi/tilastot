@@ -12,7 +12,6 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Tyylit säilyvät ennallaan */
     :root {
       --bg-color: #1e1e2e; --text-color: #cdd6f4; --card-bg: #313244;
       --border-color: #45475a; --button-bg: #585b70; --button-hover-bg: #6c7086;
@@ -70,6 +69,11 @@
         height: 100vh; box-sizing: border-box;
     }
     #contentFrame { width: 100%; height: 100%; border: none; }
+    .new-window-icon { /* UUSI TYYLI IKONILLE */
+        font-size: 0.8em;
+        vertical-align: top;
+        margin-left: 4px;
+    }
     @media (max-width: 768px) {
         .header-left h1 { font-size: 1.2em; }
         nav {
@@ -111,12 +115,22 @@
             </div>
           </li>
           <li class="dropdown">
-            <a href="javascript:void(0);" class="dropdown-toggle">Muualla Netissä &#9662;</a>
+            <a href="javascript:void(0);" class="dropdown-toggle">Työkalut & Sivustot &#9662;</a>
             <div class="dropdown-content">
-              <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com</a>
+              <a href="https://www.geocaching.com/" class="nav-link" target="_blank">Geocaching.com<span class="new-window-icon">↗</span></a>
+              <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC<span class="new-window-icon">↗</span></a>
               <a href="https://www.geocache.fi/" class="nav-link">Geocache.fi</a>
               <a href="https://www.geocachingtoolbox.com/" class="nav-link">Geocaching Toolbox</a>
-              <a href="https://project-gc.com/" class="nav-link" target="_blank">Project-GC</a>
+              <a href="https://gcutils.de/" class="nav-link" target="_blank">GCUtils.de<span class="new-window-icon">↗</span></a>
+              <a href="https://www.dcode.fr/en" class="nav-link" target="_blank">dCode.fr<span class="new-window-icon">↗</span></a>
+              <a href="https://gc.de/gc/reversewherigo/" class="nav-link" target="_blank">Reverse Wherigo Solver<span class="new-window-icon">↗</span></a>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle">Kartat &#9662;</a>
+            <div class="dropdown-content">
+                <a href="https://www.retkikartta.fi/" class="nav-link">Retkikartta.fi</a>
+                <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" class="nav-link" target="_blank">Karttapaikka (MML)<span class="new-window-icon">↗</span></a>
             </div>
           </li>
         </ul>
@@ -134,9 +148,7 @@
         const contentFrame = document.getElementById('contentFrame');
         const mainNav = document.getElementById('main-nav');
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-
         mobileMenuToggle.addEventListener('click', () => mainNav.classList.toggle('active'));
-
         document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768 && e.target.parentElement.classList.contains('dropdown')) {
@@ -145,15 +157,9 @@
                 }
             });
         });
-
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
-                // MUUTOS: Jos linkki on tarkoitettu uuteen ikkunaan, älä tee mitään.
-                if (this.getAttribute('target') === '_blank') {
-                    return;
-                }
-                
-                // Muussa tapauksessa suorita normaali toiminto.
+                if (this.getAttribute('target') === '_blank') return;
                 e.preventDefault();
                 const pageUrl = this.getAttribute('href');
                 if (pageUrl && pageUrl !== '#') contentFrame.src = pageUrl;
