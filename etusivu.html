@@ -26,14 +26,15 @@
         }
         p { margin: 0.3em 0 0 0; opacity: 0.9; line-height: 1.5; }
         a.link-title {
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #a6e3a1;
-            text-decoration: none;
-            display: block;
+            font-weight: bold; font-size: 1.2em;
+            color: #a6e3a1; text-decoration: none; display: block;
         }
-        a.link-title:hover {
-            text-decoration: underline;
+        a.link-title:hover { text-decoration: underline; }
+        .new-window-icon { /* UUSI TYYLI IKONILLE */
+            font-size: 0.8em;
+            vertical-align: top;
+            margin-left: 4px;
+            display: inline-block;
         }
     </style>
 </head>
@@ -62,11 +63,15 @@
             </li>
         </ul>
 
-        <h2>Muualla Netissä</h2>
+        <h2>Työkalut & Sivustot</h2>
         <ul>
             <li>
-                <a href="https://www.geocaching.com/" class="link-title" target="_blank">Geocaching.com</a>
+                <a href="https://www.geocaching.com/" class="link-title" target="_blank">Geocaching.com<span class="new-window-icon">↗</span></a>
                 <p>Geokätköilyn virallinen pääsivusto.</p>
+            </li>
+            <li>
+                <a href="https://project-gc.com/" class="link-title" target="_blank">Project-GC<span class="new-window-icon">↗</span></a>
+                <p>Kattava tilastosivusto ja työkalu geokätköilijöille.</p>
             </li>
             <li>
                 <a href="https://www.geocache.fi/" class="link-title">Geocache.fi</a>
@@ -77,8 +82,28 @@
                 <p>Laaja kokoelma työkaluja mm. koordinaattimuunnoksiin ja salakirjoitusten purkuun.</p>
             </li>
             <li>
-                <a href="https://project-gc.com/" class="link-title" target="_blank">Project-GC</a>
-                <p>Kattava tilastosivusto ja työkalu geokätköilijöille.</p>
+                <a href="https://gcutils.de/" class="link-title" target="_blank">GCUtils.de<span class="new-window-icon">↗</span></a>
+                <p>Kattava valikoima työkaluja geokätköilijöille.</p>
+            </li>
+            <li>
+                <a href="https://www.dcode.fr/en" class="link-title" target="_blank">dCode.fr<span class="new-window-icon">↗</span></a>
+                <p>Erittäin kattava sivusto erilaisten salakirjoitusten ja koodien purkamiseen.</p>
+            </li>
+            <li>
+                <a href="https://gc.de/gc/reversewherigo/" class="link-title" target="_blank">Reverse Wherigo Solver<span class="new-window-icon">↗</span></a>
+                <p>Auttaa ratkaisemaan käänteisiä Wherigo-pulmia.</p>
+            </li>
+        </ul>
+
+        <h2>Kartat</h2>
+        <ul>
+             <li>
+                <a href="https://www.retkikartta.fi/" class="link-title">Retkikartta.fi</a>
+                <p>Metsähallituksen tarkat maastokartat koko Suomesta.</p>
+            </li>
+            <li>
+                <a href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" class="link-title" target="_blank">Karttapaikka (MML)<span class="new-window-icon">↗</span></a>
+                <p>Maanmittauslaitoksen karttapalvelu, josta löytyy tarkat kartat ja ilmakuvat.</p>
             </li>
         </ul>
     </div>
