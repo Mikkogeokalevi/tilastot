@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geokätköilyn Haastetyökalu</title>
+    
+    <style>
+        body{background-color:#1a2015;font-family:'Georgia',serif;margin:0;padding:20px;transition:padding .3s ease}.sisalto-laatikko{max-width:950px;margin:30px auto;padding:10px;background-color:#3D4F2B;border:3px solid #11150C;border-radius:12px;box-shadow:5px 5px 15px rgba(0,0,0,.6);transition:margin .3s ease}.teksti-alue{color:#F8F8F8;line-height:1.8;padding:10px;font-size:1.1em;transition:font-size .3s ease}.logo-container{text-align:center;margin-bottom:15px}.logo{width:120px;height:120px;border:2px solid #90EE90;border-radius:50%;box-shadow:1px 1px 3px rgba(0,0,0,.4);background-color:#3D4F2B;padding:3px}.paaotsikko{color:#90EE90;text-align:center;margin-top:0;margin-bottom:20px;text-shadow:1px 1px 2px rgba(0,0,0,.8);font-size:1.6em;letter-spacing:.5px}.leipateksti{margin:15px 0;color:#FFFFFF;font-size:1.2em}.valinnat-laatikko{background-color:#2A381C;padding:15px;border-radius:8px;margin:20px 0;border:1px dashed #90EE90}.valinnat-laatikko label{margin-right:20px;font-size:1.1em;cursor:pointer;display:inline-block;margin-bottom:10px;min-width:150px}.valinnat-laatikko input{vertical-align:middle;margin-right:5px}#zip-input-container{margin:20px 0}#zip-input{font-size:1.1em}#export-button{font-size:1em;padding:8px 12px;margin-top:10px;background-color:#90EE90;color:#11150C;border:none;border-radius:5px;cursor:pointer}#export-button:hover{background-color:#7CFC00}#status{font-weight:700;min-height:25px;color:#FFD700}.grid-container{overflow-x:auto}.grid-container table{border-collapse:collapse;margin-top:15px;margin-bottom:15px;width:100%}.grid-container td,.grid-container th{border:1px solid #90EE90;text-align:center;padding:5px;font-size:.9em}.grid-container th{background-color:#2A381C}.grid-container td.found{background-color:#90ee90;color:#114e11;font-weight:700}.grid-container td.not-found{background-color:rgba(0,0,0,.2)}.grid-container ul{list-style-type:none;padding-left:0;columns:2;gap:20px}.grid-container h4{color:#90EE90;margin-top:20px}.suodatus-paneeli{background-color:#2A381C;padding:20px;border-radius:8px;margin:20px 0;border:1px dashed #90EE90;display:flex;flex-wrap:wrap;gap:20px}.suodatus-paneeli .filter-group{display:flex;flex-direction:column}.suodatus-paneeli label{font-size:.9em;color:#90EE90;margin-bottom:5px}.suodatus-paneeli select{font-size:1em;padding:5px;background-color:#F8F8F8;border:1px solid #90EE90;border-radius:4px}
+        @media (max-width:768px){body{padding:10px}.sisalto-laatikko{margin:15px auto}.teksti-alue{font-size:1em}.paaotsikko{font-size:1.4em}.leipateksti{font-size:1.1em}.grid-container ul{columns:1}.grid-container td,.grid-container th{padding:4px;font-size:.85em;min-width:30px}.grid-container thead th{position:-webkit-sticky;position:sticky;top:0;z-index:2}.grid-container tbody th{position:-webkit-sticky;position:sticky;left:0;background-color:#3D4F2B;z-index:1}.grid-container thead th:first-child{z-index:3}}
+    </style>
+</head>
+<body>
+
+    <div class="sisalto-laatikko">
+        <div class="teksti-alue">
+            <div class="logo-container">
+                <img src="https://img.geocaching.com:443/84454fa6-e23a-4aad-a8a4-612b77f23abe.png" alt="Oma logo" class="logo" />
+            </div>
+            <h3 class="paaotsikko">— Geokätköilyn Haastetyökalu —</h3>
+            
+            <p class="leipateksti">
+                Lataa "My Finds" .zip-tiedostosi, valitse haluamasi haasteet ja suodattimet, ja näe edistymisesi välittömästi.
+            </p>
+            
+            <div class="suodatus-paneeli" id="filter-panel" style="display: none;">
+                <div class="filter-group">
+                    <label for="filter-year">Vuosi</label>
+                    <select id="filter-year" class="filter-select"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-month">Kuukausi</label>
+                    <select id="filter-month" class="filter-select">
+                        <option value="all">Kaikki</option>
+                        <option value="0">Tammi</option><option value="1">Helmi</option><option value="2">Maalis</option>
+                        <option value="3">Huhti</option><option value="4">Touko</option><option value="5">Kesä</option>
+                        <option value="6">Heinä</option><option value="7">Elo</option><option value="8">Syys</option>
+                        <option value="9">Loka</option><option value="10">Marras</option><option value="11">Joulu</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-weekday">Viikonpäivä</label>
+                    <select id="filter-weekday" class="filter-select">
+                        <option value="all">Kaikki</option>
+                        <option value="1">Maanantai</option><option value="2">Tiistai</option><option value="3">Keskiviikko</option>
+                        <option value="4">Torstai</option><option value="5">Perjantai</option><option value="6">Lauantai</option>
+                        <option value="0">Sunnuntai</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-type">Kätkötyyppi</label>
+                    <select id="filter-type" class="filter-select"></select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-country">Maa</label>
+                    <select id="filter-country" class="filter-select"></select>
+                </div>
+            </div>
+
+            <div class="valinnat-laatikko">
+                <p class="leipateksti" style="margin-top:0; margin-bottom:10px; font-size: 1.1em;">Valitse näytettävät tilastot:</p>
+                <label><input type="checkbox" id="chk-fizzy" class="challenge-checkbox" checked> Fizzy (D/T)</label>
+                <label><input type="checkbox" id="chk-calendar" class="challenge-checkbox" checked> Kalenteri</label>
+                <label><input type="checkbox" id="chk-jasmer" class="challenge-checkbox" checked> Jasmer</label>
+                <label><input type="checkbox" id="chk-yearmonth" class="challenge-checkbox"> Vuosi/kk-matriisi</label>
+                <label><input type="checkbox" id="chk-streak" class="challenge-checkbox"> Löytöputki</label>
+                <label><input type="checkbox" id="chk-typesize" class="challenge-checkbox"> Tyyppi & Koko</label>
+                <label><input type="checkbox" id="chk-owners" class="challenge-checkbox"> Omistajat (Top 30)</label>
+                <label><input type="checkbox" id="chk-countries" class="challenge-checkbox"> Maat</label>
+                <label><input type="checkbox" id="chk-attributes" class="challenge-checkbox"> Attribuutit</label>
+            </div>
+            
+            <div id="zip-input-container">
+                <input type="file" id="zip-input" accept=".zip">
+                <button id="export-button" style="display: none;">Tallenna data (JSON)</button>
+            </div>
+            <div id="status">Etsitään valmiiksi tallennettua dataa...</div>
+
+            <div id="results-container" style="display: none;">
+                </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        let allParsedFinds = [];
+
+        // --- Tapahtumakuuntelijat ---
+        document.addEventListener('DOMContentLoaded', loadInitialData); // UUSI: Ladataan data heti kun sivu on valmis
+        document.getElementById('zip-input').addEventListener('change', handleFileSelect, false);
+        document.getElementById('export-button').addEventListener('click', exportDataAsJson, false); // UUSI
+        document.querySelectorAll('.filter-select, .challenge-checkbox').forEach(element => {
+            element.addEventListener('change', runAnalysis);
+        });
+        
+        async function loadInitialData() {
+            try {
+                const response = await fetch('my_finds_data.json');
+                if (!response.ok) {
+                    throw new Error('JSON-dataa ei löytynyt, näytetään tiedoston lataus.');
+                }
+                const data = await response.json();
+
+                // TÄRKEÄÄ: Muunnetaan päivämäärät takaisin Date-objekteiksi
+                allParsedFinds = data.map(find => ({
+                    ...find,
+                    findDate: new Date(find.findDate),
+                    placedDate: new Date(find.placedDate)
+                }));
+                
+                document.getElementById('zip-input-container').style.display = 'none'; // Piilotetaan latausosio
+                document.getElementById('status').textContent = `Ladattu ${allParsedFinds.length} löytöä valmiista datatiedostosta.`;
+                
+                populateFilterOptions();
+                runAnalysis();
+
+            } catch (error) {
+                console.log(error.message);
+                document.getElementById('status').textContent = 'Valitse .zip-tiedosto aloittaaksesi.';
+            }
+        }
+
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = 'Käsitellään tiedostoa, odota hetki...';
+            document.getElementById('results-container').style.display = 'none';
+            document.getElementById('filter-panel').style.display = 'none';
+            document.getElementById('export-button').style.display = 'none';
+            try {
+                const jszip = new JSZip();
+                const zip = await jszip.loadAsync(file);
+                let gpxContents = [];
+                zip.forEach(async (relativePath, zipEntry) => {
+                    if (zipEntry.name.toLowerCase().endsWith('.gpx') && !zipEntry.dir) {
+                        gpxContents.push(zipEntry.async('string'));
+                    }
+                });
+                if (gpxContents.length === 0) throw new Error('ZIP-tiedosto ei sisältänyt yhtään .gpx-tiedostoa.');
+                const allGpx = await Promise.all(gpxContents);
+                statusEl.textContent = 'Jäsennetään GPX-dataa... Tämä voi kestää hetken.';
+                await new Promise(resolve => setTimeout(resolve, 50));
+                
+                allParsedFinds = parseGpxFiles(allGpx);
+                
+                populateFilterOptions();
+                runAnalysis();
+                document.getElementById('export-button').style.display = 'inline-block'; // Näytetään datan tallennusnappi
+
+            } catch (error) {
+                statusEl.textContent = 'Virhe: ' + error.message;
+                console.error(error);
+            }
+        }
+        
+        function exportDataAsJson() {
+            if (allParsedFinds.length === 0) {
+                alert('Ei dataa tallennettavaksi.');
+                return;
+            }
+            const dataStr = JSON.stringify(allParsedFinds);
+            const dataBlob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'my_finds_data.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function runAnalysis() {
+            if (allParsedFinds.length === 0) return;
+            
+            const filteredFinds = getFilteredFinds(); 
+            const resultsEl = document.getElementById('results-container');
+            
+            if(document.getElementById('zip-input-container').style.display !== 'none'){
+                 document.getElementById('status').textContent = `Näytetään ${filteredFinds.length} / ${allParsedFinds.length} löydöstä valittujen suodattimien perusteella.`;
+            }
+           
+            resultsEl.style.display = 'block';
+            resultsEl.innerHTML = '';
+            
+            if (document.getElementById('chk-streak').checked) { resultsEl.innerHTML += `<div id="streak-container"><h2>Pisin löytöputki</h2><div id="streak-stats-grid" class="grid-container"></div></div>`; renderStreakStats(filteredFinds); }
+            if (document.getElementById('chk-typesize').checked) { resultsEl.innerHTML += `<div id="type-size-stats-container"><h2>Kätkötyypit ja -koot</h2><div id="type-size-stats-grid" class="grid-container"></div></div>`; renderTypeAndSizeStats(filteredFinds); }
+            if (document.getElementById('chk-owners').checked) { resultsEl.innerHTML += `<div id="owner-stats-container"><h2>Löydöt omistajittain (Top 30)</h2><div id="owner-stats-grid" class="grid-container"></div></div>`; renderOwnerStats(filteredFinds); }
+            if (document.getElementById('chk-countries').checked) { resultsEl.innerHTML += `<div id="country-stats-container"><h2>Löydöt maittain</h2><div id="country-stats-grid" class="grid-container"></div></div>`; renderCountryStats(filteredFinds); }
+            if (document.getElementById('chk-fizzy').checked) { resultsEl.innerHTML += `<div id="fizzy-container"><h2>Fizzy Challenge (D/T-ruudukko)</h2><div id="fizzy-grid" class="grid-container"></div></div>`; renderFizzyGrid(filteredFinds); }
+            if (document.getElementById('chk-yearmonth').checked) { resultsEl.innerHTML += `<div id="year-month-container"><h2>Löytömatriisi (Vuosi/Kuukausi)</h2><div id="year-month-grid" class="grid-container"></div></div>`; renderYearMonthGrid(filteredFinds); }
+            if (document.getElementById('chk-calendar').checked) { resultsEl.innerHTML += `<div id="calendar-container"><h2>Calendar Challenge (365 päivää)</h2><div id="calendar-grid" class="grid-container"></div></div>`; renderCalendarGrid(filteredFinds); }
+            if (document.getElementById('chk-jasmer').checked) { resultsEl.innerHTML += `<div id="jasmer-container"><h2>Jasmer Challenge (Piilotuskuukaudet)</h2><div id="jasmer-grid" class="grid-container"></div></div>`; renderJasmerGrid(filteredFinds); }
+            if (document.getElementById('chk-attributes').checked) { resultsEl.innerHTML += `<div id="attributes-container"><h2>Attribuuttihaaste</h2><div id="attributes-grid" class="grid-container"></div></div>`; renderAttributeGrid(filteredFinds); }
+        }
+
+        // --- Kaikki muut funktiot (populateFilterOptions, getFilteredFinds, parseGpxFiles, render...) pysyvät ennallaan ---
+        // Tässä ne ovat selkeyden vuoksi:
+        function populateFilterOptions() {
+            const yearSelect = document.getElementById('filter-year');
+            const typeSelect = document.getElementById('filter-type');
+            const countrySelect = document.getElementById('filter-country');
+            const years = [...new Set(allParsedFinds.map(f => f.findDate.getFullYear()))].sort((a, b) => b - a);
+            const types = [...new Set(allParsedFinds.map(f => f.type))].sort();
+            const countries = [...new Set(allParsedFinds.map(f => f.country).filter(c => c !== 'N/A'))].sort();
+            yearSelect.innerHTML = '<option value="all">Kaikki</option>';
+            typeSelect.innerHTML = '<option value="all">Kaikki</option>';
+            countrySelect.innerHTML = '<option value="all">Kaikki</option>';
+            years.forEach(year => yearSelect.innerHTML += `<option value="${year}">${year}</option>`);
+            types.forEach(type => typeSelect.innerHTML += `<option value="${type}">${type}</option>`);
+            countries.forEach(country => countrySelect.innerHTML += `<option value="${country}">${country}</option>`);
+            document.getElementById('filter-panel').style.display = 'flex';
+        }
+
+        function getFilteredFinds() {
+            const year = document.getElementById('filter-year').value;
+            const month = document.getElementById('filter-month').value;
+            const weekday = document.getElementById('filter-weekday').value;
+            const type = document.getElementById('filter-type').value;
+            const country = document.getElementById('filter-country').value;
+            let filteredFinds = allParsedFinds;
+            if (year !== 'all') { filteredFinds = filteredFinds.filter(f => f.findDate.getFullYear() == year); }
+            if (month !== 'all') { filteredFinds = filteredFinds.filter(f => f.findDate.getMonth() == month); }
+            if (weekday !== 'all') { filteredFinds = filteredFinds.filter(f => f.findDate.getDay() == weekday); }
+            if (type !== 'all') { filteredFinds = filteredFinds.filter(f => f.type === type); }
+            if (country !== 'all') { filteredFinds = filteredFinds.filter(f => f.country === country); }
+            return filteredFinds;
+        }
+
+        function parseGpxFiles(gpxStrings) {
+            const finds = [];
+            const parser = new DOMParser();
+            gpxStrings.forEach(gpxString => {
+                const xmlDoc = parser.parseFromString(gpxString, "application/xml");
+                const waypoints = xmlDoc.getElementsByTagName('wpt');
+                for (const wpt of waypoints) {
+                    const cacheNode = wpt.querySelector('groundspeak\\:cache, cache');
+                    if (!cacheNode) continue;
+                    const logNode = wpt.querySelector('groundspeak\\:log, log');
+                    const logTypeNode = logNode?.querySelector('groundspeak\\:type, type');
+                    if (!logNode || logTypeNode?.textContent.toLowerCase() !== 'found it') continue;
+                    const attributesNode = cacheNode.querySelector('groundspeak\\:attributes, attributes');
+                    const findAttributes = [];
+                    if (attributesNode) {
+                        const attributeNodes = attributesNode.querySelectorAll('groundspeak\\:attribute, attribute');
+                        attributeNodes.forEach(attr => {
+                            findAttributes.push({ id: attr.getAttribute('id'), inc: attr.getAttribute('inc') === '1', name: attr.textContent.trim() });
+                        });
+                    }
+                    finds.push({
+                        gcCode: wpt.querySelector('name')?.textContent ?? 'N/A',
+                        name: cacheNode.querySelector('groundspeak\\:name, name')?.textContent ?? 'Nimetön',
+                        type: cacheNode.querySelector('groundspeak\\:type, type')?.textContent ?? 'N/A',
+                        container: cacheNode.querySelector('groundspeak\\:container, container')?.textContent ?? 'N/A',
+                        difficulty: parseFloat(cacheNode.querySelector('groundspeak\\:difficulty, difficulty')?.textContent ?? 0),
+                        terrain: parseFloat(cacheNode.querySelector('groundspeak\\:terrain, terrain')?.textContent ?? 0),
+                        owner: cacheNode.querySelector('groundspeak\\:owner, owner')?.textContent ?? 'N/A',
+                        country: cacheNode.querySelector('groundspeak\\:country, country')?.textContent ?? 'N/A',
+                        state: cacheNode.querySelector('groundspeak\\:state, state')?.textContent ?? 'N/A',
+                        findDate: new Date(logNode.querySelector('groundspeak\\:date, date').textContent),
+                        placedDate: new Date(wpt.querySelector('time').textContent),
+                        attributes: findAttributes
+                    });
+                }
+            });
+            return finds;
+        }
+        
+        function renderFizzyGrid(finds) {
+            const container = document.getElementById('fizzy-grid');
+            const dtCounts = new Map();
+            finds.forEach(f => {
+                const key = `${f.difficulty}_${f.terrain}`;
+                dtCounts.set(key, (dtCounts.get(key) || 0) + 1);
+            });
+            const difficulties = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+            const terrains = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+            let html = '<table><thead><tr><th>D/T</th>';
+            terrains.forEach(t => html += `<th>${t.toFixed(1)}</th>`);
+            html += '</tr></thead><tbody>';
+            difficulties.forEach(d => {
+                html += `<tr><th>${d.toFixed(1)}</th>`;
+                terrains.forEach(t => {
+                    const key = `${d}_${t}`;
+                    const count = dtCounts.get(key) || 0;
+                    const isFound = count > 0;
+                    html += `<td class="${isFound ? 'found' : 'not-found'}">${isFound ? count : ''}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            html += `<p class="leipateksti">Olet täyttänyt <strong>${dtCounts.size} / 81</strong> D/T-yhdistelmästä (valituilla suodattimilla).</p>`;
+            container.innerHTML = html;
+        }
+        
+        function renderCalendarGrid(finds) {
+            const container = document.getElementById('calendar-grid');
+            const dayCounts = new Map();
+            finds.forEach(f => {
+                const key = `${(f.findDate.getMonth() + 1).toString().padStart(2, '0')}-${f.findDate.getDate().toString().padStart(2, '0')}`;
+                dayCounts.set(key, (dayCounts.get(key) || 0) + 1);
+            });
+            const leapDayKey = '02-29';
+            const foundLeapDay = dayCounts.has(leapDayKey);
+            const months = ['Tammi', 'Helmi', 'Maalis', 'Huhti', 'Touko', 'Kesä', 'Heinä', 'Elo', 'Syys', 'Loka', 'Marras', 'Joulu'];
+            let html = '<table><thead><tr><th></th>';
+            for (let i = 1; i <= 31; i++) html += `<th>${i}</th>`;
+            html += '</tr></thead><tbody>';
+            for (let i = 0; i < 12; i++) {
+                html += `<tr><th>${months[i]}</th>`;
+                for (let j = 1; j <= 31; j++) {
+                    const date = new Date(2024, i, j);
+                    if (date.getMonth() !== i) {
+                        html += '<td style="background-color: #3D4F2B; border-color: #3D4F2B;"></td>';
+                    } else {
+                        const key = `${(i + 1).toString().padStart(2, '0')}-${j.toString().padStart(2, '0')}`;
+                        const count = dayCounts.get(key) || 0;
+                        const isFound = count > 0;
+                        html += `<td class="${isFound ? 'found' : 'not-found'}">${isFound ? count : ''}</td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            html += `<p class="leipateksti">Olet löytänyt kätkön <strong>${dayCounts.size}</strong> päivänä vuodesta. ${foundLeapDay ? `Karkauspäivänä löytöjä: <strong>${dayCounts.get(leapDayKey)}</strong> kpl!` : ''}</p>`;
+            container.innerHTML = html;
+        }
+
+        function renderJasmerGrid(finds) {
+            const container = document.getElementById('jasmer-grid');
+            const foundMonths = new Set(finds.map(f => `${f.placedDate.getFullYear()}-${(f.placedDate.getMonth() + 1).toString().padStart(2, '0')}`));
+            const startYear = 2000;
+            const currentYear = new Date().getFullYear();
+            const months = ['T', 'H', 'M', 'H', 'T', 'K', 'H', 'E', 'S', 'L', 'M', 'J'];
+            let html = '<table><thead><tr><th>Vuosi</th>';
+            months.forEach(m => html += `<th>${m}</th>`);
+            html += '</tr></thead><tbody>';
+            for (let year = startYear; year <= currentYear; year++) {
+                html += `<tr><th>${year}</th>`;
+                for (let month = 1; month <= 12; month++) {
+                    if (year === 2000 && month < 5) {
+                         html += '<td style="background-color: #3D4F2B; border-color: #3D4F2B;"></td>';
+                         continue;
+                    }
+                    const isFound = foundMonths.has(`${year}-${month.toString().padStart(2, '0')}`);
+                    html += `<td class="${isFound ? 'found' : 'not-found'}"></td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            const now = new Date();
+            const totalMonths = (now.getFullYear() - 2000 - 1) * 12 + (12 - 4) + (now.getMonth() + 1);
+            html += `<p class="leipateksti">Olet löytänyt kätkön <strong>${foundMonths.size} / ${totalMonths}</strong> mahdollisesta piilotuskuukaudesta.</p>`;
+            container.innerHTML = html;
+        }
+        
+        function renderYearMonthGrid(finds) {
+            const container = document.getElementById('year-month-grid');
+            if (finds.length === 0) { container.innerHTML = ''; return; }
+            const counts = new Map();
+            let minYear = finds[0].findDate.getFullYear();
+            let maxYear = minYear;
+            finds.forEach(f => {
+                const year = f.findDate.getFullYear();
+                const month = f.findDate.getMonth();
+                const key = `${year}-${month}`;
+                counts.set(key, (counts.get(key) || 0) + 1);
+                if (year < minYear) minYear = year;
+                if (year > maxYear) maxYear = year;
+            });
+            const months = ['Tammi', 'Helmi', 'Maalis', 'Huhti', 'Touko', 'Kesä', 'Heinä', 'Elo', 'Syys', 'Loka', 'Marras', 'Joulu'];
+            let html = '<table><thead><tr><th>Vuosi</th>';
+            months.forEach(m => html += `<th>${m.substring(0,3)}</th>`);
+            html += '<th>Yht.</th></tr></thead><tbody>';
+            for (let year = maxYear; year >= minYear; year--) {
+                let yearTotal = 0;
+                html += `<tr><th>${year}</th>`;
+                for (let month = 0; month < 12; month++) {
+                    const count = counts.get(`${year}-${month}`) || 0;
+                    yearTotal += count;
+                    html += `<td>${count > 0 ? count : ''}</td>`;
+                }
+                html += `<th>${yearTotal}</th>`;
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function renderStreakStats(finds) {
+            const container = document.getElementById('streak-stats-grid');
+            if (finds.length === 0) {
+                container.innerHTML = '<p>Ei löytöjä valituilla suodattimilla.</p>';
+                return;
+            }
+            const uniqueFindDays = [...new Set(finds.map(f => f.findDate.toISOString().split('T')[0]))];
+            uniqueFindDays.sort();
+            let longestStreak = 0;
+            if (uniqueFindDays.length > 0) {
+                longestStreak = 1;
+                let currentStreak = 1;
+                for (let i = 1; i < uniqueFindDays.length; i++) {
+                    const currentDate = new Date(uniqueFindDays[i]);
+                    const prevDate = new Date(uniqueFindDays[i - 1]);
+                    const diffTime = currentDate - prevDate;
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays === 1) {
+                        currentStreak++;
+                    } else {
+                        if (currentStreak > longestStreak) longestStreak = currentStreak;
+                        currentStreak = 1;
+                    }
+                }
+                if (currentStreak > longestStreak) longestStreak = currentStreak;
+            }
+            container.innerHTML = `<p class="leipateksti">Pisin löytöputkesi on: <strong>${longestStreak} päivää</strong>.</p>`;
+        }
+
+        function renderTypeAndSizeStats(finds) {
+            const container = document.getElementById('type-size-stats-grid');
+            const typeCounts = new Map();
+            const sizeCounts = new Map();
+            finds.forEach(f => {
+                typeCounts.set(f.type, (typeCounts.get(f.type) || 0) + 1);
+                sizeCounts.set(f.container, (sizeCounts.get(f.container) || 0) + 1);
+            });
+            const sortedTypes = [...typeCounts.entries()].sort((a, b) => b[1] - a[1]);
+            const sortedSizes = [...sizeCounts.entries()].sort((a, b) => b[1] - a[1]);
+            let html = '<h4>Kätkötyypit</h4><ul>';
+            sortedTypes.forEach(([type, count]) => { html += `<li>${type}: <strong>${count}</strong></li>`; });
+            html += '</ul><h4>Kätköjen koot</h4><ul>';
+            sortedSizes.forEach(([size, count]) => { html += `<li>${size}: <strong>${count}</strong></li>`; });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+        
+        function renderOwnerStats(finds) {
+            const container = document.getElementById('owner-stats-grid');
+            const ownerCounts = new Map();
+            finds.forEach(f => {
+                if (f.owner && f.owner !== 'N/A') {
+                    ownerCounts.set(f.owner, (ownerCounts.get(f.owner) || 0) + 1);
+                }
+            });
+            const sortedOwners = [...ownerCounts.entries()].sort((a, b) => b[1] - a[1]);
+            let html = '<ul>';
+            sortedOwners.slice(0, 30).forEach(([owner, count]) => {
+                html += `<li>${owner}: <strong>${count}</strong></li>`;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
+        function renderCountryStats(finds) {
+            const container = document.getElementById('country-stats-grid');
+            const countryCounts = new Map();
+            finds.forEach(f => {
+                if (f.country && f.country !== 'N/A') {
+                    countryCounts.set(f.country, (countryCounts.get(f.country) || 0) + 1);
+                }
+            });
+            const sortedCountries = [...countryCounts.entries()].sort((a, b) => b[1] - a[1]);
+            let html = '<ul>';
+            sortedCountries.forEach(([country, count]) => {
+                html += `<li>${country}: <strong>${count}</strong></li>`;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
+        function renderAttributeGrid(finds) {
+            const container = document.getElementById('attributes-grid');
+            const foundAttributes = new Set();
+            finds.forEach(find => {
+                find.attributes.forEach(attr => { foundAttributes.add(`${attr.id}_${attr.inc}`); });
+            });
+            const allAttributes = [
+                { id: '1', name: 'Koirat sallittu', inc: true }, { id: '1', name: 'Ei koiria', inc: false },
+                { id: '2', name: 'Pääsymaksu/lupa', inc: true }, { id: '2', name: 'Ei pääsymaksua', inc: false },
+                { id: '7', name: 'Pyörätuolilla saavutettavissa', inc: true }, { id: '7', name: 'Ei pyörätuolilla', inc: false },
+                { id: '10', name: 'Vesikulkuneuvo vaaditaan', inc: true }, { id: '10', name: 'Ei vesikulkuneuvoa', inc: false },
+                { id: '13', name: '24/7 saatavilla', inc: true }, { id: '13', name: 'Ei 24/7 saatavilla', inc: false },
+                { id: '42', name: 'Puuhamoottori', inc: true }, {id: '42', name: 'Ei puuhamoottoria', inc: false},
+                { id: '47', name: 'Ryhmätyöskentelyä', inc: true }, { id: '47', name: 'Ei ryhmätyöskentelyä', inc: false }
+            ];
+            let html = '<table><thead><tr><th>Attribuutti</th><th>Löytynyt</th></tr></thead><tbody>';
+            allAttributes.forEach(attr => {
+                const isFound = foundAttributes.has(`${attr.id}_${attr.inc}`);
+                html += `<tr><td>${attr.name}</td><td class="${isFound ? 'found' : 'not-found'}">${isFound ? '✓' : ''}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+    </script>
+</body>
+</html>
