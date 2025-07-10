@@ -73,8 +73,7 @@
                 <label><input type="checkbox" id="chk-typesize" class="challenge-checkbox"> Tyyppi & Koko</label>
                 <label><input type="checkbox" id="chk-owners" class="challenge-checkbox"> Omistajat (Top 30)</label>
                 <label><input type="checkbox" id="chk-countries" class="challenge-checkbox"> Maat</label>
-                <label><input type="checkbox" id="chk-attributes" class="challenge-checkbox"> Attribuutit</label>
-            </div>
+                </div>
             
             <div id="zip-input-container">
                 <input type="file" id="zip-input" accept=".zip">
@@ -106,15 +105,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        const ATTRIBUTE_FINNISH_NAMES = {
-            '14': { true: 'Koiria', false: 'Ei koiria' }, '15': { true: 'Polkupyörä', false: 'Ei polkupyörää' }, '16': { true: 'Moottoripyörä', false: 'Ei moottoripyörää' }, '17': { true: 'Mönkijä', false: 'Ei mönkijää' }, '18': { true: 'Maastoauto', false: 'Ei maastoautoa' }, '19': { true: 'Lumikelkka', false: 'Ei lumikelkkaa' }, '20': { true: 'Hevosia', false: 'Ei hevosia' }, '57': { true: 'Kuorma-autoilijoille', false: 'Ei kuorma-autoilijoille' }, '38': { true: 'Nuotio', false: 'Ei nuotiota' },
-            '6': { true: 'Suositellaan lapsille' }, '8': { true: 'Alle tunnissa haettavissa' }, '9': { true: 'Maisemakohde' }, '45': { true: 'Vaikea kiipeäminen' }, '13': { true: 'Saatavilla 24/7', false: 'Ei 24/7 saatavilla' }, '21': { true: 'Suositellaan yöllä' }, '12': { true: 'Saatavilla talvella' }, '22': { true: 'Huomaamattomuutta vaaditaan' }, '40': { true: 'Omistajan huomiota pyydetään' }, '56': { true: 'Maastomysteeri' }, '42': { true: 'Yökätkö' }, '43': { true: 'Pysäköi ja nappaa' }, '44': { true: 'Hylätty rakennus' }, '10': { true: 'Lyhyt kävely (<1km)' }, '11': { true: 'Keskipitkä kävely (1-10km)' }, '55': { true: 'Kausittainen pääsy' }, '63': { true: 'Suositellaan turisteille' }, '54': { true: 'Piha (yksityisalue)' }, '47': { true: 'Tiimityötä vaaditaan' }, '61': { true: 'Haastekätkö' }, '62': { true: 'Power trail' }, '53': { true: 'Bonuskätkö' },
-            '51': { true: 'Lost And Found -kiertue' }, '71': { true: 'Kumppanuuskätkö' }, '70': { true: 'GeoTour' }, '72': { true: 'Geocaching.com solution checker' },
-            '2': { true: 'Sisäänpääsy-/parkkimaksu', false: 'Ei maksuja' }, '3': { true: 'Kiipeilyvarusteet', false: 'Ei kiipeilyvarusteita' }, '4': { true: 'Vene', false: 'Ei venettä' }, '5': { true: 'Sukellusvarusteet', false: 'Ei sukellusvarusteita' }, '23': { true: 'Taskulamppu', false: 'Ei taskulamppua' }, '29': { true: 'UV-valo', false: 'Ei UV-valoa' }, '30': { true: 'Lumikengät', false: 'Ei lumikenkiä' }, '31': { true: 'Murtomaasukset', false: 'Ei murtomaasuksia' }, '32': { true: 'Työkaluja', false: 'Ei työkaluja' }, '69': { true: 'Langaton lähetin', false: 'Ei lähetintä' }, '64': { true: 'Puuhun kiipeämistä', false: 'Ei puuhun kiipeämistä' },
-            '35': { true: 'Myrkkykasveja', false: 'Ei myrkkykasveja' }, '36': { true: 'Vaarallisia eläimiä', false: 'Ei vaarallisia eläimiä' }, '37': { true: 'Punkkeja', false: 'Ei punkkeja' }, '39': { true: 'Hylätty kaivos' }, '46': { true: 'Metsästysalue' }, '48': { true: 'Vaarallinen alue' }, '33': { true: 'Karjaa lähellä' }, '49': { true: 'Kallioita/kiviä', false: 'Ei kallioita/kiviä' }, '50': { true: 'Piikkikasveja', false: 'Ei piikkikasveja' },
-            '7': { true: 'Haettavissa pyörätuolilla', false: 'Ei pyörätuolilla' }, '25': { true: 'Parkkipaikka lähellä' }, '26': { true: 'Julkinen liikenne lähellä' }, '27': { true: 'Juomavettä lähellä' }, '28': { true: 'Yleinen WC lähellä' }, '34': { true: 'Puhelin lähellä' }, '52': { true: 'Piknikpöytiä lähellä' }, '41': { true: 'Lastenvaunuilla tavoitettavissa' }, '58': { true: 'Huoltoasema lähellä' }, '59': { true: 'Ruokaa lähellä' }
-        };
-
         let allParsedFinds = [];
         let gpxCreationDate = null;
         let attributeMap = new Map();
@@ -225,8 +215,7 @@
                 'chk-streak': { container: 'streak-container', grid: 'streak-stats-grid', title: 'Pisin löytöputki', render: renderStreakStats },
                 'chk-typesize': { container: 'type-size-stats-container', grid: 'type-size-stats-grid', title: 'Kätkötyypit ja -koot', render: renderTypeAndSizeStats },
                 'chk-owners': { container: 'owner-stats-container', grid: 'owner-stats-grid', title: 'Löydöt omistajittain (Top 30)', render: renderOwnerStats },
-                'chk-countries': { container: 'country-stats-container', grid: 'country-stats-grid', title: 'Löydöt maittain', render: renderCountryStats },
-                'chk-attributes': { container: 'attributes-container', grid: 'attributes-grid', title: 'Attribuuttihaaste', render: renderAttributeGrid }
+                'chk-countries': { container: 'country-stats-container', grid: 'country-stats-grid', title: 'Löydöt maittain', render: renderCountryStats }
             };
             for (const id in renderMap) {
                 if (document.getElementById(id) && document.getElementById(id).checked) {
@@ -336,8 +325,7 @@
             const sortedAttributes = [...attributeMap.values()].sort((a,b) => a.name.localeCompare(b.name));
 
             sortedAttributes.forEach(attrData => {
-                const finnishName = ATTRIBUTE_FINNISH_NAMES[attrData.id]?.[attrData.inc] || attrData.name;
-                const checkbox = `<label><input type="checkbox" value="${attrData.id}_${attrData.inc}" data-name="${finnishName}"> ${finnishName}</label>`;
+                const checkbox = `<label><input type="checkbox" value="${attrData.id}_${attrData.inc}" data-name="${attrData.name}"> ${attrData.name}</label>`;
                 if (attrData.inc) {
                     positiveHtml += checkbox;
                 } else {
@@ -689,8 +677,7 @@
             sortedAttrs.forEach(attrData => {
                 const key = `${attrData.id}_${attrData.inc}`;
                 const count = attributeCounts.get(key) || 0;
-                const displayName = ATTRIBUTE_FINNISH_NAMES[attrData.id]?.[attrData.inc] || attrData.name;
-                html += `<tr><td>${displayName}</td><td class="${count > 0 ? 'found' : 'not-found'}">${count > 0 ? count : ''}</td></tr>`;
+                html += `<tr><td>${attrData.name}</td><td class="${count > 0 ? 'found' : 'not-found'}">${count > 0 ? count : ''}</td></tr>`;
             });
 
             html += '</tbody></table>';
