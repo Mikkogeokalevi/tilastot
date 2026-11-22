@@ -8,13 +8,12 @@
   html, body {
     margin: 0;
     height: 100%;
-    background: #1a1a1a;
     font-family: Verdana, Geneva, sans-serif;
-    color: #f0f0f0;
   }
   body {
     display: flex;
     flex-direction: column;
+    background: #d9d9d9;
   }
   header {
     display: flex;
@@ -23,6 +22,7 @@
     padding: 12px 16px;
     background: #111111;
     border-bottom: 2px solid #ff8800;
+    flex: none;
   }
   header label {
     color: #ff8800;
@@ -39,11 +39,73 @@
     font-size: 14px;
     cursor: pointer;
   }
+  .kentta {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  .sivu {
+    width: 100%;
+    max-width: 1100px;
+    background: #ffffff;
+    box-shadow: 0 0 24px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+  }
+  .kuvausotsake {
+    color: #4a4a4a;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 16px 24px 4px 24px;
+  }
   iframe {
     flex: 1;
     width: 100%;
     border: none;
-    background: #1a1a1a;
+    background: #ffffff;
+    min-height: 300px;
+  }
+  .koodi-alue {
+    border-top: 1px solid #dddddd;
+    padding: 12px 24px 16px 24px;
+    flex: none;
+  }
+  .koodi-otsikko {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .koodi-otsikko span {
+    color: #4a4a4a;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  button {
+    background: #ff8800;
+    color: #111111;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 16px;
+    cursor: pointer;
+  }
+  textarea {
+    width: 100%;
+    height: 150px;
+    box-sizing: border-box;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 11px;
+    color: #333333;
+    background: #f7f7f7;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 10px;
+    resize: vertical;
+    white-space: pre;
+    overflow: auto;
   }
 </style>
 </head>
@@ -51,17 +113,372 @@
 <header>
   <label for="pohja">Valitse pohja:</label>
   <select id="pohja">
-    <option value="tradi_01.html">Tradi 01 — Päivän ensimmäinen</option>
-    <option value="multi_01.html">Multi 01 — Muistomerkkien matka</option>
-    <option value="mysteeri_01.html">Mysteeri 01 — Eksynyt kirje</option>
-    <option value="wherigo_01.html">Wherigo 01 — Kuuma ja kylmä</option>
-    <option value="letter_01.html">Letter 01 — Dartmoorin perinne</option>
+    <optgroup label="Tumma teema">
+      <option value="tradi_01.html">Tradi 01 — Päivän ensimmäinen</option>
+      <option value="multi_01.html">Multi 01 — Muistomerkkien matka</option>
+      <option value="mysteeri_01.html">Mysteeri 01 — Eksynyt kirje</option>
+      <option value="wherigo_01.html">Wherigo 01 — Kuuma ja kylmä</option>
+      <option value="letter_01.html">Letter 01 — Dartmoorin perinne</option>
+    </optgroup>
+    <optgroup label="Vaalea teema">
+      <option value="tradi_01w.html">Tradi 01 — Päivän ensimmäinen</option>
+      <option value="multi_01w.html">Multi 01 — Muistomerkkien matka</option>
+      <option value="mysteeri_01w.html">Mysteeri 01 — Eksynyt kirje</option>
+      <option value="wherigo_01w.html">Wherigo 01 — Kuuma ja kylmä</option>
+      <option value="letter_01w.html">Letter 01 — Dartmoorin perinne</option>
+    </optgroup>
   </select>
 </header>
-<iframe id="frame" src="tradi_01.html"></iframe>
+<div class="kentta">
+  <div class="sivu">
+    <div class="kuvausotsake">Geokätkön kuvaus:</div>
+    <iframe id="frame" src="tradi_01.html"></iframe>
+    <div class="koodi-alue">
+      <div class="koodi-otsikko">
+        <span>Kopioitava HTML — liitä kätkön kuvauskenttään sellaisenaan:</span>
+        <button id="kopioi">📋 Kopioi HTML</button>
+      </div>
+      <textarea id="koodi" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<script type="text/plain" id="lahde-tradi_01.html"><meta charset="UTF-8">
+<div style="background-color:#111111; background-image:linear-gradient(180deg,#181818,#0d0d0d); border:2px solid #4CAF50; border-radius:14px; box-shadow:0 0 28px rgba(76,175,80,0.14), 0 8px 24px rgba(0,0,0,0.7); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#f0f0f0; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/f8d11150-0c80-4b0b-85fa-d667eb4f71b1.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.6);" />
+
+    <div style="color:#bbbbbb; font-size:14px; letter-spacing:3px;">— NASTOGEON TRADI —</div>
+    <div style="color:#4CAF50; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 0 14px rgba(76,175,80,0.45);">📦 PÄIVÄN ENSIMMÄINEN</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(76,175,80,0),#4CAF50,rgba(76,175,80,0));"></div>
+
+    <p style="margin:0 0 14px 0;">No niin, <font color="#4CAF50">kätkökollega</font> — tässä on sitä perinteistä kätköilyä parhaimmillaan! Ei arvoituksia, ei laskukaavoja, ei mutkia matkassa: vain sinä, laite ja rehellinen piilo, joka odottaa löytäjäänsä. Jos kaipaat päivääsi <font color="#ffb300">helppoa hymyä</font>, tämä purkki on tehty juuri sinua varten.</p>
+
+    <p style="margin:0 0 14px 0;">Piilo asustaa <font color="#ffb300">luonnon rauhassa</font>, sopivan kävelymatkan päässä lähimmältä pysäköintipaikalta. Reitti on helppokulkuinen, joten kätkö sopii erinomaisesti myös <font color="#4CAF50">perheen pienimmille löytäjille</font> ja uraansa aloitteleville. Sesonkiaikaan lähistöllä saattaa liikkua uteliaita <font color="#ffb300">muukalaisia</font> — toimi siis huomaamattomasti ja odota tarvittaessa sopivaa hetkeä.</p>
+
+    <p style="margin:0 0 14px 0;">Rasia on <font color="#4CAF50">kestävä muovipurkki</font>, johon mahtuu pieniä vaihtotavaroita ja satunnainen <font color="#ffb300">matkalainen</font>kin. Vaihda tavaraa mieluiten tasan tai yli — niin purkin sisältö pysyy mielenkiintoisena seuraavalle löytäjälle. Oma kynä kannattaa aina olla mukana, vaikka rasissa yksi varalla olisikin!</p>
+
+    <p style="margin:0 0 14px 0;">Tarkkaa vihjettä et tähän tarvitse: luota <font color="#4CAF50">kätkövaistoosi</font> ja vilkaise sinne, mistä purkit yleensä asustavat. Kun löytö on taskussa, muista kirjaantua <font color="#ffb300">lokikirjaan</font> ja asettaa rasia takaisin täsmälleen samaan asentoon kuin se piilossa makasi.</p>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(76,175,80,0),#4CAF50,rgba(76,175,80,0));"></div>
+    <div style="color:#4CAF50; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 0 12px rgba(76,175,80,0.4);">Onnea metsästykseen — nähdään lokissa! 💚</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-multi_01.html"><meta charset="UTF-8">
+<div style="background-color:#111111; background-image:linear-gradient(180deg,#181818,#0d0d0d); border:2px solid #ff8800; border-radius:14px; box-shadow:0 0 28px rgba(255,136,0,0.14), 0 8px 24px rgba(0,0,0,0.7); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#f0f0f0; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/f8d11150-0c80-4b0b-85fa-d667eb4f71b1.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.6);" />
+
+    <div style="color:#bbbbbb; font-size:14px; letter-spacing:3px;">— NASTOGEON MULTI —</div>
+    <div style="color:#ff8800; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 0 14px rgba(255,136,0,0.45);">🧭 MUISTOMERKKIEN MATKA</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(255,136,0,0),#ff8800,rgba(255,136,0,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Tervetuloa pienelle kiertueelle, <font color="#ff8800">kätkökollega</font>! Tämä monivaiheinen kätkö opastaa sinut sellaisten <font color="#ff8800">muistomerkkien</font> ja <font color="#4CAF50">tarinoiden</font> äärelle, joiden ohitse ihmiset kiirehtivät päivittäin pysähtymättä koskaan. Nyt on oiva hetki korjata asia — ja kerätä samalla yksi löytö lisää tilille.</p>
+
+    <p style="margin:0 0 14px 0;">Reitti kulkee kahden havaintopisteen kautta. Kummallakin pysähdyksellä etsit yhden luvun — ei kummajaisia eikä vaikeaa matematiikkaa, vain <font color="#ff8800">tarkkaa katsetta</font>. Lopuksi sijoitat löytämäsi luvut alla olevaan <font color="#4CAF50">laskukaavaan</font>, ja purkin todelliset koordinaatit selviävät kuin itsestään.</p>
+
+    <p style="margin:0 0 14px 0;">Varaudu kävelemään reitillä noin <font color="#ff8800">kilometrin verran</font>. Alkupiste on julkaistuissa koordinaateissa, ja maali on lyhyen matkan päässä — purkki itse on pienehkö <font color="#4CAF50">muovirasia</font> lokikirjoineen.</p>
+
+    <div style="border:1px dashed #4CAF50; border-radius:10px; background-color:#151515; padding:14px 18px; margin:6px 0 16px 0; text-align:left;">
+      <div style="color:#4CAF50; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">🧭 LASKUKAAVA</div>
+      <p style="margin:0 0 10px 0;"><font color="#ff8800">Vaihe 1</font> (lähtöpiste): Laske, montako tekstiriviä muistolaatassa on yhteensä. Saamasi luku on <font color="#4CAF50">M</font>.</p>
+      <p style="margin:0 0 10px 0;"><font color="#ff8800">Vaihe 2</font>: Jatka koordinaatteihin N 61° 45.123&prime; E 023° 40.456&prime;. Etsi lähistöltä patsaan jalusta ja ota sen vuosiluvun kaksi viimeistä numeroa. Saamasi luku on <font color="#4CAF50">P</font>.</p>
+      <p style="margin:0;"><font color="#ff8800">Lopullinen sijainti:</font><br />
+      N 61° 46.(M × 100 + P + 5)&prime;<br />
+      E 023° 41.(P × 9 + M)&prime;<br />
+      <font color="#bbbbbb" size="2">Jos tulos on alle kolminumeroinen, täydennä etunollilla.</font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Kun koordinaatit ovat hallussa, viimeinen etappi on lyhyt ja helppokulkuinen. Purkki piiloutuu maaston tarjoamaan <font color="#4CAF50">luonnolliseen suojaan</font> — vilkaise vihjettä vasta, jos olet täysin jumissa. Ja kuten aina: aseta rasia takaisin huolellisesti, jottei se joudu <font color="#ff8800">muukalaisten</font> käsiin.</p>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(255,136,0,0),#ff8800,rgba(255,136,0,0));"></div>
+    <div style="color:#ff8800; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 0 12px rgba(255,136,0,0.4);">Hyvää kiertuetta — luvut palkitsevat tarkan löytäjän! 🧭</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-mysteeri_01.html"><meta charset="UTF-8">
+<div style="background-color:#111111; background-image:linear-gradient(180deg,#181818,#0d0d0d); border:2px solid #ab47bc; border-radius:14px; box-shadow:0 0 28px rgba(171,71,188,0.14), 0 8px 24px rgba(0,0,0,0.7); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#f0f0f0; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/f8d11150-0c80-4b0b-85fa-d667eb4f71b1.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.6);" />
+
+    <div style="color:#bbbbbb; font-size:14px; letter-spacing:3px;">— NASTOGEON MYSTEERI —</div>
+    <div style="color:#ab47bc; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 0 14px rgba(171,71,188,0.45);">🧩 EKSYNYT KIRJE</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(171,71,188,0),#ab47bc,rgba(171,71,188,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Kuulkaapa tarina, <font color="#ab47bc">kätkökollega</font>. Kirpputorin nurkasta löytyi kellastunut kirjekuori: postileima yli puolen vuosisadan takaa, ja vastaanottaja, jota viesti ei koskaan tavoittanut. Joku halusi kerran välittää sanoman — ja se sanoma odottaa <font color="#ec407a">lukijaansa</font> yhä.</p>
+
+    <p style="margin:0 0 14px 0;">Kuoren sisältä paljastui lyhyt viesti ja omituinen <font color="#ab47bc">kirjainsarja</font>. Mitä lähettäjä yritti kertoa, ja miksi kirje jäi matkaan? Tällainen <font color="#ec407a">mysteeri</font> olisi melkein sääli jättää ratkaisematta — ja juuri siksi sen selvittäminen on nyt sinun tehtäväsi.</p>
+
+    <p style="margin:0 0 14px 0;">Pura alla oleva viesti, niin saat selville, minne kirje oli alun perin tarkoitus viedä — ja samalla kätkön todelliset koordinaatit. <font color="#ab47bc">Huomio: kätkö ei ole julkaistuissa koordinaateissa</font>, vaikka ne osoittavatkin aivan oikeaan naapurustoon. Ratkaise siis pulma ensin ja lähde vasta sitten liikkeelle.</p>
+
+    <div style="border:1px dashed #ec407a; border-radius:10px; background-color:#151515; padding:14px 18px; margin:6px 0 16px 0;">
+      <div style="color:#ec407a; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">🔐 RATKAISTAVA VIESTI</div>
+      <p style="margin:0 0 10px 0; font-size:18px; letter-spacing:2px;"><font color="#ab47bc">NRRUGLQDDWLW NHUWRYDW ORSXQ</font></p>
+      <p style="margin:0;"><font color="#bbbbbb" size="2">Vihje tarvittaessa: roomalainen keisari luotti kolmeen askeleeseen.</font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Kun olet purkanut viestin, tarkista vastauksesi alla olevasta linkistä — vain oikea ratkaisu päästää sinut jatkoon. Purkki itse on pienehkö <font color="#ec407a">muovirasia</font>, johon mahtuu matkalainen tai pari, ja se löytyy <font color="#ab47bc">lyhyen kävelyn</font> päästä lähimmältä pysäköintipaikalta.</p>
+
+    <a href="https://www.certitudes.org/" style="display:inline-block; background-color:#ab47bc; background-image:linear-gradient(180deg,#ce93d8,#ab47bc); color:#111111; font-weight:bold; padding:10px 24px; border-radius:8px; text-decoration:none; margin:4px 0 18px 0; box-shadow:0 4px 14px rgba(171,71,188,0.35);">✅ Tarkista ratkaisu (Certitude)</a>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(171,71,188,0),#ab47bc,rgba(171,71,188,0));"></div>
+    <div style="color:#ab47bc; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 0 12px rgba(171,71,188,0.4);">Ratkaise arvoitus, kätkökollega — kirje ansaitsee päästä perille!</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-wherigo_01.html"><meta charset="UTF-8">
+<div style="background-color:#111111; background-image:linear-gradient(180deg,#181818,#0d0d0d); border:2px solid #26c6da; border-radius:14px; box-shadow:0 0 28px rgba(38,198,218,0.14), 0 8px 24px rgba(0,0,0,0.7); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#f0f0f0; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/f8d11150-0c80-4b0b-85fa-d667eb4f71b1.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.6);" />
+
+    <div style="color:#bbbbbb; font-size:14px; letter-spacing:3px;">— NASTOGEON WHERIGO —</div>
+    <div style="color:#26c6da; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 0 14px rgba(38,198,218,0.45);">📡 KUUMA JA KYLMÄ</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(38,198,218,0),#26c6da,rgba(38,198,218,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Muistatko sen leikin, <font color="#26c6da">kätkökollega</font>? Sen, jossa yksi piilottaa aarteen ja muut hakevat sitä <font color="#ffd54f">kuuman ja kylmän</font> perusteella? Tämä kätkö on juuri sitä — mutta nyt huutajana toimii oma laitteesi, ja aarre on rehellinen purkki jossain näillä seuduilla.</p>
+
+    <p style="margin:0 0 14px 0;">Kyseessä on <font color="#26c6da">käänteinen Wherigo</font> eli reverse wherigo: loppukoordinaatteja ei kerrota missään vaiheessa. Sen sijaan patruuna vastaa ainoastaan yhteen kysymykseen — <font color="#ffd54f">miten kaukana</font> maali on. Kävele, mittaa uudelleen ja huomaa, oletko kuumalla vai kylmällä jäljellä. Jokainen mittaus on askel lähemmäs.</p>
+
+    <p style="margin:0 0 14px 0;">Tarvitset matkaan <font color="#26c6da">Wherigo-yhteensopivan</font> laitteen tai sovelluksen — esimerkiksi WhereYouGo Androidille tai Wherigo-sovelluksen iOS:lle — sekä alla olevat kolme <font color="#ffd54f">käynnistyskoodia</font>. Patruunan lataat sivun lopussa olevasta linkistä. Julkaistut koordinaatit ovat hyvä aloituspaikka, mutta purkki itse ei ole siellä.</p>
+
+    <div style="border:1px dashed #ffd54f; border-radius:10px; background-color:#151515; padding:14px 18px; margin:6px 0 16px 0; text-align:left;">
+      <div style="color:#ffd54f; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">📡 KÄYNNISTYSKOODIT</div>
+      <p style="margin:0 0 10px 0;">Syötä nämä kolme koodia patruunaan tässä järjestyksessä:</p>
+      <p style="margin:0 0 6px 0;"><font color="#26c6da">Koodi 1:</font> <font color="#26c6da" size="4"><b>123456</b></font></p>
+      <p style="margin:0 0 6px 0;"><font color="#26c6da">Koodi 2:</font> <font color="#26c6da" size="4"><b>654321</b></font></p>
+      <p style="margin:0;"><font color="#26c6da">Koodi 3:</font> <font color="#26c6da" size="4"><b>112233</b></font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Kun <font color="#ffd54f">etäisyyslukema</font> käy riittävän pieneksi, silmäile ympäristöä tuttujen piilopaikkojen varalta — purkki on pienehkö <font color="#26c6da">muovirasia</font> lokikirjoineen. Ja muistathan kertoa lokissasi, monellako mittauksella maali löytyi: se on tämän kätkön hauskin tilasto.</p>
+
+    <a href="https://www.wherigo.com/" style="display:inline-block; background-color:#26c6da; background-image:linear-gradient(180deg,#4dd0e1,#26c6da); color:#111111; font-weight:bold; padding:10px 24px; border-radius:8px; text-decoration:none; margin:4px 0 18px 0; box-shadow:0 4px 14px rgba(38,198,218,0.35);">📥 Lataa Reverse Wherigo -patruuna</a>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(38,198,218,0),#26c6da,rgba(38,198,218,0));"></div>
+    <div style="color:#26c6da; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 0 12px rgba(38,198,218,0.4);">Mittaa, kävele, mittaa — kuumimmat jäljet johtavat perille! 📡</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-letter_01.html"><meta charset="UTF-8">
+<div style="background-color:#111111; background-image:linear-gradient(180deg,#181818,#0d0d0d); border:2px solid #e53935; border-radius:14px; box-shadow:0 0 28px rgba(229,57,53,0.14), 0 8px 24px rgba(0,0,0,0.7); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#f0f0f0; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/f8d11150-0c80-4b0b-85fa-d667eb4f71b1.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.6);" />
+
+    <div style="color:#bbbbbb; font-size:14px; letter-spacing:3px;">— NASTOGEON LETTER —</div>
+    <div style="color:#e53935; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 0 14px rgba(229,57,53,0.45);">📮 DARTMOORIN PERINNE</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(229,57,53,0),#e53935,rgba(229,57,53,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Tiesitkö, <font color="#e53935">kätkökollega</font>, että harrastuksemme juuret ulottuvat aina vuoteen <font color="#ffe082">1854</font>? Tuolloin Englannin Dartmoorin kosteikolla retkeilijät alkoivat jättää käyntikorttejaan ja viestejään piilossa olevaan purkkiin — näin syntyi <font color="#e53935">letterboxing</font>, geokätköilyn kunnioitettu esikuva.</p>
+
+    <p style="margin:0 0 14px 0;">Tämä letter-kätkö jatkaa tuota vanhaa perinnettä: rasian sisältä löytyy lokivihon lisäksi oma <font color="#ffe082">leimasin</font>, joka on kätkön sielu. Se <font color="#e53935">ei ole vaihtotavaraa</font> eikä sitä saa koskaan ottaa mukaansa — leimasin jää aina paikoilleen seuraavaa kävijää odottamaan.</p>
+
+    <p style="margin:0 0 14px 0;">Jos sinulla on oma leimasin, ota se rohkeasti mukaan: leimaa kätkön leimasimella oma vihkosi ja jätä oman leimasimesi jälki kätkön <font color="#ffe082">lokivihkoon</font>. Näin perinne jatkuu kädestä käteen, löytäjältä toiselle. Ilman leimasintakin onnistut mainiosti — pelkkä nimimerkki lokissa riittää aivan hyvin.</p>
+
+    <div style="border:1px dashed #ffe082; border-radius:10px; background-color:#151515; padding:14px 18px; margin:6px 0 16px 0; text-align:left;">
+      <div style="color:#ffe082; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">📮 NÄIN LEIMAAT</div>
+      <p style="margin:0 0 10px 0;"><font color="#e53935">1.</font> Löydä purkki ja avaa se varovasti — sisältö on herkkää.</p>
+      <p style="margin:0 0 10px 0;"><font color="#e53935">2.</font> Leimaa kätkön leimasimella oma vihkosi tai lokikirjasi.</p>
+      <p style="margin:0 0 10px 0;"><font color="#e53935">3.</font> Jätä oman leimasimesi jälki kätkön lokivihkoon — jos leimasinta ei ole, riittää nimimerkki.</p>
+      <p style="margin:0;"><font color="#e53935">4.</font> Aseta leimasin takaisin purkkiin ja sulje huolellisesti. <font color="#ffe082">Leimasin kuuluu aina kätkölle!</font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Piilo itsessään on helppo löytää — tässä kätkössä arvo on pikemminkin <font color="#e53935">perinteessä</font> kuin paikannuksen vaikeudessa. Kun purkki avautuu, saatat kokea ripauksen samaa riemua, jonka Dartmoorin retkeilijät tunsivat toistasataa vuotta sitten.</p>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(229,57,53,0),#e53935,rgba(229,57,53,0));"></div>
+    <div style="color:#e53935; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 0 12px rgba(229,57,53,0.4);">Leimaa ja lähde — perinne jatkuu sinun kauttasi! 📮</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-tradi_01w.html"><meta charset="UTF-8">
+<div style="background-color:#f6f5f1; background-image:linear-gradient(180deg,#ffffff,#f2efe9); border:2px solid #2e7d32; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#333333; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/db8e9aa1-bd6a-4b86-923e-a3cc42cf8492.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+
+    <div style="color:#888888; font-size:14px; letter-spacing:3px;">— NASTOGEON TRADI —</div>
+    <div style="color:#2e7d32; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 2px 8px rgba(46,125,50,0.25);">📦 PÄIVÄN ENSIMMÄINEN</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(46,125,50,0),#2e7d32,rgba(46,125,50,0));"></div>
+
+    <p style="margin:0 0 14px 0;">No niin, <font color="#2e7d32">kätkökollega</font> — tässä on sitä perinteistä kätköilyä parhaimmillaan! Ei arvoituksia, ei laskukaavoja, ei mutkia matkassa: vain sinä, laite ja rehellinen piilo, joka odottaa löytäjäänsä. Jos kaipaat päivääsi <font color="#f57f17">helppoa hymyä</font>, tämä purkki on tehty juuri sinua varten.</p>
+
+    <p style="margin:0 0 14px 0;">Piilo asustaa <font color="#f57f17">luonnon rauhassa</font>, sopivan kävelymatkan päässä lähimmältä pysäköintipaikalta. Reitti on helppokulkuinen, joten kätkö sopii erinomaisesti myös <font color="#2e7d32">perheen pienimmille löytäjille</font> ja uraansa aloitteleville. Sesonkiaikaan lähistöllä saattaa liikkua uteliaita <font color="#f57f17">muukalaisia</font> — toimi siis huomaamattomasti ja odota tarvittaessa sopivaa hetkeä.</p>
+
+    <p style="margin:0 0 14px 0;">Rasia on <font color="#2e7d32">kestävä muovipurkki</font>, johon mahtuu pieniä vaihtotavaroita ja satunnainen <font color="#f57f17">matkalainen</font>kin. Vaihda tavaraa mieluiten tasan tai yli — niin purkin sisältö pysyy mielenkiintoisena seuraavalle löytäjälle. Oma kynä kannattaa aina olla mukana, vaikka rasissa yksi varalla olisikin!</p>
+
+    <p style="margin:0 0 14px 0;">Tarkkaa vihjettä et tähän tarvitse: luota <font color="#2e7d32">kätkövaistoosi</font> ja vilkaise sinne, mistä purkit yleensä asustavat. Kun löytö on taskussa, muista kirjaantua <font color="#f57f17">lokikirjaan</font> ja asettaa rasia takaisin täsmälleen samaan asentoon kuin se piilossa makasi.</p>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(46,125,50,0),#2e7d32,rgba(46,125,50,0));"></div>
+    <div style="color:#2e7d32; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 2px 8px rgba(46,125,50,0.2);">Onnea metsästykseen — nähdään lokissa! 💚</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-multi_01w.html"><meta charset="UTF-8">
+<div style="background-color:#f6f5f1; background-image:linear-gradient(180deg,#ffffff,#f2efe9); border:2px solid #e65100; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#333333; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/db8e9aa1-bd6a-4b86-923e-a3cc42cf8492.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+
+    <div style="color:#888888; font-size:14px; letter-spacing:3px;">— NASTOGEON MULTI —</div>
+    <div style="color:#e65100; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 2px 8px rgba(230,81,0,0.25);">🧭 MUISTOMERKKIEN MATKA</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(230,81,0,0),#e65100,rgba(230,81,0,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Tervetuloa pienelle kiertueelle, <font color="#e65100">kätkökollega</font>! Tämä monivaiheinen kätkö opastaa sinut sellaisten <font color="#e65100">muistomerkkien</font> ja <font color="#2e7d32">tarinoiden</font> äärelle, joiden ohitse ihmiset kiirehtivät päivittäin pysähtymättä koskaan. Nyt on oiva hetki korjata asia — ja kerätä samalla yksi löytö lisää tilille.</p>
+
+    <p style="margin:0 0 14px 0;">Reitti kulkee kahden havaintopisteen kautta. Kummallakin pysähdyksellä etsit yhden luvun — ei kummajaisia eikä vaikeaa matematiikkaa, vain <font color="#e65100">tarkkaa katsetta</font>. Lopuksi sijoitat löytämäsi luvut alla olevaan <font color="#2e7d32">laskukaavaan</font>, ja purkin todelliset koordinaatit selviävät kuin itsestään.</p>
+
+    <p style="margin:0 0 14px 0;">Varaudu kävelemään reitillä noin <font color="#e65100">kilometrin verran</font>. Alkupiste on julkaistuissa koordinaateissa, ja maali on lyhyen matkan päässä — purkki itse on pienehkö <font color="#2e7d32">muovirasia</font> lokikirjoineen.</p>
+
+    <div style="border:1px dashed #2e7d32; border-radius:10px; background-color:rgba(46,125,50,0.05); padding:14px 18px; margin:6px 0 16px 0; text-align:left;">
+      <div style="color:#2e7d32; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">🧭 LASKUKAAVA</div>
+      <p style="margin:0 0 10px 0;"><font color="#e65100">Vaihe 1</font> (lähtöpiste): Laske, montako tekstiriviä muistolaatassa on yhteensä. Saamasi luku on <font color="#2e7d32">M</font>.</p>
+      <p style="margin:0 0 10px 0;"><font color="#e65100">Vaihe 2</font>: Jatka koordinaatteihin N 61° 45.123&prime; E 023° 40.456&prime;. Etsi lähistöltä patsaan jalusta ja ota sen vuosiluvun kaksi viimeistä numeroa. Saamasi luku on <font color="#2e7d32">P</font>.</p>
+      <p style="margin:0;"><font color="#e65100">Lopullinen sijainti:</font><br />
+      N 61° 46.(M × 100 + P + 5)&prime;<br />
+      E 023° 41.(P × 9 + M)&prime;<br />
+      <font color="#777777" size="2">Jos tulos on alle kolminumeroinen, täydennä etunollilla.</font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Kun koordinaatit ovat hallussa, viimeinen etappi on lyhyt ja helppokulkuinen. Purkki piiloutuu maaston tarjoamaan <font color="#2e7d32">luonnolliseen suojaan</font> — vilkaise vihjettä vasta, jos olet täysin jumissa. Ja kuten aina: aseta rasia takaisin huolellisesti, jottei se joudu <font color="#e65100">muukalaisten</font> käsiin.</p>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(230,81,0,0),#e65100,rgba(230,81,0,0));"></div>
+    <div style="color:#e65100; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 2px 8px rgba(230,81,0,0.2);">Hyvää kiertuetta — luvut palkitsevat tarkan löytäjän! 🧭</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-mysteeri_01w.html"><meta charset="UTF-8">
+<div style="background-color:#f6f5f1; background-image:linear-gradient(180deg,#ffffff,#f2efe9); border:2px solid #8e24aa; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#333333; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/db8e9aa1-bd6a-4b86-923e-a3cc42cf8492.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+
+    <div style="color:#888888; font-size:14px; letter-spacing:3px;">— NASTOGEON MYSTEERI —</div>
+    <div style="color:#8e24aa; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 2px 8px rgba(142,36,170,0.25);">🧩 EKSYNYT KIRJE</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(142,36,170,0),#8e24aa,rgba(142,36,170,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Kuulkaapa tarina, <font color="#8e24aa">kätkökollega</font>. Kirpputorin nurkasta löytyi kellastunut kirjekuori: postileima yli puolen vuosisadan takaa, ja vastaanottaja, jota viesti ei koskaan tavoittanut. Joku halusi kerran välittää sanoman — ja se sanoma odottaa <font color="#d81b60">lukijaansa</font> yhä.</p>
+
+    <p style="margin:0 0 14px 0;">Kuoren sisältä paljastui lyhyt viesti ja omituinen <font color="#8e24aa">kirjainsarja</font>. Mitä lähettäjä yritti kertoa, ja miksi kirje jäi matkaan? Tällainen <font color="#d81b60">mysteeri</font> olisi melkein sääli jättää ratkaisematta — ja juuri siksi sen selvittäminen on nyt sinun tehtäväsi.</p>
+
+    <p style="margin:0 0 14px 0;">Pura alla oleva viesti, niin saat selville, minne kirje oli alun perin tarkoitus viedä — ja samalla kätkön todelliset koordinaatit. <font color="#8e24aa">Huomio: kätkö ei ole julkaistuissa koordinaateissa</font>, vaikka ne osoittavatkin aivan oikeaan naapurustoon. Ratkaise siis pulma ensin ja lähde vasta sitten liikkeelle.</p>
+
+    <div style="border:1px dashed #d81b60; border-radius:10px; background-color:rgba(142,36,170,0.05); padding:14px 18px; margin:6px 0 16px 0;">
+      <div style="color:#d81b60; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">🔐 RATKAISTAVA VIESTI</div>
+      <p style="margin:0 0 10px 0; font-size:18px; letter-spacing:2px;"><font color="#8e24aa">NRRUGLQDDWLW NHUWRYDW ORSXQ</font></p>
+      <p style="margin:0;"><font color="#777777" size="2">Vihje tarvittaessa: roomalainen keisari luotti kolmeen askeleeseen.</font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Kun olet purkanut viestin, tarkista vastauksesi alla olevasta linkistä — vain oikea ratkaisu päästää sinut jatkoon. Purkki itse on pienehkö <font color="#d81b60">muovirasia</font>, johon mahtuu matkalainen tai pari, ja se löytyy <font color="#8e24aa">lyhyen kävelyn</font> päästä lähimmältä pysäköintipaikalta.</p>
+
+    <a href="https://www.certitudes.org/" style="display:inline-block; background-color:#8e24aa; background-image:linear-gradient(180deg,#ab47bc,#8e24aa); color:#ffffff; font-weight:bold; padding:10px 24px; border-radius:8px; text-decoration:none; margin:4px 0 18px 0; box-shadow:0 4px 14px rgba(142,36,170,0.35);">✅ Tarkista ratkaisu (Certitude)</a>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(142,36,170,0),#8e24aa,rgba(142,36,170,0));"></div>
+    <div style="color:#8e24aa; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 2px 8px rgba(142,36,170,0.2);">Ratkaise arvoitus, kätkökollega — kirje ansaitsee päästä perille!</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-wherigo_01w.html"><meta charset="UTF-8">
+<div style="background-color:#f6f5f1; background-image:linear-gradient(180deg,#ffffff,#f2efe9); border:2px solid #0097a7; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#333333; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/db8e9aa1-bd6a-4b86-923e-a3cc42cf8492.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+
+    <div style="color:#888888; font-size:14px; letter-spacing:3px;">— NASTOGEON WHERIGO —</div>
+    <div style="color:#0097a7; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 2px 8px rgba(0,151,167,0.25);">📡 KUUMA JA KYLMÄ</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(0,151,167,0),#0097a7,rgba(0,151,167,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Muistatko sen leikin, <font color="#0097a7">kätkökollega</font>? Sen, jossa yksi piilottaa aarteen ja muut hakevat sitä <font color="#f9a825">kuuman ja kylmän</font> perusteella? Tämä kätkö on juuri sitä — mutta nyt huutajana toimii oma laitteesi, ja aarre on rehellinen purkki jossain näillä seuduilla.</p>
+
+    <p style="margin:0 0 14px 0;">Kyseessä on <font color="#0097a7">käänteinen Wherigo</font> eli reverse wherigo: loppukoordinaatteja ei kerrota missään vaiheessa. Sen sijaan patruuna vastaa ainoastaan yhteen kysymykseen — <font color="#f9a825">miten kaukana</font> maali on. Kävele, mittaa uudelleen ja huomaa, oletko kuumalla vai kylmällä jäljellä. Jokainen mittaus on askel lähemmäs.</p>
+
+    <p style="margin:0 0 14px 0;">Tarvitset matkaan <font color="#0097a7">Wherigo-yhteensopivan</font> laitteen tai sovelluksen — esimerkiksi WhereYouGo Androidille tai Wherigo-sovelluksen iOS:lle — sekä alla olevat kolme <font color="#f9a825">käynnistyskoodia</font>. Patruunan lataat sivun lopussa olevasta linkistä. Julkaistut koordinaatit ovat hyvä aloituspaikka, mutta purkki itse ei ole siellä.</p>
+
+    <div style="border:1px dashed #f9a825; border-radius:10px; background-color:rgba(0,151,167,0.05); padding:14px 18px; margin:6px 0 16px 0; text-align:left;">
+      <div style="color:#f9a825; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">📡 KÄYNNISTYSKOODIT</div>
+      <p style="margin:0 0 10px 0;">Syötä nämä kolme koodia patruunaan tässä järjestyksessä:</p>
+      <p style="margin:0 0 6px 0;"><font color="#0097a7">Koodi 1:</font> <font color="#0097a7" size="4"><b>123456</b></font></p>
+      <p style="margin:0 0 6px 0;"><font color="#0097a7">Koodi 2:</font> <font color="#0097a7" size="4"><b>654321</b></font></p>
+      <p style="margin:0;"><font color="#0097a7">Koodi 3:</font> <font color="#0097a7" size="4"><b>112233</b></font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Kun <font color="#f9a825">etäisyyslukema</font> käy riittävän pieneksi, silmäile ympäristöä tuttujen piilopaikkojen varalta — purkki on pienehkö <font color="#0097a7">muovirasia</font> lokikirjoineen. Ja muistathan kertoa lokissasi, monellako mittauksella maali löytyi: se on tämän kätkön hauskin tilasto.</p>
+
+    <a href="https://www.wherigo.com/" style="display:inline-block; background-color:#0097a7; background-image:linear-gradient(180deg,#00acc1,#00838f); color:#ffffff; font-weight:bold; padding:10px 24px; border-radius:8px; text-decoration:none; margin:4px 0 18px 0; box-shadow:0 4px 14px rgba(0,151,167,0.35);">📥 Lataa Reverse Wherigo -patruuna</a>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(0,151,167,0),#0097a7,rgba(0,151,167,0));"></div>
+    <div style="color:#0097a7; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 2px 8px rgba(0,151,167,0.2);">Mittaa, kävele, mittaa — kuumimmat jäljet johtavat perille! 📡</div>
+
+  </div>
+</div></script>
+
+<script type="text/plain" id="lahde-letter_01w.html"><meta charset="UTF-8">
+<div style="background-color:#f6f5f1; background-image:linear-gradient(180deg,#ffffff,#f2efe9); border:2px solid #c62828; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:760px; margin:0 auto; padding:20px;">
+  <div style="color:#333333; font-family:Verdana, Geneva, sans-serif; font-size:14px; line-height:1.8; text-align:center;">
+
+    <img src="https://s3.amazonaws.com/gs-geo-images/db8e9aa1-bd6a-4b86-923e-a3cc42cf8492.jpg" alt="Nastogeo" style="width:300px; border-radius:10px; display:block; margin:0 auto 16px auto; box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+
+    <div style="color:#888888; font-size:14px; letter-spacing:3px;">— NASTOGEON LETTER —</div>
+    <div style="color:#c62828; font-size:28px; font-weight:bold; letter-spacing:1px; margin:8px 0 6px 0; text-shadow:0 2px 8px rgba(198,40,40,0.25);">📮 DARTMOORIN PERINNE</div>
+    <div style="height:2px; width:180px; margin:0 auto 20px auto; background:linear-gradient(90deg,rgba(198,40,40,0),#c62828,rgba(198,40,40,0));"></div>
+
+    <p style="margin:0 0 14px 0;">Tiesitkö, <font color="#c62828">kätkökollega</font>, että harrastuksemme juuret ulottuvat aina vuoteen <font color="#795548">1854</font>? Tuolloin Englannin Dartmoorin kosteikolla retkeilijät alkoivat jättää käyntikorttejaan ja viestejään piilossa olevaan purkkiin — näin syntyi <font color="#c62828">letterboxing</font>, geokätköilyn kunnioitettu esikuva.</p>
+
+    <p style="margin:0 0 14px 0;">Tämä letter-kätkö jatkaa tuota vanhaa perinnettä: rasian sisältä löytyy lokivihon lisäksi oma <font color="#795548">leimasin</font>, joka on kätkön sielu. Se <font color="#c62828">ei ole vaihtotavaraa</font> eikä sitä saa koskaan ottaa mukaansa — leimasin jää aina paikoilleen seuraavaa kävijää odottamaan.</p>
+
+    <p style="margin:0 0 14px 0;">Jos sinulla on oma leimasin, ota se rohkeasti mukaan: leimaa kätkön leimasimella oma vihkosi ja jätä oman leimasimesi jälki kätkön <font color="#795548">lokivihkoon</font>. Näin perinne jatkuu kädestä käteen, löytäjältä toiselle. Ilman leimasintakin onnistut mainiosti — pelkkä nimimerkki lokissa riittää aivan hyvin.</p>
+
+    <div style="border:1px dashed #795548; border-radius:10px; background-color:rgba(198,40,40,0.05); padding:14px 18px; margin:6px 0 16px 0; text-align:left;">
+      <div style="color:#795548; font-weight:bold; text-align:center; font-size:16px; letter-spacing:2px; margin-bottom:10px;">📮 NÄIN LEIMAAT</div>
+      <p style="margin:0 0 10px 0;"><font color="#c62828">1.</font> Löydä purkki ja avaa se varovasti — sisältö on herkkää.</p>
+      <p style="margin:0 0 10px 0;"><font color="#c62828">2.</font> Leimaa kätkön leimasimella oma vihkosi tai lokikirjasi.</p>
+      <p style="margin:0 0 10px 0;"><font color="#c62828">3.</font> Jätä oman leimasimesi jälki kätkön lokivihkoon — jos leimasinta ei ole, riittää nimimerkki.</p>
+      <p style="margin:0;"><font color="#c62828">4.</font> Aseta leimasin takaisin purkkiin ja sulje huolellisesti. <font color="#795548">Leimasin kuuluu aina kätkölle!</font></p>
+    </div>
+
+    <p style="margin:0 0 14px 0;">Piilo itsessään on helppo löytää — tässä kätkössä arvo on pikemminkin <font color="#c62828">perinteessä</font> kuin paikannuksen vaikeudessa. Kun purkki avautuu, saatat kokea ripauksen samaa riemua, jonka Dartmoorin retkeilijät tunsivat toistasataa vuotta sitten.</p>
+
+    <div style="height:2px; width:180px; margin:18px auto 14px auto; background:linear-gradient(90deg,rgba(198,40,40,0),#c62828,rgba(198,40,40,0));"></div>
+    <div style="color:#c62828; font-size:20px; font-weight:bold; margin-top:8px; text-shadow:0 2px 8px rgba(198,40,40,0.2);">Leimaa ja lähde — perinne jatkuu sinun kauttasi! 📮</div>
+
+  </div>
+</div></script>
+
 <script>
-  document.getElementById('pohja').addEventListener('change', function () {
-    document.getElementById('frame').src = this.value;
+  var sel = document.getElementById('pohja');
+  var frame = document.getElementById('frame');
+  var koodi = document.getElementById('koodi');
+
+  function paivita() {
+    frame.src = sel.value;
+    var lohko = document.getElementById('lahde-' + sel.value);
+    koodi.value = lohko ? lohko.textContent.replace(/^\s+|\s+$/g, '') : '';
+  }
+  sel.addEventListener('change', paivita);
+  paivita();
+
+  document.getElementById('kopioi').addEventListener('click', function () {
+    koodi.focus();
+    koodi.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(koodi.value).catch(function () {});
+    }
+    var btn = this;
+    var teksti = btn.textContent;
+    btn.textContent = '✅ Kopioitu!';
+    setTimeout(function () { btn.textContent = teksti; }, 1500);
   });
 </script>
 </body>
